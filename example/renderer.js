@@ -8,8 +8,9 @@
 
 const ie = require('../lib/ie');
 
-ieVersion = ie.GetVersion();
-console.log(`Inference Engine version: `, ieVersion);
+ieVersion = ie.getVersion();
+console.log(`Inference Engine version: `);
+console.log(ieVersion);
 
 const element = document.getElementById('ie-version');
 if (element) {

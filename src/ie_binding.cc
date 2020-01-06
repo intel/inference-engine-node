@@ -43,7 +43,7 @@ napi_value Init(napi_env env, napi_value exports) {
   napi_property_descriptor exports_properties[] = {
       {"IENetworkCreate", nullptr, IENetworkCreate, nullptr, nullptr, nullptr,
        napi_default, nullptr},
-      {"GetVersion", nullptr, GetVersion, nullptr, nullptr, nullptr,
+      {"getVersion", nullptr, GetVersion, nullptr, nullptr, nullptr,
        napi_default, nullptr},
   };
   nstatus = napi_define_properties(env, exports, ARRAY_SIZE(exports_properties),
