@@ -18,6 +18,7 @@
       'target_name': 'ie_node',
       'sources': [
         './src/ie_backend.cc',
+        './src/ie_backend.h',
         './src/ie_binding.cc'
       ],
       'cflags_cc!': [ '-fno-rtti' ],

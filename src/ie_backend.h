@@ -1,5 +1,5 @@
-#ifndef DLDT_BACKEND_H_
-#define DLDT_BACKEND_H_
+#ifndef IE_BACKEND_H_
+#define IE_BACKEND_H_
 
 #include <node_api.h>
 #include <map>
@@ -23,4 +23,4 @@ class IEBackend {
 
 }  // namespace ienodejs
 
-#endif  // #ifndef DLDT_BACKEND_H_
+#endif  // #ifndef IE_BACKEND_H_
