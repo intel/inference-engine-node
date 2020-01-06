@@ -27,3 +27,13 @@ Before run following script, setup the system environment variables for OpenVINO
 ```sh
 $ node test/version.js
 ```
+
+### Example
+
+Setup system environment variables of OpenVINO as test.
+
+```sh
+$ cd example
+$ npm install
+$ npm start
+```

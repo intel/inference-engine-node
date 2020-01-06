@@ -4,3 +4,14 @@
 // `nodeIntegration` is turned off. Use `preload.js` to
 // selectively enable features needed in the rendering
 // process.
+
+
+const ie = require('../lib/ie');
+
+ieVersion = ie.GetVersion();
+console.log(`Inference Engine version: `, ieVersion);
+
+const element = document.getElementById('ie-version');
+if (element) {
+  element.innerText = `${ieVersion.apiVersion.major}.${ieVersion.apiVersion.minor}`;
+}
