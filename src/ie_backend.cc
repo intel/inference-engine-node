@@ -62,8 +62,11 @@ napi_value IEBackend::GetVersion(napi_env env) {
   return result;
 }
 
-napi_value IENetworkCreate(napi_env env, napi_value model, napi_value weigths) {
+napi_value IEBackend::IENetworkCreate(napi_env env, napi_value model, napi_value weigths) {
+  napi_status nstatus;
   napi_value network_id;
+  nstatus = napi_create_int32(env, 0, &network_id);
+  ENSURE_NAPI_OK_RETVAL(env, nstatus, nullptr);
   return network_id;
 }
 
