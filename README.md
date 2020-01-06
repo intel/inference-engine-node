@@ -1,5 +1,11 @@
 # A binding to Inference Engine for Node.JS
 
+### Prerequisites
+
+Dwonload [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-download/) and install into default path.
+
+Note: currently only support Windows and Linux.
+
 ### Install
 
 ```sh
@@ -8,16 +14,16 @@ $ npm install
 
 ### Build
 
-Note: only support building on Linux.
-
-Make sure the [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-download/free-download-linux) is installed into default path (/opt/intel/computer_vision_sdk/).
-
 ```sh
-$ npm run-script build
+$ npm run build
 ```
+
+Note: for Visual Studio 2019, you may need to open binding.sln and retarget the solution manually.
 
 ### Test
 
+Before run following script, setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
+
 ```sh
-$ LD_LIBRARY_PATH=/opt/intel/computer_vision_sdk/inference_engine/lib/ubuntu_16.04/intel64/ node test/version.js
+$ node test/version.js
 ```
