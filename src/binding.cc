@@ -1,5 +1,7 @@
 #include "napi.h"
 
+#include "network.h"
+
 #include "inference_engine.hpp"
 
 namespace ie = InferenceEngine;
@@ -28,8 +30,31 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   return version;
 }
 
+Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  if (info.Length() < 2) {
+    Napi::TypeError::New(env, "Wrong number of arguments")
+      .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  if (!info[0].IsString() || !info[1].IsString()) {
+    Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+  Network::NewInstanceAsync(env, info[0], info[1], deferred);
+  return deferred.Promise();
+
+  // return Network::NewInstance(env, info[0], info[1]);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
+  exports.Set("createNetwork", Napi::Function::New(env, CreateNetwork));
+  Network::Init(env);
   return exports;
 }
 
