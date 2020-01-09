@@ -1,5 +1,5 @@
-#ifndef CORE_H
-#define CORE_H
+#ifndef IE_NODE_CORE_H
+#define IE_NODE_CORE_H
 
 #include <napi.h>
 
@@ -15,18 +15,13 @@ class Core : public Napi::ObjectWrap<Core> {
 
     private:
         static Napi::FunctionReference constructor;
-
-        Napi::Value test(const Napi::CallbackInfo& info);
-
-        // Napi::Object getVersions(const Napi::CallbackInfo& info, Napi::String device_name);
-        
-       // Napi::Object loadNetwork(const Napi::CallbackInfo& info, Napi::String device_name);
+        Napi::Value getVersions(const Napi::CallbackInfo& info);
 
         InferenceEngine::Core actual_;
 };
 
-}
+}// namespace ienodejs
 
 
 
-#endif
+#endif  //IE_NODE_CORE_H

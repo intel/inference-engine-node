@@ -1,7 +1,5 @@
 #include <napi.h>
-#include <uv.h>
 #include "core.h"
-#include "network.h"
 
 #include "inference_engine.hpp"
 
@@ -18,22 +16,19 @@ void Core::Init(const Napi::Env& env) {
 
     Napi::Function func = DefineClass(
       env, "Core",
-      {InstanceMethod("test", &Core::test)});
+      {InstanceMethod("getVersions", &Core::getVersions)});
 
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
 }
 
-// Core::Core(const Napi::CallbackInfo &info) 
-//     : Napi::ObjectWrap<Core>(info) {
-//         Napi::Env env = info.Env();
-//         Napi::HandleScope scope(env);
-
-//         this->actual_ = ie::Core();
-// }
-
 Core::Core(const Napi::CallbackInfo &info) 
-    : Napi::ObjectWrap<Core>(info) { }
+    : Napi::ObjectWrap<Core>(info) {
+        Napi::Env env = info.Env();
+        Napi::HandleScope scope(env);
+
+        this->actual_ = ie::Core();
+}
 
 Napi::Object Core::NewInstance(const Napi::Env& env) {
   Napi::EscapableHandleScope scope(env);
@@ -42,16 +37,48 @@ Napi::Object Core::NewInstance(const Napi::Env& env) {
   return scope.Escape(napi_value(obj)).ToObject();
 }
 
-// Napi::Object Core::getVersions(const Napi::CallbackInfo& info, Napi::String device_name_value) {}
+Napi::Value Core::getVersions(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
 
-Napi::Value Core::test(const Napi::CallbackInfo& info){
-    Napi::Env env = info.Env();
+  if (info.Length() != 1) {
+    Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
 
-    // obj.Set("info", "Core.test()");
-    // obj.Set("status", "Task 1");
+  if (!info[0].IsString()) {
+    Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+ 
+  std::string device_name_string = info[0].ToString().Utf8Value();
 
-    return Napi::String::New(env, actual_.GetVersions("CPU")["CPU"].buildNumber);
+  std::map<std::string, ie::Version> versionsMap = actual_.GetVersions(device_name_string);
+  std::map<std::string, ie::Version>::iterator iter;
+
+  Napi::Object versions = Napi::Object::New(env);
+
+  for(iter = versionsMap.begin(); iter != versionsMap.end(); iter++){
+    Napi::Object device = Napi::Object::New(env);
+    ie::Version* ie_version = &iter->second;
+
+    Napi::Object api_version = Napi::Object::New(env);
+    api_version.Set("major", ie_version->apiVersion.major);
+    api_version.Set("minor", ie_version->apiVersion.minor);
+    device.Set("apiVersion", api_version);
+  
+    if (ie_version->buildNumber) {
+      device.Set("buildNumber", ie_version->buildNumber);
+    }
+
+    if (ie_version->description) {
+      device.Set("description", ie_version->description);
+    }
+
+    versions.Set(iter->first, device);
+  }
+
+  Napi::Value versions_napi_value = Napi::Value::From(env, versions);
+  return versions_napi_value;
 }
 
-
-}
+} // namespace ienodejs

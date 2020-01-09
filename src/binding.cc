@@ -49,10 +49,7 @@ Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
   Network::NewInstanceAsync(env, info[0], info[1], deferred);
   return deferred.Promise();
-
-  // return Network::NewInstance(env, info[0], info[1]);
 }
-
 
 Napi::Value CreateCore(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
