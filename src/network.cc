@@ -70,12 +70,6 @@ void Network::Init(const Napi::Env& env) {
 Network::Network(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<Network>(info) {}
 
-Napi::Object Network::NewInstance(const Napi::Env& env, const Napi::Value& model, const Napi::Value& weights) {
-  Napi::EscapableHandleScope scope(env);
-  Napi::Object obj = constructor.New({model, weights});
-  return scope.Escape(napi_value(obj)).ToObject();
-}
-
 void Network::NewInstanceAsync(Napi::Env env, const Napi::Value& model, const Napi::Value& weights, Napi::Promise::Deferred& deferred) {
   NetworkAsyncWorker* worker = new NetworkAsyncWorker(env, model, weights, deferred);
   worker->Queue();

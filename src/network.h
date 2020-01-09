@@ -1,5 +1,5 @@
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef IE_NODE_NETWORK_H
+#define IE_NODE_NETWORK_H
 
 #include <napi.h>
 
@@ -10,7 +10,6 @@ namespace ienodejs {
 class Network : public Napi::ObjectWrap<Network> {
  public:
   static void Init(const Napi::Env& env);
-  static Napi::Object NewInstance(const Napi::Env& env, const Napi::Value& model, const Napi::Value& weights);
   static void NewInstanceAsync(Napi::Env env, const Napi::Value& model, const Napi::Value& weights, Napi::Promise::Deferred& deferred);
   Network(const Napi::CallbackInfo& info);
 
@@ -21,8 +20,6 @@ class Network : public Napi::ObjectWrap<Network> {
   // APIs
   Napi::Value getName(const Napi::CallbackInfo& info);
 
-  void LoadIROnWorkerThread();
-
   std::string model_;
   std::string weights_;
   InferenceEngine::CNNNetwork actual_;
@@ -30,4 +27,4 @@ class Network : public Napi::ObjectWrap<Network> {
 
 }  // namespace ienodejs
 
-#endif  // NETWORK_H
+#endif  // IE_NODE_NETWORK_H
