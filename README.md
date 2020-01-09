@@ -5,6 +5,7 @@
 Dwonload [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-download/) and install into default path.
 
 **Note:** Windows and Linux are supproted currently.
+
 **Note:** OpenVINO 2019 R3.1 is verified on Windows.
 
 ### Install
