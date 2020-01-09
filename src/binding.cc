@@ -12,6 +12,7 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   const ie::Version* ie_version = ie::GetInferenceEngineVersion();
 
   Napi::Object version = Napi::Object::New(env);
+  Napi::ObjectWrap
 
   Napi::Object api_version = Napi::Object::New(env);
   api_version.Set("major", ie_version->apiVersion.major);
@@ -28,8 +29,11 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   return version;
 }
 
+Napi::Object createCore(const Napi::CallbackInfo& info){};
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
+  exports.Set("")
   return exports;
 }
 

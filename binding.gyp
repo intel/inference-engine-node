@@ -2,8 +2,8 @@
   'conditions': [
     ['OS=="linux"', {
       'variables' : {
-        'IE_INCLUDE_DIR' : '/opt/intel/computer_vision_sdk/inference_engine/include/',
-        'IE_LIBRARY_DIR' : '/opt/intel/computer_vision_sdk/inference_engine/lib/ubuntu_16.04/intel64/'
+        'IE_INCLUDE_DIR' : '/opt/intel/openvino_2019.3.376/inference_engine/include/',
+        'IE_LIBRARY_DIR' : '/opt/intel/openvino_2019.3.376/inference_engine/lib/intel64/'
       },
     }],
     ['OS=="win"', {
@@ -19,9 +19,8 @@
       'sources': [
         './src/binding.cc'
       ],
-      'cflags_cc!': [ '-fno-rtti' ],
       'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions', '-fno-rtti' ],
       'xcode_settings': {
         'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
         'CLANG_CXX_LIBRARY': 'libc++',
