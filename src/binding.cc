@@ -2,6 +2,8 @@
 
 #include "network.h"
 
+#include "core.h"
+
 #include "inference_engine.hpp"
 
 namespace ie = InferenceEngine;
@@ -14,7 +16,6 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   const ie::Version* ie_version = ie::GetInferenceEngineVersion();
 
   Napi::Object version = Napi::Object::New(env);
-  Napi::ObjectWrap
 
   Napi::Object api_version = Napi::Object::New(env);
   api_version.Set("major", ie_version->apiVersion.major);
@@ -52,10 +53,18 @@ Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
   // return Network::NewInstance(env, info[0], info[1]);
 }
 
+
+Napi::Value CreateCore(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  return Core::NewInstance(env);
+}
+
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
   exports.Set("createNetwork", Napi::Function::New(env, CreateNetwork));
+  exports.Set("createCore", Napi::Function::New(env, CreateCore));
   Network::Init(env);
+  Core::Init(env);
   return exports;
 }
 
