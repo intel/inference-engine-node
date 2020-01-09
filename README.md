@@ -15,10 +15,11 @@ $ npm install
 ### Build
 
 ```sh
-$ npm run build
+$ npm install -g node-gyp
+$ node-gyp build
 ```
 
-Note: for Visual Studio 2019, you may need to open binding.sln and retarget the solution manually.
+Note: verified for node-gyp v6.10 and VS2019
 
 ### Test
 
@@ -26,6 +27,7 @@ Before run following script, setup the system environment variables for OpenVINO
 
 ```sh
 $ node test/version.js
+$ node test/network.js
 ```
 
 ### Example

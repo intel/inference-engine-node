@@ -17,17 +17,26 @@
     {
       'target_name': 'ie_node',
       'sources': [
-        './src/binding.cc'
+        './src/binding.cc',
+        './src/network.cc',
+        './src/network.h'
       ],
+      'cflags!': [ '-fno-rtti' ],
+      'cflags_cc!': [ '-fno-rtti' ],
       'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions', '-fno-rtti' ],
-      'xcode_settings': {
-        'GCC_ENABLE_CPP_EXCEPTIONS': 'YES',
-        'CLANG_CXX_LIBRARY': 'libc++',
-        'MACOSX_DEPLOYMENT_TARGET': '10.7',
-      },
-      'msvs_settings': {
-        'VCCLCompilerTool': { 'ExceptionHandling': 1 },
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'default_configuration': 'Release',
+      'configurations': {
+        'Debug': {
+          'msvs_settings': {
+            'VCCLCompilerTool': { 'ExceptionHandling': 1, 'RuntimeTypeInfo': 'true'},
+          },
+        },
+        'Release': {
+          'msvs_settings': {
+            'VCCLCompilerTool': { 'ExceptionHandling': 1, 'RuntimeTypeInfo': 'true'},
+          },
+        }
       },
       'include_dirs' : [ "<!@(node -p \"require('node-addon-api').include\")",
                          '<(IE_INCLUDE_DIR)' ],
