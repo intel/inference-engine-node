@@ -18,10 +18,12 @@
       'target_name': 'ie_node',
       'sources': [
         './src/binding.cc',
-        './src/network.cc',
-        './src/network.h',
         './src/core.cc',
-        './src/core.h'
+        './src/core.h',
+        './src/input_info.cc',
+        './src/input_info.h',
+        './src/network.cc',
+        './src/network.h'
       ],
       'cflags!': [ '-fno-exceptions', '-fno-rtti'],
       'cflags_cc!': [ '-fno-exceptions', '-fno-rtti'],
@@ -29,12 +31,20 @@
       'configurations': {
         'Debug': {
           'msvs_settings': {
-            'VCCLCompilerTool': { 'ExceptionHandling': 1, 'RuntimeTypeInfo': 'true'},
+            'VCCLCompilerTool': {
+              'ExceptionHandling': 1,
+              'RuntimeTypeInfo': 'true',
+              'RuntimeLibrary': 3 # MultiThreadedDebugDLL (/MDd)
+            },
           },
         },
         'Release': {
           'msvs_settings': {
-            'VCCLCompilerTool': { 'ExceptionHandling': 1, 'RuntimeTypeInfo': 'true'},
+            'VCCLCompilerTool': { 
+              'ExceptionHandling': 1,
+              'RuntimeTypeInfo': 'true',
+              'RuntimeLibrary': 1,    # MultiThreadedDebug (/MTd)
+            },
           },
         }
       },

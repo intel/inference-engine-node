@@ -18,7 +18,8 @@ class Network : public Napi::ObjectWrap<Network> {
 
   static Napi::FunctionReference constructor;
   // APIs
-  Napi::Value getName(const Napi::CallbackInfo& info);
+  Napi::Value GetName(const Napi::CallbackInfo& info);
+  Napi::Value GetInputsInfo(const Napi::CallbackInfo& info);
 
   std::string model_;
   std::string weights_;

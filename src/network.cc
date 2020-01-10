@@ -1,4 +1,6 @@
 #include "network.h"
+#include "input_info.h"
+
 #include <napi.h>
 #include <uv.h>
 
@@ -61,7 +63,9 @@ void Network::Init(const Napi::Env& env) {
 
   Napi::Function func = DefineClass(
       env, "Network",
-      {InstanceMethod("getName", &Network::getName)});
+      {InstanceMethod("getName", &Network::GetName),
+       InstanceMethod("getInputsInfo", &Network::GetInputsInfo),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -75,9 +79,20 @@ void Network::NewInstanceAsync(Napi::Env env, const Napi::Value& model, const Na
   worker->Queue();
 }
 
-Napi::Value Network::getName(const Napi::CallbackInfo& info) {
+Napi::Value Network::GetName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   return Napi::String::New(env, actual_.getName());
+}
+
+Napi::Value Network::GetInputsInfo(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  const ie::InputsDataMap ie_inputs_info = actual_.getInputsInfo();
+  Napi::Array js_inputs_info = Napi::Array::New(env, ie_inputs_info.size());
+  size_t i = 0;
+  for (auto& in : ie_inputs_info) {
+    js_inputs_info[i++] = InputInfo::NewInstance(env, in.second);
+  }
+  return js_inputs_info;
 }
 
 }  // ienodejs
