@@ -42,6 +42,16 @@ On Linux, make sure that OpenVINO is installed at
 ```
 /opt/intel/
 ```
+Excute the command to set the environment variables
+```
+source /opt/intel/openvino/bin/setupvars.sh
+```
+
+Run script to install external software dependencies
+```
+cd /opt/intel/openvino/install_dependencies
+sudo -E ./install_openvino_dependencies.sh
+```
 
 ```sh
 $ node test/version.js
