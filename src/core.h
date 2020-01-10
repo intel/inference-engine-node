@@ -15,13 +15,11 @@ class Core : public Napi::ObjectWrap<Core> {
 
     private:
         static Napi::FunctionReference constructor;
-        Napi::Value getVersions(const Napi::CallbackInfo& info);
+        Napi::Value GetVersions(const Napi::CallbackInfo& info);
 
         InferenceEngine::Core actual_;
 };
 
 }// namespace ienodejs
-
-
 
 #endif  //IE_NODE_CORE_H

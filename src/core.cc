@@ -16,7 +16,7 @@ void Core::Init(const Napi::Env& env) {
 
     Napi::Function func = DefineClass(
       env, "Core",
-      {InstanceMethod("getVersions", &Core::getVersions)});
+      {InstanceMethod("getVersions", &Core::GetVersions)});
 
     constructor = Napi::Persistent(func);
     constructor.SuppressDestruct();
@@ -37,7 +37,7 @@ Napi::Object Core::NewInstance(const Napi::Env& env) {
   return scope.Escape(napi_value(obj)).ToObject();
 }
 
-Napi::Value Core::getVersions(const Napi::CallbackInfo& info) {
+Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
@@ -52,12 +52,12 @@ Napi::Value Core::getVersions(const Napi::CallbackInfo& info) {
  
   std::string device_name_string = info[0].ToString().Utf8Value();
 
-  std::map<std::string, ie::Version> versionsMap = actual_.GetVersions(device_name_string);
+  std::map<std::string, ie::Version> versions_Map = actual_.GetVersions(device_name_string);
   std::map<std::string, ie::Version>::iterator iter;
 
   Napi::Object versions = Napi::Object::New(env);
 
-  for(iter = versionsMap.begin(); iter != versionsMap.end(); iter++){
+  for(iter = versions_Map.begin(); iter != versions_Map.end(); iter++){
     Napi::Object device = Napi::Object::New(env);
     ie::Version* ie_version = &iter->second;
 
