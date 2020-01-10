@@ -23,7 +23,11 @@ $ npm install -g node-gyp
 $ node-gyp rebuild
 ```
 
-**Note:** node-gyp v6.10 and VS2019 are verified on Windows and Linux.
+You can use these commands for Linux build.
+
+**Note:** node-gyp v6.10 and VS2019 are verified on Windows.
+
+**Note:** node-gyp v6.10 and gcc 5.4.0 are verified on Linux.
 
 ### Test
 
@@ -32,6 +36,11 @@ Before run following script, setup the system environment variables for OpenVINO
 For example, on Windows, execute
 ```sh
 C:\> "c:\Program Files (x86)\IntelSWTools\openvino\bin\setupvars.bat"
+```
+
+On Linux, make sure that OpenVINO is installed at
+```
+/opt/intel/
 ```
 
 ```sh
