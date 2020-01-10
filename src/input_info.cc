@@ -50,29 +50,27 @@ Napi::Value InputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   return Napi::String::New(env, utils::GetNameOfPrecision(actual_->getPrecision()));
 }
 
-Napi::Value InputInfo::SetPrecision(const Napi::CallbackInfo& info) {
+void InputInfo::SetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   if (!info[0].IsString()) {
     Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   std::string precision_name = info[0].ToString().Utf8Value();
 
   if (!utils::IsValidPrecisionName(precision_name)) {
     Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   actual_->setPrecision(utils::GetPrecisionByName(precision_name));
-
-  return env.Null();
 }
 
 Napi::Value InputInfo::GetLayout(const Napi::CallbackInfo& info) {
@@ -80,29 +78,27 @@ Napi::Value InputInfo::GetLayout(const Napi::CallbackInfo& info) {
   return Napi::String::New(env, utils::GetNameOfLayout(actual_->getLayout()));
 }
 
-Napi::Value InputInfo::SetLayout(const Napi::CallbackInfo& info) {
+void InputInfo::SetLayout(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   if (!info[0].IsString()) {
     Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   std::string layout_name = info[0].ToString().Utf8Value();
 
   if (!utils::IsValidLayoutName(layout_name)) {
     Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   actual_->setLayout(utils::GetLayoutByName(layout_name));
-
-  return env.Null();
 }
 
 Napi::Value InputInfo::GetDims(const Napi::CallbackInfo& info) {

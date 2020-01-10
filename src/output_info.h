@@ -18,7 +18,7 @@ class OutputInfo : public Napi::ObjectWrap<OutputInfo> {
   // APIs
   Napi::Value Name(const Napi::CallbackInfo& info);
   Napi::Value GetPrecision(const Napi::CallbackInfo& info);
-  Napi::Value SetPrecision(const Napi::CallbackInfo& info);
+  void SetPrecision(const Napi::CallbackInfo& info);
   Napi::Value GetLayout(const Napi::CallbackInfo& info);
   Napi::Value GetDims(const Napi::CallbackInfo& info);
 

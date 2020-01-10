@@ -11,7 +11,6 @@ function showInfo(info) {
 ie.createNetwork(model_path + '.xml', model_path + '.bin')
   .then(net => {
     console.log(`Succeed to load network at ${model_path}`);
-    console.log(net);
     console.log(`Network name: ${net.getName()}`);
     console.log('---------------------------');
     console.log('Inputs info:')

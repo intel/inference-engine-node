@@ -49,29 +49,27 @@ Napi::Value OutputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   return Napi::String::New(env, utils::GetNameOfPrecision(actual_->getPrecision()));
 }
 
-Napi::Value OutputInfo::SetPrecision(const Napi::CallbackInfo& info) {
+void OutputInfo::SetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   if (!info[0].IsString()) {
     Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   std::string precision_name = info[0].ToString().Utf8Value();
 
   if (!utils::IsValidPrecisionName(precision_name)) {
     Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
-    return env.Null();
+    return;
   }
 
   actual_->setPrecision(utils::GetPrecisionByName(precision_name));
-
-  return env.Null();
 }
 
 Napi::Value OutputInfo::GetLayout(const Napi::CallbackInfo& info) {
