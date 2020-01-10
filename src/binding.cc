@@ -1,6 +1,8 @@
 #include "napi.h"
 
 #include "network.h"
+#include "input_info.h"
+#include "output_info.h"
 
 #include "core.h"
 
@@ -62,6 +64,8 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("createCore", Napi::Function::New(env, CreateCore));
   Network::Init(env);
   Core::Init(env);
+  InputInfo::Init(env);
+  OutputInfo::Init(env);
   return exports;
 }
 
