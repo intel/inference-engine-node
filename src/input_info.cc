@@ -1,4 +1,6 @@
 #include "input_info.h"
+#include "utils.h"
+
 #include <napi.h>
 #include <uv.h>
 
@@ -7,49 +9,6 @@ using namespace Napi;
 namespace ie = InferenceEngine;
 
 namespace ienodejs {
-
-std::map<ie::Precision, std::string> precision_name_map = { {ie::Precision::FP32, "fp32"},
-                                                            {ie::Precision::FP16, "fp16"},
-                                                            {ie::Precision::Q78,  "q87"},
-                                                            {ie::Precision::I32,  "i32"},
-                                                            {ie::Precision::I16,  "i16"},
-                                                            {ie::Precision::I8,   "i8"},
-                                                            {ie::Precision::U16,  "u16"},
-                                                            {ie::Precision::U8,   "u8"} };
-
-std::map<std::string, ie::Precision> precision_type_map = { {"fp32", ie::Precision::FP32},
-                                                            {"fp16", ie::Precision::FP16},
-                                                            {"q78",  ie::Precision::Q78},
-                                                            {"i32",  ie::Precision::I32},
-                                                            {"i16",  ie::Precision::I16},
-                                                            {"i8",   ie::Precision::I8},
-                                                            {"i16",  ie::Precision::U16},
-                                                            {"u8",   ie::Precision::U8} };
-
-std::map<ie::Layout, std::string> layout_name_map = { {ie::Layout::ANY,     "any"},
-                                                      {ie::Layout::NCHW,    "nchw"},
-                                                      {ie::Layout::NHWC,    "nhwc"},
-                                                      {ie::Layout::OIHW,    "oihw"},
-                                                      {ie::Layout::C,       "c"},
-                                                      {ie::Layout::CHW,     "chw"},
-                                                      {ie::Layout::HW,      "hw"},
-                                                      {ie::Layout::NC,      "nc"},
-                                                      {ie::Layout::CN,      "cn"},
-                                                      {ie::Layout::NCDHW,   "ncdhw"},
-                                                      {ie::Layout::BLOCKED, "blocked"} };
-
-
-std::map<std::string, ie::Layout> layout_type_map = { {"any",     ie::Layout::ANY},
-                                                      {"nchw",    ie::Layout::NCHW},
-                                                      {"nhwc",    ie::Layout::NHWC},
-                                                      {"oihw",    ie::Layout::OIHW},
-                                                      {"c",       ie::Layout::C},
-                                                      {"chw",     ie::Layout::CHW},
-                                                      {"hw",      ie::Layout::HW},
-                                                      {"nc",      ie::Layout::NC},
-                                                      {"cn",      ie::Layout::CN},
-                                                      {"ncdhw",   ie::Layout::NCDHW},
-                                                      {"blocked", ie::Layout::BLOCKED} };
 
 Napi::FunctionReference InputInfo::constructor;
 
@@ -88,7 +47,7 @@ Napi::Value InputInfo::Name(const Napi::CallbackInfo& info) {
 
 Napi::Value InputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  return Napi::String::New(env, precision_name_map[actual_->getPrecision()]);
+  return Napi::String::New(env, utils::GetNameOfPrecision(actual_->getPrecision()));
 }
 
 Napi::Value InputInfo::SetPrecision(const Napi::CallbackInfo& info) {
@@ -104,16 +63,21 @@ Napi::Value InputInfo::SetPrecision(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  std::string precision = info[0].ToString().Utf8Value();
+  std::string precision_name = info[0].ToString().Utf8Value();
 
-  actual_->setPrecision(precision_type_map[precision]);
+  if (!utils::IsValidPrecisionName(precision_name)) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  actual_->setPrecision(utils::GetPrecisionByName(precision_name));
 
   return env.Null();
 }
 
 Napi::Value InputInfo::GetLayout(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  return Napi::String::New(env, layout_name_map[actual_->getLayout()]);
+  return Napi::String::New(env, utils::GetNameOfLayout(actual_->getLayout()));
 }
 
 Napi::Value InputInfo::SetLayout(const Napi::CallbackInfo& info) {
@@ -129,9 +93,14 @@ Napi::Value InputInfo::SetLayout(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  std::string layout = info[0].ToString().Utf8Value();
+  std::string layout_name = info[0].ToString().Utf8Value();
 
-  actual_->setLayout(layout_type_map[layout]);
+  if (!utils::IsValidLayoutName(layout_name)) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  actual_->setLayout(utils::GetLayoutByName(layout_name));
 
   return env.Null();
 }

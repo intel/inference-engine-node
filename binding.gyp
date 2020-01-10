@@ -23,7 +23,11 @@
         './src/input_info.cc',
         './src/input_info.h',
         './src/network.cc',
-        './src/network.h'
+        './src/network.h',
+        './src/output_info.cc',
+        './src/output_info.h',
+        './src/utils.cc',
+        './src/utils.h'
       ],
       'cflags!': [ '-fno-exceptions', '-fno-rtti'],
       'cflags_cc!': [ '-fno-exceptions', '-fno-rtti'],

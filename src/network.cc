@@ -1,5 +1,6 @@
 #include "network.h"
 #include "input_info.h"
+#include "output_info.h"
 
 #include <napi.h>
 #include <uv.h>
@@ -65,6 +66,7 @@ void Network::Init(const Napi::Env& env) {
       env, "Network",
       {InstanceMethod("getName", &Network::GetName),
        InstanceMethod("getInputsInfo", &Network::GetInputsInfo),
+       InstanceMethod("getOutputsInfo", &Network::GetOutputsInfo),
       });
 
   constructor = Napi::Persistent(func);
@@ -93,6 +95,17 @@ Napi::Value Network::GetInputsInfo(const Napi::CallbackInfo& info) {
     js_inputs_info[i++] = InputInfo::NewInstance(env, in.second);
   }
   return js_inputs_info;
+}
+
+Napi::Value Network::GetOutputsInfo(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  const ie::OutputsDataMap ie_outputputs_info = actual_.getOutputsInfo();
+  Napi::Array js_outputs_info = Napi::Array::New(env, ie_outputputs_info.size());
+  size_t i = 0;
+  for (auto& out : ie_outputputs_info) {
+    js_outputs_info[i++] = OutputInfo::NewInstance(env, out.second);
+  }
+  return js_outputs_info;
 }
 
 }  // ienodejs

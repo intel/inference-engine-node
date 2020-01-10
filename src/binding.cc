@@ -2,6 +2,7 @@
 
 #include "network.h"
 #include "input_info.h"
+#include "output_info.h"
 
 #include "core.h"
 
@@ -64,6 +65,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Network::Init(env);
   Core::Init(env);
   InputInfo::Init(env);
+  OutputInfo::Init(env);
   return exports;
 }
 
