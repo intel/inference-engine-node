@@ -2,6 +2,8 @@
 
 #include "network.h"
 
+#include "core.h"
+
 #include "inference_engine.hpp"
 
 namespace ie = InferenceEngine;
@@ -47,14 +49,19 @@ Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
   Network::NewInstanceAsync(env, info[0], info[1], deferred);
   return deferred.Promise();
+}
 
-  // return Network::NewInstance(env, info[0], info[1]);
+Napi::Value CreateCore(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  return Core::NewInstance(env);
 }
 
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
   exports.Set("createNetwork", Napi::Function::New(env, CreateNetwork));
+  exports.Set("createCore", Napi::Function::New(env, CreateCore));
   Network::Init(env);
+  Core::Init(env);
   return exports;
 }
 

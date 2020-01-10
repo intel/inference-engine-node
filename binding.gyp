@@ -19,12 +19,12 @@
       'sources': [
         './src/binding.cc',
         './src/network.cc',
-        './src/network.h'
+        './src/network.h',
+        './src/core.cc',
+        './src/core.h'
       ],
-      'cflags!': [ '-fno-rtti' ],
-      'cflags_cc!': [ '-fno-rtti' ],
-      'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
+      'cflags!': [ '-fno-exceptions', '-fno-rtti'],
+      'cflags_cc!': [ '-fno-exceptions', '-fno-rtti'],
       'default_configuration': 'Release',
       'configurations': {
         'Debug': {
