@@ -6,7 +6,7 @@ Dwonload [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-dow
 
 **Note:** Windows and Linux are supproted currently.
 
-**Note:** OpenVINO 2019 R3.1 is verified on Windows.
+**Note:** OpenVINO 2019 R3.1 is verified on Windows and Linux.
 
 ### Install
 
@@ -23,7 +23,7 @@ $ npm install -g node-gyp
 $ node-gyp rebuild
 ```
 
-**Note:** node-gyp v6.10 and VS2019 are verified on Windows.
+**Note:** node-gyp v6.10 and VS2019 are verified on Windows and Linux.
 
 ### Test
 
