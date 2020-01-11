@@ -2,8 +2,8 @@
   'conditions': [
     ['OS=="linux"', {
       'variables' : {
-        'IE_INCLUDE_DIR' : '/opt/intel/computer_vision_sdk/inference_engine/include/',
-        'IE_LIBRARY_DIR' : '/opt/intel/computer_vision_sdk/inference_engine/lib/ubuntu_16.04/intel64/'
+        'IE_INCLUDE_DIR' : '/opt/intel/openvino/inference_engine/include/',
+        'IE_LIBRARY_DIR' : '/opt/intel/openvino/inference_engine/lib/intel64/'
       },
     }],
     ['OS=="win"', {
