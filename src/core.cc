@@ -1,5 +1,10 @@
 #include "core.h"
+#include "execnetwork.h"
+#include "input_info.h"
+#include "network.h"
+#include "output_info.h"
 #include <napi.h>
+#include <uv.h>
 
 #include "inference_engine.hpp"
 
@@ -11,31 +16,33 @@ namespace ienodejs {
 
 Napi::FunctionReference Core::constructor;
 
-void Core::Init(const Napi::Env& env) {
+void Core::Init(const Napi::Env &env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(
-      env, "Core", {InstanceMethod("getVersions", &Core::GetVersions)});
+  Napi::Function func =
+      DefineClass(env, "Core",
+                  {InstanceMethod("getVersions", &Core::GetVersions),
+                   InstanceMethod("loadNetwork", &Core::LoadNetwork)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
 }
 
-Core::Core(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Core>(info) {
+Core::Core(const Napi::CallbackInfo &info) : Napi::ObjectWrap<Core>(info) {
   Napi::Env env = info.Env();
   Napi::HandleScope scope(env);
 
   this->actual_ = ie::Core();
 }
 
-Napi::Object Core::NewInstance(const Napi::Env& env) {
+Napi::Object Core::NewInstance(const Napi::Env &env) {
   Napi::EscapableHandleScope scope(env);
 
   Napi::Object obj = constructor.New({});
   return scope.Escape(napi_value(obj)).ToObject();
 }
 
-Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
+Napi::Value Core::GetVersions(const Napi::CallbackInfo &info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
@@ -60,7 +67,7 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
 
   for (iter = versions_Map.begin(); iter != versions_Map.end(); iter++) {
     Napi::Object device = Napi::Object::New(env);
-    ie::Version* ie_version = &iter->second;
+    ie::Version *ie_version = &iter->second;
 
     Napi::Object api_version = Napi::Object::New(env);
     api_version.Set("major", ie_version->apiVersion.major);
@@ -82,4 +89,32 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
   return versions_napi_value;
 }
 
-}  // namespace ienodejs
+Napi::Value Core::LoadNetwork(const Napi::CallbackInfo &info) {
+  Napi::Env env = info.Env();
+
+  if (info.Length() < 2) {
+    Napi::TypeError::New(env, "Wrong number of arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  if (!info[0].IsObject() || !info[1].IsString()) {
+    Napi::TypeError::New(env, "Wrong type of arguments")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+  ExecutableNetwork::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
+
+  // Napi::Object network_obj = info[0].ToObject();
+  // Network* network = Napi::ObjectWrap<Network>::Unwrap(network_obj);
+  
+  // ie::ExecutableNetwork test = actual_.LoadNetwork(network->actual_, info[1].ToString());
+
+  // deferred.Resolve(Napi::Value::From(env, "Test local"));
+
+  return deferred.Promise();
+}
+
+} // namespace ienodejs

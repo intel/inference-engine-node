@@ -6,6 +6,8 @@
 
 #include "core.h"
 
+#include "execnetwork.h"
+
 #include "inference_engine.hpp"
 
 namespace ie = InferenceEngine;
@@ -65,6 +67,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("createCore", Napi::Function::New(env, CreateCore));
   Network::Init(env);
   Core::Init(env);
+  ExecutableNetwork::Init(env);
   InputInfo::Init(env);
   OutputInfo::Init(env);
   return exports;
