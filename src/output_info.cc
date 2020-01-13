@@ -15,14 +15,15 @@ Napi::FunctionReference OutputInfo::constructor;
 void OutputInfo::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(
-      env, "OutputInfo",
-      {InstanceMethod("name", &OutputInfo::Name),
-       InstanceMethod("getPrecision", &OutputInfo::GetPrecision),
-       InstanceMethod("setPrecision", &OutputInfo::GetPrecision),
-       InstanceMethod("getLayout", &OutputInfo::GetLayout),
-       InstanceMethod("getDims", &OutputInfo::GetDims),
-      });
+  Napi::Function func =
+      DefineClass(env, "OutputInfo",
+                  {
+                      InstanceMethod("name", &OutputInfo::Name),
+                      InstanceMethod("getPrecision", &OutputInfo::GetPrecision),
+                      InstanceMethod("setPrecision", &OutputInfo::GetPrecision),
+                      InstanceMethod("getLayout", &OutputInfo::GetLayout),
+                      InstanceMethod("getDims", &OutputInfo::GetDims),
+                  });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -31,7 +32,8 @@ void OutputInfo::Init(const Napi::Env& env) {
 OutputInfo::OutputInfo(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<OutputInfo>(info) {}
 
-Napi::Object OutputInfo::NewInstance(const Napi::Env& env, const ie::DataPtr& actual) {
+Napi::Object OutputInfo::NewInstance(const Napi::Env& env,
+                                     const ie::DataPtr& actual) {
   Napi::EscapableHandleScope scope(env);
   Napi::Object obj = constructor.New({});
   OutputInfo* info = Napi::ObjectWrap<OutputInfo>::Unwrap(obj);
@@ -46,19 +48,22 @@ Napi::Value OutputInfo::Name(const Napi::CallbackInfo& info) {
 
 Napi::Value OutputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-  return Napi::String::New(env, utils::GetNameOfPrecision(actual_->getPrecision()));
+  return Napi::String::New(env,
+                           utils::GetNameOfPrecision(actual_->getPrecision()));
 }
 
 void OutputInfo::SetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
-    Napi::TypeError::New(env, "Wrong number of arguments").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "Wrong number of arguments")
+        .ThrowAsJavaScriptException();
     return;
   }
 
   if (!info[0].IsString()) {
-    Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "Wrong type of arguments")
+        .ThrowAsJavaScriptException();
     return;
   }
 
@@ -87,4 +92,4 @@ Napi::Value OutputInfo::GetDims(const Napi::CallbackInfo& info) {
   return js_dims;
 }
 
-}
+}  // namespace ienodejs

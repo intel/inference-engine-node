@@ -10,7 +10,9 @@ namespace ienodejs {
 class InputInfo : public Napi::ObjectWrap<InputInfo> {
  public:
   static void Init(const Napi::Env& env);
-  static Napi::Object NewInstance(const Napi::Env& env, const InferenceEngine::InputInfo::Ptr& actual);
+  static Napi::Object NewInstance(
+      const Napi::Env& env,
+      const InferenceEngine::InputInfo::Ptr& actual);
   InputInfo(const Napi::CallbackInfo& info);
 
  private:

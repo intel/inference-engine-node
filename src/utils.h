@@ -15,8 +15,8 @@ bool IsValidPrecisionName(const std::string& name);
 InferenceEngine::Precision GetPrecisionByName(const std::string& name);
 std::string GetNameOfPrecision(const InferenceEngine::Precision& precision);
 
-}
+}  // namespace utils
 
-}
+}  // namespace ienodejs
 
 #endif  // IE_NODE_UTILS_H
