@@ -10,7 +10,10 @@ namespace ienodejs {
 class Network : public Napi::ObjectWrap<Network> {
  public:
   static void Init(const Napi::Env& env);
-  static void NewInstanceAsync(Napi::Env env, const Napi::Value& model, const Napi::Value& weights, Napi::Promise::Deferred& deferred);
+  static void NewInstanceAsync(Napi::Env env,
+                               const Napi::Value& model,
+                               const Napi::Value& weights,
+                               Napi::Promise::Deferred& deferred);
   Network(const Napi::CallbackInfo& info);
 
  private:

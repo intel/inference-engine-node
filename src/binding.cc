@@ -1,7 +1,7 @@
 #include "napi.h"
 
-#include "network.h"
 #include "input_info.h"
+#include "network.h"
 #include "output_info.h"
 
 #include "core.h"
@@ -23,7 +23,7 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   api_version.Set("major", ie_version->apiVersion.major);
   api_version.Set("minor", ie_version->apiVersion.minor);
   version.Set("apiVersion", api_version);
-  
+
   if (ie_version->buildNumber) {
     version.Set("buildNumber", ie_version->buildNumber);
   }
@@ -39,12 +39,13 @@ Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
 
   if (info.Length() < 2) {
     Napi::TypeError::New(env, "Wrong number of arguments")
-      .ThrowAsJavaScriptException();
+        .ThrowAsJavaScriptException();
     return env.Null();
   }
 
   if (!info[0].IsString() || !info[1].IsString()) {
-    Napi::TypeError::New(env, "Wrong type of arguments").ThrowAsJavaScriptException();
+    Napi::TypeError::New(env, "Wrong type of arguments")
+        .ThrowAsJavaScriptException();
     return env.Null();
   }
 
