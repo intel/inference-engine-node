@@ -67,3 +67,13 @@ $ cd example
 $ npm install
 $ npm start
 ```
+
+### Coding style
+
+Use `clang-format` and follows [Chromium coding style](https://chromium.googlesource.com/chromium/src/+/master/styleguide/c++/c++.md).
+
+```sh
+$ npm install -g clang-format
+```
+
+Refer to [clang-format usage of Electron.js](https://electronjs.org/docs/development/clang-format).
