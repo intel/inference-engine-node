@@ -1,4 +1,4 @@
-#include "execnetwork.h"
+#include "executable_network.h"
 #include "network.h"
 
 #include <napi.h>
@@ -45,7 +45,6 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
     ExecutableNetwork* execnetwork =
         Napi::ObjectWrap<ExecutableNetwork>::Unwrap(obj);
     execnetwork->actual_ = actual_;
-    execnetwork->name = name_;
     deferred_.Resolve(scope.Escape(napi_value(obj)).ToObject());
   }
 
@@ -66,9 +65,7 @@ Napi::FunctionReference ExecutableNetwork::constructor;
 void ExecutableNetwork::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "ExecutableNetwork",
-                  {InstanceMethod("getName", &ExecutableNetwork::GetName)});
+  Napi::Function func = DefineClass(env, "ExecutableNetwork", {});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -85,11 +82,6 @@ void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
   ExecnetworkAsyncWorker* execworker =
       new ExecnetworkAsyncWorker(env, network, dev_name, core, deferred);
   execworker->Queue();
-}
-
-Napi::Value ExecutableNetwork::GetName(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  return Napi::String::New(env, name);
 }
 
 }  // namespace ienodejs

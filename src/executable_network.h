@@ -1,5 +1,5 @@
-#ifndef IE_EXECNETWORK_H
-#define IE_EXECNETWORK_H
+#ifndef IE_EXECUTABLE_NETWORK_H
+#define IE_EXECUTABLE_NETWORK_H
 
 #include <napi.h>
 
@@ -22,13 +22,10 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
 
   static Napi::FunctionReference constructor;
   // APIs
-  Napi::Value GetName(const Napi::CallbackInfo& info);
 
   InferenceEngine::ExecutableNetwork actual_;
-
-  std::string name;
 };
 
 }  // namespace ienodejs
 
-#endif  // IE_EXECNETWORK_H
+#endif  // IE_EXECUTABLE_NETWORK_H

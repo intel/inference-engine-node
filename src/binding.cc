@@ -6,7 +6,7 @@
 
 #include "core.h"
 
-#include "execnetwork.h"
+#include "executable_network.h"
 
 #include "inference_engine.hpp"
 

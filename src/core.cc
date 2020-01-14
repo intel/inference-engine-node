@@ -1,10 +1,9 @@
 #include "core.h"
+#include "executable_network.h"
+#include "network.h"
+
 #include <napi.h>
 #include <uv.h>
-#include "execnetwork.h"
-#include "input_info.h"
-#include "network.h"
-#include "output_info.h"
 
 #include "inference_engine.hpp"
 

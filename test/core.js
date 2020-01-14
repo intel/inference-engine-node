@@ -9,8 +9,7 @@ ie.createNetwork(model_path + '.xml', model_path + '.bin')
       console.log('IE core load the network:');
       core.loadNetwork(net, 'CPU')
           .then(exec_net => {
-            console.log('Name of ExecNetwork:')
-            console.log(exec_net.getName());
+            console.log(exec_net);
           })
           .catch(error => {
             console.log(error);
