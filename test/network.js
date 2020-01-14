@@ -19,15 +19,6 @@ ie.createNetwork(model_path + '.xml', model_path + '.bin')
         showInfo(info);
       });
       console.log('---------------------------');
-      const core = ie.createCore();
-      core.loadNetwork(net, "CPU").then(exec => {
-        console.log(exec.test());
-        console.log("Promise successfully");
-      }).catch(error => {
-        console.log("Some errors happen");
-      })
-      
-      console.log('---------------------------');
       let info = inputs_info[0];
       console.log(`Set input '${info.name()}' layout to 'nhwc'`);
       info.setLayout('nhwc');

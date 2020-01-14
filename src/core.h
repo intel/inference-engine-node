@@ -8,22 +8,20 @@
 namespace ienodejs {
 
 class Core : public Napi::ObjectWrap<Core> {
-public:
-  static void Init(const Napi::Env &env);
-  static Napi::Object NewInstance(const Napi::Env &env);
-  Core(const Napi::CallbackInfo &info);
+ public:
+  static void Init(const Napi::Env& env);
+  static Napi::Object NewInstance(const Napi::Env& env);
+  Core(const Napi::CallbackInfo& info);
 
-private:
-  friend class ExecnetworkAsyncWorker;
-
+ private:
   static Napi::FunctionReference constructor;
   // APIs
-  Napi::Value GetVersions(const Napi::CallbackInfo &info);
-  Napi::Value LoadNetwork(const Napi::CallbackInfo &info);
+  Napi::Value GetVersions(const Napi::CallbackInfo& info);
+  Napi::Value LoadNetwork(const Napi::CallbackInfo& info);
 
   InferenceEngine::Core actual_;
 };
 
-} // namespace ienodejs
+}  // namespace ienodejs
 
-#endif // IE_NODE_CORE_H
+#endif  // IE_NODE_CORE_H

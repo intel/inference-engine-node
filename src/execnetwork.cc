@@ -18,17 +18,17 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
                          Napi::Promise::Deferred& deferred)
       : env_(env),
         Napi::AsyncWorker(env),
-        deferred_(deferred)
-        {
-            network_ = Napi::ObjectWrap<Network>::Unwrap(network.ToObject())->actual_;
-            device_name_ = device_name.As<Napi::String>();
-            core_ = core;
-        }
+        device_name_(device_name.As<Napi::String>()),
+        core_(core),
+        deferred_(deferred) {
+    network_ = Napi::ObjectWrap<Network>::Unwrap(network.ToObject())->actual_;
+  }
 
   ~ExecnetworkAsyncWorker() {}
 
   void Execute() {
     try {
+      name_ = network_.getName();
       actual_ = core_.LoadNetwork(network_, device_name_);
     } catch (const std::exception& error) {
       Napi::AsyncWorker::SetError("The first step error.");
@@ -45,17 +45,18 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
     ExecutableNetwork* execnetwork =
         Napi::ObjectWrap<ExecutableNetwork>::Unwrap(obj);
     execnetwork->actual_ = actual_;
+    execnetwork->name = name_;
     deferred_.Resolve(scope.Escape(napi_value(obj)).ToObject());
-    // deferred_.Resolve(Napi::Value::From(env_, "Test local"));
   }
 
   void OnError(Napi::Error const& error) { deferred_.Reject(error.Value()); }
 
  private:
-  ie::ExecutableNetwork actual_;
   ie::CNNNetwork network_;
-  std::string device_name_;
   ie::Core core_;
+  ie::ExecutableNetwork actual_;
+  std::string device_name_;
+  std::string name_;
   Napi::Env env_;
   Napi::Promise::Deferred deferred_;
 };
@@ -67,7 +68,7 @@ void ExecutableNetwork::Init(const Napi::Env& env) {
 
   Napi::Function func =
       DefineClass(env, "ExecutableNetwork",
-                  {InstanceMethod("test", &ExecutableNetwork::Test)});
+                  {InstanceMethod("getName", &ExecutableNetwork::GetName)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -76,7 +77,7 @@ void ExecutableNetwork::Init(const Napi::Env& env) {
 ExecutableNetwork::ExecutableNetwork(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<ExecutableNetwork>(info) {}
 
-void ExecutableNetwork::NewInstanceAsync(Napi::Env &env,
+void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
                                          const Napi::Value& network,
                                          const Napi::Value& dev_name,
                                          ie::Core core,
@@ -86,10 +87,9 @@ void ExecutableNetwork::NewInstanceAsync(Napi::Env &env,
   execworker->Queue();
 }
 
-Napi::Value ExecutableNetwork::Test(const Napi::CallbackInfo& info) {
+Napi::Value ExecutableNetwork::GetName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
-  return Napi::Value::From(env, "Test Executable Network!");
+  return Napi::String::New(env, name);
 }
 
 }  // namespace ienodejs

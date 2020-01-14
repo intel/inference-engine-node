@@ -10,7 +10,7 @@ namespace ienodejs {
 class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
  public:
   static void Init(const Napi::Env& env);
-  static void NewInstanceAsync(Napi::Env &env,
+  static void NewInstanceAsync(Napi::Env& env,
                                const Napi::Value& network,
                                const Napi::Value& dev_name,
                                InferenceEngine::Core core,
@@ -22,9 +22,11 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
 
   static Napi::FunctionReference constructor;
   // APIs
+  Napi::Value GetName(const Napi::CallbackInfo& info);
+
   InferenceEngine::ExecutableNetwork actual_;
 
-  Napi::Value Test(const Napi::CallbackInfo& info);
+  std::string name;
 };
 
 }  // namespace ienodejs
