@@ -2,6 +2,7 @@
 #define IE_NODE_NETWORK_H
 
 #include <napi.h>
+#include "core.h"
 
 #include "inference_engine.hpp"
 
@@ -17,7 +18,9 @@ class Network : public Napi::ObjectWrap<Network> {
   Network(const Napi::CallbackInfo& info);
 
  private:
+  friend class Core;
   friend class NetworkAsyncWorker;
+  friend class ExecnetworkAsyncWorker;
 
   static Napi::FunctionReference constructor;
   // APIs

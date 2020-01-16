@@ -20,6 +20,8 @@
         './src/binding.cc',
         './src/core.cc',
         './src/core.h',
+        './src/executable_network.cc',
+        './src/executable_network.h',
         './src/input_info.cc',
         './src/input_info.h',
         './src/network.cc',
