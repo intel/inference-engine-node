@@ -103,6 +103,12 @@ Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
+  if (!info[0].ToObject().InstanceOf(Network::constructor.Value())) {
+    Napi::TypeError::New(env, "first argument has to be class Network")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
   ExecutableNetwork::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
 

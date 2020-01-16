@@ -28,13 +28,12 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
 
   void Execute() {
     try {
-      name_ = network_.getName();
-      actual_ = core_.LoadNetwork(network_, device_name_);
+      executable_network_ = core_.LoadNetwork(network_, device_name_);
     } catch (const std::exception& error) {
-      Napi::AsyncWorker::SetError("The first step error.");
+      Napi::AsyncWorker::SetError(error.what());
       return;
     } catch (...) {
-      Napi::AsyncWorker::SetError("The second step error.");
+      Napi::AsyncWorker::SetError("Unknown/internal exception happened.");
       return;
     }
   }
@@ -42,9 +41,9 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
   void OnOK() {
     Napi::EscapableHandleScope scope(env_);
     Napi::Object obj = ExecutableNetwork::constructor.New({});
-    ExecutableNetwork* execnetwork =
+    ExecutableNetwork* exec_network =
         Napi::ObjectWrap<ExecutableNetwork>::Unwrap(obj);
-    execnetwork->actual_ = actual_;
+    exec_network->actual_ = executable_network_;
     deferred_.Resolve(scope.Escape(napi_value(obj)).ToObject());
   }
 
@@ -53,9 +52,8 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
  private:
   ie::CNNNetwork network_;
   ie::Core core_;
-  ie::ExecutableNetwork actual_;
+  ie::ExecutableNetwork executable_network_;
   std::string device_name_;
-  std::string name_;
   Napi::Env env_;
   Napi::Promise::Deferred deferred_;
 };

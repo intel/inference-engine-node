@@ -7,9 +7,13 @@ console.log(core.getVersions('CPU'));
 ie.createNetwork(model_path + '.xml', model_path + '.bin')
     .then(net => {
       console.log('IE core load the network:');
+      console.log('---------------------------');
       core.loadNetwork(net, 'CPU')
           .then(exec_net => {
+            console.log('---------------------------');
             console.log(exec_net);
+            console.log('Use class ExecutableNetwork to test the loadNetwork:');
+            core.loadNetwork(exec_net, 'CPU');
           })
           .catch(error => {
             console.log(error);

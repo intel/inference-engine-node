@@ -18,6 +18,7 @@ class Network : public Napi::ObjectWrap<Network> {
   Network(const Napi::CallbackInfo& info);
 
  private:
+  friend class Core;
   friend class NetworkAsyncWorker;
   friend class ExecnetworkAsyncWorker;
 
