@@ -104,7 +104,7 @@ Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {
   }
 
   if (!info[0].ToObject().InstanceOf(Network::constructor.Value())) {
-    Napi::TypeError::New(env, "first argument has to be class Network")
+    Napi::TypeError::New(env, "The first argument should be a Network object")
         .ThrowAsJavaScriptException();
     return env.Null();
   }
