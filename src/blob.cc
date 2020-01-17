@@ -30,25 +30,25 @@ Blob::Blob(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Blob>(info) {}
 
 Napi::Value Blob::NewInstance(const Napi::Env& env,
                               const ie::Blob::Ptr& actual) {
-    Napi::EscapableHandleScope scope(env);
+  Napi::EscapableHandleScope scope(env);
 
-    Napi::Object obj = constructor.New({});
-    Blob* blob = Napi::ObjectWrap<Blob>::Unwrap(obj);
-    blob->actual_ = actual;
+  Napi::Object obj = constructor.New({});
+  Blob* blob = Napi::ObjectWrap<Blob>::Unwrap(obj);
+  blob->actual_ = actual;
 
-    return scope.Escape(napi_value(obj)).ToObject();
-  }
+  return scope.Escape(napi_value(obj)).ToObject();
+}
 
-  Napi::Value Blob::Buffer(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
+Napi::Value Blob::Buffer(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
 
-    return Napi::ArrayBuffer::New(env, actual_->buffer(), actual_->size());
-  }
+  return Napi::ArrayBuffer::New(env, actual_->buffer(), actual_->size());
+}
 
-  Napi::Value Blob::ByteSize(const Napi::CallbackInfo& info) {
-    Napi::Env env = info.Env();
+Napi::Value Blob::ByteSize(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
 
-    return Napi::Number::New(env, actual_->byteSize());
-  }
+  return Napi::Number::New(env, actual_->byteSize());
+}
 
 }  // namespace ienodejs
