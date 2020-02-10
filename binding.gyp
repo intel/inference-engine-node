@@ -49,7 +49,7 @@
             'VCCLCompilerTool': { 
               'ExceptionHandling': 1,
               'RuntimeTypeInfo': 'true',
-              'RuntimeLibrary': 1,    # MultiThreadedDebug (/MTd)
+              'RuntimeLibrary': 2 # MultiThreadedDLL (/MD)
             },
           },
         }
