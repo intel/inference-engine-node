@@ -13,7 +13,7 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
   static void NewInstanceAsync(Napi::Env& env,
                                const Napi::Value& network,
                                const Napi::Value& dev_name,
-                               InferenceEngine::Core core,
+                               const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred);
   ExecutableNetwork(const Napi::CallbackInfo& info);
 
@@ -22,6 +22,7 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
 
   static Napi::FunctionReference constructor;
   // APIs
+  Napi::Value CreateInferRequest(const Napi::CallbackInfo& info);
 
   InferenceEngine::ExecutableNetwork actual_;
 };
