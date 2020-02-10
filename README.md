@@ -2,7 +2,7 @@
 
 ### Prerequisites
 
-Dwonload [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-download/) and install into default path.
+Download [OpenVINO](https://software.intel.com/en-us/openvino-toolkit/choose-download/) and install into the default path.
 
 **Note:** Windows and Linux are supproted currently.
 
@@ -23,11 +23,11 @@ $ npm install -g node-gyp
 $ node-gyp rebuild
 ```
 
-You can use these commands for Linux build.
-
 **Note:** node-gyp v6.10 and VS2019 are verified on Windows.
 
 **Note:** node-gyp v6.10 and gcc 5.4.0 are verified on Linux.
+
+**Note:** for Debug build on Windows, please change library path to "C:\Program Files (x86)\IntelSWTools\openvino\inference_engine\lib\intel64\Debug" and library name to "inference_engined.lib".
 
 ### Test
 
@@ -42,7 +42,7 @@ On Linux, make sure that OpenVINO is installed at
 ```
 /opt/intel/
 ```
-Excute the command to set the environment variables
+Execute the command to setup the environment variables
 ```
 source /opt/intel/openvino/bin/setupvars.sh
 ```
@@ -53,6 +53,7 @@ cd /opt/intel/openvino/install_dependencies
 sudo -E ./install_openvino_dependencies.sh
 ```
 
+Run tests
 ```sh
 $ node test/version.js
 $ node test/network.js
