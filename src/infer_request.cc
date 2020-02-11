@@ -55,11 +55,6 @@ Napi::Value InferRequest::GetBlob(const Napi::CallbackInfo& info) {
     return env.Null();
   }
 
-  std::string name_ = info[0].ToString();
-  return Blob::NewInstance(env, actual_, name_);
-}
-
-Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
   std::string name = info[0].ToString();
   try {
     ie::Blob::Ptr blob = actual_.GetBlob(name);
@@ -80,6 +75,8 @@ Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
   deferred.Reject(Napi::TypeError::New(env, "Not implemented").Value());
+
+  return deferred.Promise();
 }
 
 }  // namespace ienodejs

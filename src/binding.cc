@@ -1,12 +1,12 @@
 #include "napi.h"
 
+#include "blob.h"
+#include "core.h"
+#include "executable_network.h"
+#include "infer_request.h"
 #include "input_info.h"
 #include "network.h"
 #include "output_info.h"
-
-#include "core.h"
-
-#include "executable_network.h"
 
 #include "inference_engine.hpp"
 
@@ -65,9 +65,11 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
   exports.Set("createNetwork", Napi::Function::New(env, CreateNetwork));
   exports.Set("createCore", Napi::Function::New(env, CreateCore));
-  Network::Init(env);
+  Blob::Init(env);
   Core::Init(env);
+  Network::Init(env);
   ExecutableNetwork::Init(env);
+  InferRequest::Init(env);
   InputInfo::Init(env);
   OutputInfo::Init(env);
   return exports;

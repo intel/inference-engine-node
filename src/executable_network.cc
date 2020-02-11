@@ -1,4 +1,6 @@
 #include "executable_network.h"
+
+#include "infer_request.h"
 #include "network.h"
 
 #include <napi.h>
@@ -14,7 +16,7 @@ class ExecnetworkAsyncWorker : public Napi::AsyncWorker {
   ExecnetworkAsyncWorker(Napi::Env& env,
                          const Napi::Value& network,
                          const Napi::Value& device_name,
-                         ie::Core& core,
+                         const ie::Core& core,
                          Napi::Promise::Deferred& deferred)
       : env_(env),
         Napi::AsyncWorker(env),
@@ -63,7 +65,10 @@ Napi::FunctionReference ExecutableNetwork::constructor;
 void ExecutableNetwork::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(env, "ExecutableNetwork", {});
+  Napi::Function func =
+      DefineClass(env, "ExecutableNetwork",
+                  {InstanceMethod("createInferRequest",
+                                  &ExecutableNetwork::CreateInferRequest)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -75,11 +80,27 @@ ExecutableNetwork::ExecutableNetwork(const Napi::CallbackInfo& info)
 void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
                                          const Napi::Value& network,
                                          const Napi::Value& dev_name,
-                                         ie::Core core,
+                                         const ie::Core& core,
                                          Napi::Promise::Deferred& deferred) {
   ExecnetworkAsyncWorker* execworker =
       new ExecnetworkAsyncWorker(env, network, dev_name, core, deferred);
   execworker->Queue();
+}
+
+Napi::Value ExecutableNetwork::CreateInferRequest(
+    const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  try {
+    ie::InferRequest infer_request = actual_.CreateInferRequest();
+    return InferRequest::NewInstance(env, infer_request);
+  } catch (const std::exception& error) {
+    Napi::RangeError::New(env, error.what()).ThrowAsJavaScriptException();
+    return env.Null();
+  } catch (...) {
+    Napi::Error::New(env, "Unknown/internal exception happened.")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
 }
 
 }  // namespace ienodejs
