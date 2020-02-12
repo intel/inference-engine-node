@@ -18,7 +18,7 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
   ExecutableNetwork(const Napi::CallbackInfo& info);
 
  private:
-  friend class ExecnetworkAsyncWorker;
+  friend class LoadNetworkAsyncWorker;
 
   static Napi::FunctionReference constructor;
   // APIs

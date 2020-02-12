@@ -11,9 +11,9 @@ namespace ie = InferenceEngine;
 
 namespace ienodejs {
 
-class NetworkAsyncWorker : public Napi::AsyncWorker {
+class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
  public:
-  NetworkAsyncWorker(Napi::Env& env,
+  ReadNetworkAsyncWorker(Napi::Env& env,
                      const Napi::Value& model,
                      const Napi::Value& weights,
                      Napi::Promise::Deferred& deferred)
@@ -23,7 +23,7 @@ class NetworkAsyncWorker : public Napi::AsyncWorker {
         weights_(weights.As<Napi::String>()),
         deferred_(deferred) {}
 
-  ~NetworkAsyncWorker() {}
+  ~ReadNetworkAsyncWorker() {}
 
   void Execute() {
     try {
@@ -82,9 +82,9 @@ void Network::NewInstanceAsync(Napi::Env env,
                                const Napi::Value& model,
                                const Napi::Value& weights,
                                Napi::Promise::Deferred& deferred) {
-  NetworkAsyncWorker* worker =
-      new NetworkAsyncWorker(env, model, weights, deferred);
-  worker->Queue();
+  ReadNetworkAsyncWorker* read_network_worker =
+      new ReadNetworkAsyncWorker(env, model, weights, deferred);
+  read_network_worker->Queue();
 }
 
 Napi::Value Network::GetName(const Napi::CallbackInfo& info) {
