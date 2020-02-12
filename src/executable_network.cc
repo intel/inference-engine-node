@@ -18,10 +18,10 @@ class LoadNetworkAsyncWorker : public Napi::AsyncWorker {
                          const Napi::Value& device_name,
                          const ie::Core& core,
                          Napi::Promise::Deferred& deferred)
-      : env_(env),
-        Napi::AsyncWorker(env),
-        device_name_(device_name.As<Napi::String>()),
+      : Napi::AsyncWorker(env),
         core_(core),
+        device_name_(device_name.As<Napi::String>()),
+        env_(env),
         deferred_(deferred) {
     network_ = Napi::ObjectWrap<Network>::Unwrap(network.ToObject())->actual_;
   }

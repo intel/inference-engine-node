@@ -14,13 +14,13 @@ namespace ienodejs {
 class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
  public:
   ReadNetworkAsyncWorker(Napi::Env& env,
-                     const Napi::Value& model,
-                     const Napi::Value& weights,
-                     Napi::Promise::Deferred& deferred)
-      : env_(env),
-        Napi::AsyncWorker(env),
+                         const Napi::Value& model,
+                         const Napi::Value& weights,
+                         Napi::Promise::Deferred& deferred)
+      : Napi::AsyncWorker(env),
         model_(model.As<Napi::String>()),
         weights_(weights.As<Napi::String>()),
+        env_(env),
         deferred_(deferred) {}
 
   ~ReadNetworkAsyncWorker() {}
