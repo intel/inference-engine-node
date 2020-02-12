@@ -20,7 +20,8 @@ void Blob::Init(const Napi::Env& env) {
   Napi::Function func =
       DefineClass(env, "Blob",
                   {InstanceMethod("buffer", &Blob::Buffer),
-                   InstanceMethod("byteSize", &Blob::ByteSize)});
+                   InstanceMethod("byteSize", &Blob::ByteSize),
+                   InstanceMethod("size", &Blob::Size)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -49,6 +50,12 @@ Napi::Value Blob::ByteSize(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   return Napi::Number::New(env, actual_->byteSize());
+}
+
+Napi::Value Blob::Size(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  return Napi::Number::New(env, actual_->size());
 }
 
 }  // namespace ienodejs

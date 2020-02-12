@@ -12,6 +12,40 @@ namespace ie = InferenceEngine;
 
 namespace ienodejs {
 
+class InferAsyncWorker : public Napi::AsyncWorker {
+ public:
+  InferAsyncWorker(Napi::Env& env,
+                   const ie::InferRequest& infer_request,
+                   Napi::Promise::Deferred& deferred)
+      : env_(env),
+        Napi::AsyncWorker(env),
+        infer_request_(infer_request),
+        deferred_(deferred) {}
+
+  ~InferAsyncWorker() {}
+
+  void Execute() {
+    try {
+      infer_request_.Infer();
+    } catch (const std::exception& error) {
+      Napi::AsyncWorker::SetError(error.what());
+      return;
+    } catch (...) {
+      Napi::AsyncWorker::SetError("Unknown/internal exception happened.");
+      return;
+    }
+  }
+
+  void OnOK() { deferred_.Resolve(Env().Null()); }
+
+  void OnError(Napi::Error const& error) { deferred_.Reject(error.Value()); }
+
+ private:
+  InferenceEngine::InferRequest infer_request_;
+  Napi::Env env_;
+  Napi::Promise::Deferred deferred_;
+};
+
 Napi::FunctionReference InferRequest::constructor;
 
 void InferRequest::Init(const Napi::Env& env) {
@@ -74,7 +108,8 @@ Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
 
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
-  deferred.Reject(Napi::TypeError::New(env, "Not implemented").Value());
+  InferAsyncWorker* infer_worker = new InferAsyncWorker(env, actual_, deferred);
+  infer_worker->Queue();
 
   return deferred.Promise();
 }

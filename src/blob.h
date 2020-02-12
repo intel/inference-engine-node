@@ -19,6 +19,7 @@ class Blob : public Napi::ObjectWrap<Blob> {
   // APIs
   Napi::Value ByteSize(const Napi::CallbackInfo& info);
   Napi::Value Buffer(const Napi::CallbackInfo& info);
+  Napi::Value Size(const Napi::CallbackInfo& info);
 
   InferenceEngine::Blob::Ptr actual_;
 };
