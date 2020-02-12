@@ -19,8 +19,8 @@ class Network : public Napi::ObjectWrap<Network> {
 
  private:
   friend class Core;
-  friend class NetworkAsyncWorker;
-  friend class ExecnetworkAsyncWorker;
+  friend class ReadNetworkAsyncWorker;
+  friend class LoadNetworkAsyncWorker;
 
   static Napi::FunctionReference constructor;
   // APIs
