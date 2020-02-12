@@ -43,7 +43,7 @@ Napi::Value Blob::NewInstance(const Napi::Env& env,
 Napi::Value Blob::Buffer(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
-  return Napi::ArrayBuffer::New(env, actual_->buffer(), actual_->size());
+  return Napi::ArrayBuffer::New(env, actual_->buffer(), actual_->byteSize());
 }
 
 Napi::Value Blob::ByteSize(const Napi::CallbackInfo& info) {
