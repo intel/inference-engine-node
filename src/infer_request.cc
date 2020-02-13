@@ -17,9 +17,9 @@ class InferAsyncWorker : public Napi::AsyncWorker {
   InferAsyncWorker(Napi::Env& env,
                    const ie::InferRequest& infer_request,
                    Napi::Promise::Deferred& deferred)
-      : env_(env),
-        Napi::AsyncWorker(env),
+      : Napi::AsyncWorker(env),
         infer_request_(infer_request),
+        env_(env),
         deferred_(deferred) {}
 
   ~InferAsyncWorker() {}
