@@ -20,7 +20,7 @@ void InputInfo::Init(const Napi::Env& env) {
                   {
                       InstanceMethod("name", &InputInfo::Name),
                       InstanceMethod("getPrecision", &InputInfo::GetPrecision),
-                      InstanceMethod("setPrecision", &InputInfo::GetPrecision),
+                      InstanceMethod("setPrecision", &InputInfo::SetPrecision),
                       InstanceMethod("getLayout", &InputInfo::GetLayout),
                       InstanceMethod("setLayout", &InputInfo::SetLayout),
                       InstanceMethod("getDims", &InputInfo::GetDims),
