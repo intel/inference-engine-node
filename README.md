@@ -63,11 +63,7 @@ $ node test/network.js
 
 Setup system environment variables of OpenVINO as test.
 
-```sh
-$ cd example
-$ npm install
-$ npm start
-```
+[hello_classification_node](example/hello_classification_node/README.md)
 
 ### Coding style
 

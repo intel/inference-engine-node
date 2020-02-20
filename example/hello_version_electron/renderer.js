@@ -6,7 +6,7 @@
 // process.
 
 
-const ie = require('../lib/ie');
+const ie = require('../../lib/ie');
 
 ieVersion = ie.getVersion();
 console.log(`Inference Engine version: `);
