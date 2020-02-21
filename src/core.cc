@@ -58,13 +58,23 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
 
   std::string device_name_string = info[0].ToString().Utf8Value();
 
-  std::map<std::string, ie::Version> versions_Map =
-      actual_.GetVersions(device_name_string);
+  std::map<std::string, ie::Version> versions_map;
+  try {
+    versions_map = actual_.GetVersions(device_name_string);
+  } catch (const std::exception& error) {
+    std::cerr << error.what() << std::endl;
+    Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
+    return env.Null();
+  } catch (...) {
+    Napi::Error::New(env, "Unknown/internal exception happened.")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
   std::map<std::string, ie::Version>::iterator iter;
 
   Napi::Object versions = Napi::Object::New(env);
 
-  for (iter = versions_Map.begin(); iter != versions_Map.end(); iter++) {
+  for (iter = versions_map.begin(); iter != versions_map.end(); iter++) {
     Napi::Object device = Napi::Object::New(env);
     ie::Version* ie_version = &iter->second;
 

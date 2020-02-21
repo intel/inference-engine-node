@@ -3,14 +3,55 @@ const jimp = require('jimp');
 const fs = require('fs');
 
 const option_definitions = [
-  {name: 'model', alias: 'm', type: String},
-  {name: 'image', alias: 'i', type: String},
-  {name: 'device', alias: 'd', type: String, defaultValue: 'CPU'}
+  {
+    name: 'help',
+    alias: 'h',
+    type: Boolean,
+    description: 'Show this help message and exit.'
+  },
+  {
+    name: 'model',
+    alias: 'm',
+    type: String,
+    description: 'Required. Path to an .xml file with a trained model.'
+  },
+  {
+    name: 'image',
+    alias: 'i',
+    type: String,
+    description: 'Required. Path to an image file.'
+  },
+  {
+    name: 'device',
+    alias: 'd',
+    type: String,
+    defaultValue: 'CPU',
+    description:
+        'Optional. Specify the target device to infer on; CPU, GPU, FPGA, ' +
+        'HDDL, MYRIAD or HETERO: is acceptable. Default value is CPU'
+  }
 ];
+
 const commandLineArgs = require('command-line-args');
+const commandLineUsage = require('command-line-usage');
+
 const options = commandLineArgs(option_definitions);
+if (options.help || !options.image || !options.model) {
+  const usage = commandLineUsage([
+    {
+      header: 'Hello Classification',
+      content: 'An example of image classification using inference-engine-node.'
+    },
+    {header: 'Options', optionList: option_definitions}
+  ])
+  console.log(usage)
+  process.exit(0);
+}
 
 const model_path = options.model;
+const re = /\.xml$/g
+const bin_path = model_path.replace(re, '.bin');
+const labels_path = model_path.replace(re, '.labels');
 const device_name = options.device;
 const image_path = options.image;
 
@@ -48,7 +89,7 @@ jimp.read(image_path)
     .then(image => {
       const core = ie.createCore();
 
-      ie.createNetwork(model_path + '.xml', model_path + '.bin')
+      ie.createNetwork(model_path, bin_path)
           .then(net => {
             console.log(`Succeed to create network at ${model_path}`);
             console.log(`Network name: ${net.getName()}`);
@@ -107,7 +148,7 @@ jimp.read(image_path)
                           const output_data =
                               new Float32Array(output_blob.buffer());
                           fs.readFile(
-                              model_path + '.labels', {encoding: 'utf-8'},
+                              labels_path, {encoding: 'utf-8'},
                               function(err, data) {
                                 let labels = null;
                                 if (!err) {
