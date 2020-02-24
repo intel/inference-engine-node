@@ -1,6 +1,7 @@
 const ie = require('../../lib/ie');
 const jimp = require('jimp');
-const fs = require('fs');
+const fs = require('fs').promises;
+const {performance} = require('perf_hooks');
 
 const option_definitions = [
   {
@@ -85,97 +86,75 @@ function topResults(tensor, labels, k = 5) {
   return classes;
 }
 
-jimp.read(image_path)
-    .then(image => {
-      const core = ie.createCore();
+console.log(`Inference Engine version: `);
+console.log(ie.getVersion());
 
-      ie.createNetwork(model_path, bin_path)
-          .then(net => {
-            console.log(`Succeed to create network at ${model_path}`);
-            console.log(`Network name: ${net.getName()}`);
-            console.log('Inputs info:')
-            const inputs_info = net.getInputsInfo();
-            inputs_info.forEach(info => {
-              showInfo(info);
-            });
-            console.log('Outputs info:');
-            const outputs_info = net.getOutputsInfo();
-            outputs_info.forEach(info => {
-              showInfo(info);
-            });
-            const input_info = inputs_info[0];
-            console.log(`Change input layout to 'nhwc' and precision to 'u8'`);
-            input_info.setLayout('nhwc');
-            input_info.setPrecision('u8');
-            showInfo(input_info);
-            const output_info = outputs_info[0];
-            console.log('---------------------------');
-            console.log(`Check ${device_name} plugin version`);
-            console.log(core.getVersions(device_name));
-            console.log('---------------------------');
-            core.loadNetwork(net, device_name)
-                .then(exec_net => {
-                  try {
-                    console.log(
-                        `Succeed to load network to ${device_name} plugin`);
-                    const infer_req = exec_net.createInferRequest();
-                    console.log('Succeed to create infer request')
-                    const input_blob = infer_req.getBlob(input_info.name());
-                    const input_dims = input_info.getDims();
-                    const input_height = input_dims[2];
-                    const input_width = input_dims[3];
-                    const input_channels = input_dims[1];
-                    const input_data = new Uint8Array(input_blob.buffer());
-                    image.resize(
-                        input_width, input_height, jimp.RESIZE_BILINEAR);
-                    console.log(`Prepare image with height = ${
-                        image.bitmap.width} width = ${image.bitmap.height}`);
-                    image.scan(
-                        0, 0, image.bitmap.width, image.bitmap.height,
-                        function(x, y, idx) {
-                          // RGBA to GBR
-                          let i = Math.floor(idx / 4) * 3;
-                          input_data[i + 2] = image.bitmap.data[idx + 0];  // R
-                          input_data[i + 0] = image.bitmap.data[idx + 1];  // G
-                          input_data[i + 1] = image.bitmap.data[idx + 2];  // B
-                        });
-                    infer_req.startAsync()
-                        .then(() => {
-                          console.log('---------------------------');
-                          console.log('Succeed to infer');
-                          const output_blob =
-                              infer_req.getBlob(output_info.name());
-                          const output_data =
-                              new Float32Array(output_blob.buffer());
-                          fs.readFile(
-                              labels_path, {encoding: 'utf-8'},
-                              function(err, data) {
-                                let labels = null;
-                                if (!err) {
-                                  labels = data.split('\n');
-                                }
-                                const results = topResults(output_data, labels);
-                                console.log('Results:')
-                                console.log(results);
-                                console.log('---------------------------');
-                                console.log('Done');
-                              });
-                        })
-                        .catch(error => {
-                          console.log(error);
-                        });
-                  } catch (error) {
-                    console.log(error);
-                  }
-                })
-                .catch(error => {
-                  console.log(error);
-                });
-          })
-          .catch(error => {
-            console.log(error);
-          });
-    })
-    .catch(err => {
-      console.error(err);
-    });
+async function main() {
+  const image = await jimp.read(image_path);
+  const core = ie.createCore();
+  let start_time = performance.now();
+  let net = await ie.createNetwork(model_path, bin_path);
+  const create_network_time = performance.now() - start_time;
+  console.log(`Succeed to create network at ${model_path} took ${
+      create_network_time.toFixed(2)} ms`);
+  console.log(`Network name: ${net.getName()}`);
+  console.log('Inputs info:')
+  const inputs_info = net.getInputsInfo();
+  inputs_info.forEach(info => {
+    showInfo(info);
+  });
+  console.log('Outputs info:');
+  const outputs_info = net.getOutputsInfo();
+  outputs_info.forEach(info => {
+    showInfo(info);
+  });
+  const input_info = inputs_info[0];
+  console.log(`Change input layout to 'nhwc' and precision to 'u8'`);
+  input_info.setLayout('nhwc');
+  input_info.setPrecision('u8');
+  showInfo(input_info);
+  const output_info = outputs_info[0];
+  console.log('---------------------------');
+  console.log(`Check ${device_name} plugin version`);
+  console.log(core.getVersions(device_name));
+  console.log('---------------------------');
+  start_time = performance.now();
+  const exec_net = await core.loadNetwork(net, device_name);
+  const load_network_time = performance.now() - start_time;
+  console.log(`Succeed to load network to ${device_name} plugin took ${
+      load_network_time.toFixed(2)} ms`);
+  let infer_req = exec_net.createInferRequest();
+  const input_blob = infer_req.getBlob(input_info.name());
+  const input_dims = input_info.getDims();
+  const input_height = input_dims[2];
+  const input_width = input_dims[3];
+  const input_channels = input_dims[1];
+  const input_data = new Uint8Array(input_blob.buffer());
+  image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
+  console.log(`Prepare image with height = ${image.bitmap.width} width = ${
+      image.bitmap.height}`);
+  image.scan(
+      0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
+        // RGBA to GBR
+        let i = Math.floor(idx / 4) * 3;
+        input_data[i + 2] = image.bitmap.data[idx + 0];  // R
+        input_data[i + 0] = image.bitmap.data[idx + 1];  // G
+        input_data[i + 1] = image.bitmap.data[idx + 2];  // B
+      });
+  console.log('---------------------------');
+  start_time = performance.now();
+  await infer_req.startAsync();
+  const infer_time = performance.now() - start_time;
+  console.log(`Succeed to infer took ${infer_time.toFixed(2)} ms`);
+  const output_blob = infer_req.getBlob(output_info.name());
+  const output_data = new Float32Array(output_blob.buffer());
+  const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
+  labels = data.split('\n');
+  const results = topResults(output_data, labels);
+  console.log('Results:')
+  console.log(results);
+  console.log('---------------------------');
+  return 'Done';
+}
+
+main().then(console.log).catch(console.error);
