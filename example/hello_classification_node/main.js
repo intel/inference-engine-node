@@ -111,12 +111,11 @@ function showPluginVersions(versions) {
 }
 
 function showResults(results) {
-  console.log('Class'.padStart(20) + 'Probability'.padStart(20));
-  console.log('------------'.padStart(20) + '-----------'.padStart(20));
+  console.log('classid'.padEnd(10) + 'probability'.padEnd(15) + 'label');
+  const header = '-------';
+  console.log(header.padEnd(10) + header.padEnd(15) + header);
   results.forEach(result => {
-    const label = result.label.split(',')[0].padStart(20);
-    const prob = `${(result.prob * 100).toFixed(2)}%`.padStart(20);
-    console.log(label + prob);
+    console.log(result.id.padEnd(10) + result.prob.padEnd(15) + result.label);
   })
 }
 
@@ -139,7 +138,8 @@ function topResults(tensor, labels, k) {
     const prob = sorted[i][0];
     const index = sorted[i][1];
     const c = {
-      label: labels === null ? index : labels[index],
+      id: index.toString(),
+      label: labels[index],
       prob: prob.toFixed(6)
     };
     classes.push(c);
@@ -182,13 +182,13 @@ async function main() {
   showBreakline();
   console.log(`Start to read image from ${image_path}.`);
   const image = await jimp.read(image_path);
-  console.log(`Succeeded. The image size is ${image.bitmap.height}x${
-      image.bitmap.width}.`);
+  console.log(`Succeeded.`);
   const input_dims = input_info.getDims();
   const input_height = input_dims[2];
   const input_width = input_dims[3];
+  console.log(`Resize image from (${image.bitmap.height}, ${
+      image.bitmap.width}) to (${input_height}, ${input_width}).`);
   image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
-  console.log(`Resize image to ${image.bitmap.height}x${image.bitmap.width}.`);
   showBreakline();
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
