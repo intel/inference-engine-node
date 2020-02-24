@@ -61,34 +61,6 @@ const option_definitions = [
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 
-const options = commandLineArgs(option_definitions);
-if (options.help || !options.image || !options.model) {
-  const usage = commandLineUsage([
-    {
-      header: 'Hello Classification',
-      content: 'An example of image classification using inference-engine-node.'
-    },
-    {header: 'Options', optionList: option_definitions}
-  ]);
-  console.log(usage);
-  process.exit(0);
-}
-
-const model_path = options.model;
-const re = /\.xml$/g
-const bin_path = model_path.replace(re, '.bin');
-const labels_path = model_path.replace(re, '.labels');
-const device_name = options.device;
-const image_path = options.image;
-const iterations = options.iterations;
-const top_k = options.topk;
-const sync = options.sync;
-
-if (iterations <= 0) {
-  console.log('The number of iterations should be greater than 0.');
-  process.exit(0);
-}
-
 function showInputOutputInfo(info) {
   console.log(`  name: ${info.name()}`);
   console.log(`  precision: ${info.getPrecision()}`);
@@ -139,7 +111,7 @@ function topResults(tensor, labels, k) {
     const index = sorted[i][1];
     const c = {
       id: index.toString(),
-      label: labels[index],
+      label: labels ? labels[index] : '',
       prob: prob.toFixed(6)
     };
     classes.push(c);
@@ -151,7 +123,39 @@ function highlight(msg) {
   console.log('\x1b[1m' + msg + '\x1b[0m');
 }
 
+function warning(msg) {
+  console.log('\x1b[33m' + msg + '\x1b[0m');
+}
+
 async function main() {
+  const options = commandLineArgs(option_definitions);
+  if (options.help || !options.image || !options.model) {
+    const usage = commandLineUsage([
+      {
+        header: 'Hello Classification',
+        content:
+            'An example of image classification using inference-engine-node.'
+      },
+      {header: 'Options', optionList: option_definitions}
+    ]);
+    console.log(usage);
+    process.exit(0);
+  }
+
+  const model_path = options.model;
+  const re = /\.xml$/g
+  const bin_path = model_path.replace(re, '.bin');
+  const labels_path = model_path.replace(re, '.labels');
+  const device_name = options.device;
+  const image_path = options.image;
+  const iterations = options.iterations;
+  const top_k = options.topk;
+  const sync = options.sync;
+
+  if (iterations <= 0) {
+    warning('The number of iterations should be greater than 0.');
+    process.exit(0);
+  }
   console.log('Start.')
   showBreakline();
   console.log(`Check inference engine version: `);
@@ -236,8 +240,13 @@ async function main() {
       (1000 / average_infer_time).toFixed(2)} FPS.`);
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.buffer());
-  const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
-  labels = data.split('\n');
+  let labels = undefined;
+  try {
+    const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
+    labels = data.split('\n');
+  } catch (error) {
+    warning(error);
+  }
   const results = topResults(output_data, labels, top_k);
   console.log(`The top ${top_k} results:`);
   showResults(results);
@@ -245,4 +254,4 @@ async function main() {
   return 'Done.';
 }
 
-main().then(console.log).catch(console.error);
+main().then(console.log).catch(warning);
