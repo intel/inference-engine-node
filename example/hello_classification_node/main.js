@@ -147,8 +147,9 @@ function topResults(tensor, labels, k) {
   return classes;
 }
 
-const color_green = '\x1b[32m';
-const color_reset = '\x1b[0m';
+function highlight(msg) {
+  console.log('\x1b[1m' + msg + '\x1b[0m');
+}
 
 async function main() {
   console.log('Start.')
@@ -161,8 +162,8 @@ async function main() {
   let start_time = performance.now();
   let net = await ie.createNetwork(model_path, bin_path);
   const create_network_time = performance.now() - start_time;
-  console.log(`${color_green}Succeeded by ${
-      create_network_time.toFixed(2)} ms.${color_reset}`);
+  highlight(
+      `Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);
   console.log(`Network name: ${net.getName()}`);
   const inputs_info = net.getInputsInfo();
   inputs_info.forEach((info, i) => {
@@ -196,8 +197,7 @@ async function main() {
   start_time = performance.now();
   const exec_net = await core.loadNetwork(net, device_name);
   const load_network_time = performance.now() - start_time;
-  console.log(`${color_green}Succeeded by ${load_network_time.toFixed(2)} ms.${
-      color_reset}`);
+  highlight(`Succeeded: load network took ${load_network_time.toFixed(2)} ms.`);
   showBreakline();
   let infer_req;
   let input_time = [];
@@ -230,9 +230,10 @@ async function main() {
       input_time.reduce((acc, v) => acc + v, 0) / input_time.length;
   const average_infer_time =
       infer_time.reduce((acc, v) => acc + v, 0) / infer_time.length;
-  console.log(`${color_green}Succeeded by average inference time ${
-      average_infer_time.toFixed(2)} ms and input filling time ${
-      average_input_time.toFixed(2)} ms.${color_reset}`);
+  highlight(`Succeeded: the average inference time is ${
+      average_infer_time.toFixed(2)} ms.`);
+  highlight(`           the throughput is ${
+      (1000 / average_infer_time).toFixed(2)} FPS.`);
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.buffer());
   const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
