@@ -18,6 +18,7 @@ class InferRequest : public Napi::ObjectWrap<InferRequest> {
   static Napi::FunctionReference constructor;
   // APIs
   Napi::Value GetBlob(const Napi::CallbackInfo& info);
+  Napi::Value Infer(const Napi::CallbackInfo& info);
   Napi::Value StartAsync(const Napi::CallbackInfo& info);
 
   InferenceEngine::InferRequest actual_;
