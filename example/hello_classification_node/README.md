@@ -24,6 +24,8 @@ Options
                             or HETERO: is acceptable. Default value is CPU.
   -n, --iterations number   Optional. The number of iterations for inference. Default value is 1.
   -k, --topk number         Optional. The number of top results to show. Default value is 5.
+  -s, --sync                Optional. Specify to inference synchronously or asynchronously. Default value
+                            is false.
 ```
 
 ### Run

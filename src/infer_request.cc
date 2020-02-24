@@ -54,6 +54,7 @@ void InferRequest::Init(const Napi::Env& env) {
   Napi::Function func =
       DefineClass(env, "InferRequest",
                   {InstanceMethod("getBlob", &InferRequest::GetBlob),
+                   InstanceMethod("infer", &InferRequest::Infer),
                    InstanceMethod("startAsync", &InferRequest::StartAsync)});
 
   constructor = Napi::Persistent(func);
@@ -101,6 +102,22 @@ Napi::Value InferRequest::GetBlob(const Napi::CallbackInfo& info) {
         .ThrowAsJavaScriptException();
     return env.Null();
   }
+}
+
+Napi::Value InferRequest::Infer(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  try {
+    actual_.Infer();
+  } catch (const std::exception& error) {
+    Napi::Error::New(env, error.what()).ThrowAsJavaScriptException();
+    return env.Null();
+  } catch (...) {
+    Napi::Error::New(env, "Unknown/internal exception happened.")
+        .ThrowAsJavaScriptException();
+    return env.Null();
+  }
+  return env.Null();
 }
 
 Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {

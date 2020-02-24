@@ -46,6 +46,15 @@ const option_definitions = [
     defaultValue: 5,
     description: 'Optional. The number of top results to show. ' +
         'Default value is 5.'
+  },
+  {
+    name: 'sync',
+    alias: 's',
+    type: Boolean,
+    defaultValue: false,
+    description:
+        'Optional. Specify to inference synchronously or asynchronously. ' +
+        'Default value is false.'
   }
 ];
 
@@ -73,6 +82,7 @@ const device_name = options.device;
 const image_path = options.image;
 const iterations = options.iterations;
 const top_k = options.topk;
+const sync = options.sync;
 
 if (iterations <= 0) {
   console.log('The number of iterations should be greater than 0.');
@@ -192,7 +202,8 @@ async function main() {
   let infer_req;
   let input_time = [];
   let infer_time = [];
-  console.log(`Start to inference for ${iterations} iterations.`);
+  console.log(`Start to inference ${sync ? '' : 'a'}synchronously for ${
+      iterations} iterations.`);
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
@@ -208,7 +219,11 @@ async function main() {
         });
     input_time.push(performance.now() - start_time);
     start_time = performance.now();
-    await infer_req.startAsync();
+    if (sync) {
+      infer_req.infer();
+    } else {
+      await infer_req.startAsync();
+    }
     infer_time.push(performance.now() - start_time);
   }
   const average_input_time =
