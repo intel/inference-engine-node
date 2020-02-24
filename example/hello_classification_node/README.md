@@ -17,16 +17,18 @@ Hello Classification
 
 Options
 
-  -h, --help            Show this help message and exit.
-  -m, --model string    Required. Path to an .xml file with a trained model.
-  -i, --image string    Required. Path to an image file.
-  -d, --device string   Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL, MYRIAD
-                        or HETERO: is acceptable. Default value is CPU
+  -h, --help                Show this help message and exit.
+  -m, --model string        Required. Path to an .xml file with a trained model.
+  -i, --image string        Required. Path to an image file.
+  -d, --device string       Optional. Specify the target device to infer on; CPU, GPU, FPGA, HDDL, MYRIAD
+                            or HETERO: is acceptable. Default value is CPU.
+  -n, --iterations number   Optional. The number of iterations for inference. Default value is 1.
+  -k, --topk number         Optional. The number of top results to show. Default value is 5.
 ```
 
 ### Run
 
-For example on Windows, run SqueezeNet on CPU plugin:
+For example on Windows, run SqueezeNet on CPU plugin for 10 iterations:
 ```sh
-$ node main.js -m ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml -i "c:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\demo\car.png" -d CPU
+$ node main.js -m ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml -i "c:\Program Files (x86)\IntelSWTools\openvino\deployment_tools\demo\car.png" -d CPU -n 10
 ```
