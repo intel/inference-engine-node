@@ -202,7 +202,7 @@ async function main() {
   let infer_req;
   let input_time = [];
   let infer_time = [];
-  console.log(`Start to inference ${sync ? '' : 'a'}synchronously for ${
+  console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
       iterations} iterations.`);
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
