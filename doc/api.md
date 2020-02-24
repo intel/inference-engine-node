@@ -36,6 +36,7 @@ interface Core {
 ### Network
 ```webidl
 enum Precision {
+  'unspecified',
   'mixed',
   'fp32',
   'fp16',
