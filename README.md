@@ -1,5 +1,7 @@
 # Inference Engine Binding for Node.js*
 
+*Other names and brands may be claimed as the property of others.
+
 ### Prerequisites
 
 Instal [Node.js](https://nodejs.org/).
