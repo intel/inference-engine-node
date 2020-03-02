@@ -1,7 +1,7 @@
 {
   "name": "inference-engine-node",
   "version": "0.1.0",
-  "description": "A binding to Inference Engine for Node.JS",
+  "description": "Inference Engine Binding for Node.js*",
   "main": "lib/ie.js",
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
@@ -13,9 +13,6 @@
   "dependencies": {
     "bindings": "~1.3.0",
     "node-addon-api": "*"
-  },
-  "devDependencies": {
-    "node-gyp": "^6.1.0"
   },
   "gypfile": true,
   "engines": {

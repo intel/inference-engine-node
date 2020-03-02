@@ -10,9 +10,11 @@ For Windows, install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/
 
 For Linux, install `build-essential` package.
 
-**Note:** Node.js 12 LTS is verified.
-
-**Note:** OpenVINO 2019 R3.1 is verified on Windows 10 and Ubuntu Linux 16.04.
+**Verified configurations:**
+  * Node.js 12 LTS
+  * OpenVINO 2019 R3.1
+  * Windows 10
+  * Ubuntu Linux 16.04
 
 ### Install
 
@@ -20,22 +22,15 @@ For Linux, install `build-essential` package.
 $ npm install
 ```
 
-### Build
-
-```sh
-$ npm install -g node-gyp
-$ node-gyp rebuild
+**Note:** For "Error: MSBuild is not set" on VS 2019, please set `msbuild_path`, e.g.
 ```
-
-**Note:** node-gyp v6.10 and VS2019 are verified on Windows.
-
-**Note:** node-gyp v6.10 and gcc 5.4.0 are verified on Linux.
-
-**Note:** for Debug build on Windows, open the solution in Visual Studio, change library path to "C:\Program Files (x86)\IntelSWTools\openvino\inference_engine\lib\intel64\Debug" and library name to "inference_engined.lib".
+$ npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+```
+**Note:** For debug build on Windows, open the solution in Visual Studio, change library path to "C:\Program Files (x86)\IntelSWTools\openvino\inference_engine\lib\intel64\Debug" and library name to "inference_engined.lib".
 
 ### Test
 
-Before run following script, setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
+Setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
 
 Run test scripts under `test` folder, for example
 ```sh
