@@ -1,4 +1,4 @@
-const ie = require('../../lib/ie');
+const ie = require('inference-engine-node');
 const jimp = require('jimp');
 const fs = require('fs').promises;
 const {performance} = require('perf_hooks');
