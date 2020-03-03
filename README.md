@@ -34,9 +34,8 @@ $ npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\20
 
 Setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
 
-Run test scripts under `test` folder, for example
 ```sh
-$ node test/version.js
+$ npm test
 ```
 
 ### Example
