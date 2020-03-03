@@ -17,6 +17,11 @@ namespace ienodejs {
 Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
+
   const ie::Version* ie_version = ie::GetInferenceEngineVersion();
 
   Napi::Object version = Napi::Object::New(env);
@@ -38,26 +43,30 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
 
 Napi::Value CreateNetwork(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "Wrong number of arguments")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong number of arguments").Value());
+    return deferred.Promise();
   }
 
   if (!info[0].IsString() || !info[1].IsString()) {
-    Napi::TypeError::New(env, "Wrong type of arguments")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong type of arguments").Value());
+    return deferred.Promise();
   }
 
-  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
   Network::NewInstanceAsync(env, info[0], info[1], deferred);
   return deferred.Promise();
 }
 
 Napi::Value CreateCore(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return env.Null();
+  }
   return Core::NewInstance(env);
 }
 
