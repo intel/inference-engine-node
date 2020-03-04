@@ -13,6 +13,7 @@
     "example": "example"
   },
   "scripts": {
+    "build": "node-gyp build",
     "test": "mocha"
   },
   "dependencies": {

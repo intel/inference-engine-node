@@ -28,6 +28,12 @@ $ npm install
 ```
 $ npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
 ```
+
+### Build
+```sh
+$ npm run build
+```
+
 **Note:** For debug build on Windows, open the solution in Visual Studio, change library path to "C:\Program Files (x86)\IntelSWTools\openvino\inference_engine\lib\intel64\Debug" and library name to "inference_engined.lib".
 
 ### Test
