@@ -15,8 +15,8 @@ describe('Core Test', function() {
     expect(core.getVersions).to.be.a('function');
   });
 
-  it('getVersions should return a PluginVersions object', () => {
-    expect(core.getVersions('CPU')).to.be.an('object');
+  it('getVersions should return a map', () => {
+    expect(core.getVersions('CPU')).to.be.an('map');
   });
 
   it('getVersions should throw for wrong number of argument', () => {

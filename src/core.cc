@@ -71,6 +71,7 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
   }
   std::map<std::string, ie::Version>::iterator iter;
 
+  // FIXME: should create a Map once node-addon-api supports it.
   Napi::Object versions = Napi::Object::New(env);
 
   for (iter = versions_map.begin(); iter != versions_map.end(); iter++) {
