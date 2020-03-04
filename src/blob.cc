@@ -42,19 +42,28 @@ Napi::Value Blob::NewInstance(const Napi::Env& env,
 
 Napi::Value Blob::Buffer(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::ArrayBuffer::New(env, actual_->buffer(), actual_->byteSize());
 }
 
 Napi::Value Blob::ByteSize(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::Number::New(env, actual_->byteSize());
 }
 
 Napi::Value Blob::Size(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::Number::New(env, actual_->size());
 }
 
