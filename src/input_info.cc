@@ -44,11 +44,19 @@ Napi::Object InputInfo::NewInstance(const Napi::Env& env,
 
 Napi::Value InputInfo::Name(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env, actual_->name());
 }
 
 Napi::Value InputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env,
                            utils::GetNameOfPrecision(actual_->getPrecision()));
 }
@@ -80,6 +88,10 @@ void InputInfo::SetPrecision(const Napi::CallbackInfo& info) {
 
 Napi::Value InputInfo::GetLayout(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env, utils::GetNameOfLayout(actual_->getLayout()));
 }
 
@@ -110,6 +122,10 @@ void InputInfo::SetLayout(const Napi::CallbackInfo& info) {
 
 Napi::Value InputInfo::GetDims(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   ie::SizeVector ie_dims = actual_->getTensorDesc().getDims();
   Napi::Array js_dims = Napi::Array::New(env, ie_dims.size());
   for (size_t i = 0; i < ie_dims.size(); ++i) {

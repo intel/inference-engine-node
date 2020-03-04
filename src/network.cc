@@ -89,11 +89,19 @@ void Network::NewInstanceAsync(Napi::Env env,
 
 Napi::Value Network::GetName(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env, actual_.getName());
 }
 
 Napi::Value Network::GetInputsInfo(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   const ie::InputsDataMap ie_inputs_info = actual_.getInputsInfo();
   Napi::Array js_inputs_info = Napi::Array::New(env, ie_inputs_info.size());
   size_t i = 0;
@@ -105,6 +113,10 @@ Napi::Value Network::GetInputsInfo(const Napi::CallbackInfo& info) {
 
 Napi::Value Network::GetOutputsInfo(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   const ie::OutputsDataMap ie_outputputs_info = actual_.getOutputsInfo();
   Napi::Array js_outputs_info =
       Napi::Array::New(env, ie_outputputs_info.size());
