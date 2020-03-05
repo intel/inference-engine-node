@@ -54,12 +54,32 @@ describe('Core Test', function() {
     expect(apiVersion.minor).to.be.a('number');
   });
 
+  it('readNetwork should be a function', () => {
+    expect(core.readNetwork).to.be.a('function');
+  });
+
+  it('readNetwork should return a Network object',
+     async () => {
+       expect(await core.readNetwork(model_path, weights_path))
+           .to.be.a('Network');
+     });
+
+  it('readNetwork should throw for wrong number of argument',
+     () => {
+       expect(core.readNetwork()).to.be.rejectedWith(TypeError);
+     });
+
+  it('readNetwork should throw for wrong type of argument',
+     () => {
+       expect(core.readNetwork(1, 2)).to.be.rejectedWith(TypeError);
+     });
+
   it('loadNetwork should be a function', () => {
     expect(core.loadNetwork).to.be.a('function');
   });
 
   it('loadNetwork should return an ExecutableNetwork', async () => {
-    const net = await ie.createNetwork(model_path, weights_path);
+    const net = await core.readNetwork(model_path, weights_path);
     expect(await core.loadNetwork(net, 'CPU')).to.be.a('ExecutableNetwork');
   });
 
@@ -68,7 +88,7 @@ describe('Core Test', function() {
   });
 
   it('loadNetwork should reject for wrong type of argument', async () => {
-    const net = await ie.createNetwork(model_path, weights_path);
+    const net = await core.readNetwork(model_path, weights_path);
     expect(core.loadNetwork(net, 2)).to.be.rejectedWith(TypeError);
   });
 
@@ -78,7 +98,7 @@ describe('Core Test', function() {
   });
 
   it('loadNetwork should reject for 2nd invalid argument', async () => {
-    const net = await ie.createNetwork(model_path, weights_path);
+    const net = await core.readNetwork(model_path, weights_path);
     expect(core.loadNetwork(net, 'foo')).to.be.rejectedWith(Error);
   });
 });

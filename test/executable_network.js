@@ -18,8 +18,8 @@ describe('ExecutableNetwork Test', function() {
   before(async () => {
     const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
     const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
-    const net = await ie.createNetwork(model_path, weights_path);
     const core = ie.createCore();
+    const net = await core.readNetwork(model_path, weights_path);
     exec_net = await core.loadNetwork(net, 'CPU');
   });
 
