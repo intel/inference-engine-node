@@ -90,6 +90,10 @@ void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
 Napi::Value ExecutableNetwork::CreateInferRequest(
     const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   try {
     ie::InferRequest infer_request = actual_.CreateInferRequest();
     return InferRequest::NewInstance(env, infer_request);

@@ -62,7 +62,6 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
   try {
     versions_map = actual_.GetVersions(device_name_string);
   } catch (const std::exception& error) {
-    std::cerr << error.what() << std::endl;
     Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
     return env.Null();
   } catch (...) {
@@ -72,6 +71,7 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
   }
   std::map<std::string, ie::Version>::iterator iter;
 
+  // FIXME: should create a Map once node-addon-api supports it.
   Napi::Object versions = Napi::Object::New(env);
 
   for (iter = versions_map.begin(); iter != versions_map.end(); iter++) {
@@ -100,26 +100,27 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
 
 Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
 
   if (info.Length() < 2) {
-    Napi::TypeError::New(env, "Wrong number of arguments")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong number of arguments").Value());
+    return deferred.Promise();
   }
 
   if (!info[0].IsObject() || !info[1].IsString()) {
-    Napi::TypeError::New(env, "Wrong type of arguments")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong type of arguments").Value());
+    return deferred.Promise();
   }
 
   if (!info[0].ToObject().InstanceOf(Network::constructor.Value())) {
-    Napi::TypeError::New(env, "The first argument should be a Network object")
-        .ThrowAsJavaScriptException();
-    return env.Null();
+    deferred.Reject(Napi::TypeError::New(
+                        env, "The first argument should be a Network object")
+                        .Value());
+    return deferred.Promise();
   }
 
-  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
   ExecutableNetwork::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
 
   return deferred.Promise();

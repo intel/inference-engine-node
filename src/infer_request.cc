@@ -106,7 +106,10 @@ Napi::Value InferRequest::GetBlob(const Napi::CallbackInfo& info) {
 
 Napi::Value InferRequest::Infer(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   try {
     actual_.Infer();
   } catch (const std::exception& error) {
@@ -122,8 +125,12 @@ Napi::Value InferRequest::Infer(const Napi::CallbackInfo& info) {
 
 Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
-
   Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+  if (info.Length() > 0) {
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong number of arguments").Value());
+    return deferred.Promise();
+  }
 
   InferAsyncWorker* infer_worker = new InferAsyncWorker(env, actual_, deferred);
   infer_worker->Queue();

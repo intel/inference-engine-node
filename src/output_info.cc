@@ -20,7 +20,7 @@ void OutputInfo::Init(const Napi::Env& env) {
                   {
                       InstanceMethod("name", &OutputInfo::Name),
                       InstanceMethod("getPrecision", &OutputInfo::GetPrecision),
-                      InstanceMethod("setPrecision", &OutputInfo::GetPrecision),
+                      InstanceMethod("setPrecision", &OutputInfo::SetPrecision),
                       InstanceMethod("getLayout", &OutputInfo::GetLayout),
                       InstanceMethod("getDims", &OutputInfo::GetDims),
                   });
@@ -43,11 +43,19 @@ Napi::Object OutputInfo::NewInstance(const Napi::Env& env,
 
 Napi::Value OutputInfo::Name(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env, actual_->getName());
 }
 
 Napi::Value OutputInfo::GetPrecision(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env,
                            utils::GetNameOfPrecision(actual_->getPrecision()));
 }
@@ -79,11 +87,19 @@ void OutputInfo::SetPrecision(const Napi::CallbackInfo& info) {
 
 Napi::Value OutputInfo::GetLayout(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   return Napi::String::New(env, utils::GetNameOfLayout(actual_->getLayout()));
 }
 
 Napi::Value OutputInfo::GetDims(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   ie::SizeVector ie_dims = actual_->getTensorDesc().getDims();
   Napi::Array js_dims = Napi::Array::New(env, ie_dims.size());
   for (size_t i = 0; i < ie_dims.size(); ++i) {

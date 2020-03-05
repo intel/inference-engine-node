@@ -24,12 +24,12 @@ interface InferenceEngine {
 ```
 ### Core
 ```webidl
-interface PluginVersion {
+interface PluginVersions {
   readonly maplike<DOMString, Version>;
 };
 
 interface Core {
-  Sequence<PluginVersion> getVersions(DOMString deviceName);
+  PluginVersions getVersions(DOMString deviceName);
   Promise<ExecutableNetwork> loadNetwork(Network network, DOMString deviceName);
 };
 ```

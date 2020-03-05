@@ -28,15 +28,20 @@ $ npm install
 ```
 $ npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
 ```
+
+### Build
+```sh
+$ npm run build
+```
+
 **Note:** For debug build on Windows, open the solution in Visual Studio, change library path to "C:\Program Files (x86)\IntelSWTools\openvino\inference_engine\lib\intel64\Debug" and library name to "inference_engined.lib".
 
 ### Test
 
 Setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
 
-Run test scripts under `test` folder, for example
 ```sh
-$ node test/version.js
+$ npm test
 ```
 
 ### Example
