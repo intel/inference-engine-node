@@ -14,7 +14,7 @@ For Linux, install `build-essential` package.
 
 **Verified configurations:**
   * Node.js 12 LTS
-  * OpenVINO 2019 R3.1
+  * OpenVINO 2020.1
   * Windows 10
   * Ubuntu Linux 16.04
 
@@ -38,7 +38,7 @@ $ npm run build
 
 ### Test
 
-Setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2019_R3.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
+Setup the system environment variables for OpenVINO on [Windows](https://docs.openvinotoolkit.org/2020.1/_docs_install_guides_installing_openvino_windows.html#set-the-environment-variables) and [Linux](https://docs.openvinotoolkit.org/2020.1/_docs_install_guides_installing_openvino_linux.html#set-the-environment-variables).
 
 ```sh
 $ npm test
