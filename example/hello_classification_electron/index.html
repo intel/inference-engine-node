@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+  <meta charset='utf-8'>
+  <title>An Image Classification Example of Inference-Engine-Node</title>
+  <meta content='width=device-width, initial-scale=1.0' name='viewport'>
+  <meta name='msapplication-TileColor' content='#ffffff'>
+  <meta name='theme-color' content='#ffffff'>
+  <link href='node_modules/bootstrap/dist/css/bootstrap.min.css' rel='stylesheet'>
+  <link href='static/css/style.css' rel='stylesheet'>
+</head>
+
+<body id='imageclassification'>
+  <header id='header'>
+    <div class='container'>
+      <div id='logo' class='pull-left'>
+          <svg preserveAspectRatio='xMidYMid meet'
+            viewBox='-1.2596205660195778 -1.002390572390567 185.26504164633673 39.987210231814544' width='1000'
+            height='50'>
+            <defs>
+              <text id='a1Hhj0hzGw' x='548' y='158.46' font-size='15' font-weight='200' font-style='normal'
+                letter-spacing='0' alignment-baseline='before-edge'
+                transform='matrix(1 0 0 1 -286.8825161889153 -158.45741702741705)' style='line-height:100%'
+                xml:space='preserve' dominant-baseline='text-before-edge'>
+                <tspan x='548' dx= '9em' dy='1em' alignment-baseline='before-edge' dominant-baseline='text-before-edge'
+                  text-anchor='end'>An Image Classification Example of Inference-Engine-Node</tspan>
+            </defs>
+            <g>
+              <g id='b1RcgdDiGU'>
+                <use xlink:href='#a1Hhj0hzGw' opacity='1' fill='#ffffff' fill-opacity='1'></use>
+              </g>
+            </g>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <form id='query' action='' method='get' class='container'>
+    <div class='filter mb-3 mt-2'>
+      <table id='filter' class='t-filter table table-condensed'>
+        <tbody>
+          <tr class='backend'>
+            <th class='text-center backendtitle'>Device</th>
+            <td>
+              <div class='g b-webnn'>
+                <input type='radio' name='bw' class='d-none' id='cpu' value='CPU'>
+                <label id='l-cpu' for='cpu' class='lml'>CPU</label>
+                <input type='radio' name='bw' class='d-none' id='gpu' value='GPU'>
+                <label id='l-gpu' for='gpu' class='lml'>GPU</label>
+                <input type='radio' name='bw' class='d-none' id='myraid' value='MYRAID'>
+                <label id='l-myraid' for='myraid' class='lml'>MYRAID</label>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </form>
+
+  <section class='ic' id='ic'>
+    <div class='container' id='container'>
+      <a id='extra' href='#' class='mb-1 mt-3'>
+        <h3 class='text-center ex' id='ictitle'>
+          Image Classification
+        </h3>
+        <span class='fa chevron-up'>
+          <svg aria-hidden='true' data-prefix='fas' data-icon='chevron-up' class='svg-inline--fa fa-chevron-up fa-w-14'
+            role='img' viewBox='0 0 448 512'>
+            <path fill='currentColor'
+              d='M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z'>
+            </path>
+          </svg>
+        </span>
+        <span class='fa chevron-down' style='display:none;'>
+          <svg aria-hidden='true' data-prefix='fas' data-icon='chevron-down'
+            class='svg-inline--fa fa-chevron-down fa-w-14' role='img' viewBox='0 0 448 512'>
+            <path fill='currentColor'
+              d='M207.029 381.476L12.686 187.132c-9.373-9.373-9.373-24.569 0-33.941l22.667-22.667c9.357-9.357 24.522-9.375 33.901-.04L224 284.505l154.745-154.021c9.379-9.335 24.544-9.317 33.901.04l22.667 22.667c9.373 9.373 9.373 24.569 0 33.941L240.971 381.476c-9.373 9.372-24.569 9.372-33.942 0z'>
+            </path>
+          </svg>
+        </span>
+      </a>
+
+      <ul class='nav nav-pills'>
+        <li id='img' class='active'>
+          <a href='#image' data-toggle='tab'>Image</a>
+        </li>
+        <li id='cam'><a href='#camera' data-toggle='tab'>Live Camera</a>
+        </li>
+      </ul>
+
+      <div id='progressContainer'>
+        <div class='mb-2'>
+          <div class='progress'>
+            <div class='progress-bar' role='progressbar' style='width: 0%;' aria-valuenow='0' aria-valuemin='0'
+              aria-valuemax='100' id='progressBar'></div>
+          </div>
+        </div>
+      </div>
+
+      <div class='tab-content clearfix' style='display: none;' id='progressmodel'>
+        <div class='loading-page'>
+          <div class='counter'>
+            <div class='loading'>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
+            <h1>0%</h1>
+            <p id='progressstep'>Loading model ...</p>
+          </div>
+        </div>
+      </div>
+      <div class='tab-content clearfix' style='display: none;' id='resulterror'>
+        <div class='c'>
+          <div class='errortitle'>Prediction Failed</div>
+          <div class='errordescription'>Please check error log for more details</div>
+        </div>
+      </div>
+
+
+      <div class='tab-content clearfix row'>
+        <div class='tab-pane text-center active col-sm' id='imagetab'>
+          <div class='icdisplay' style='display: none;'>
+            <div class='col-lg-12 col-xs-12 text-center'>
+              <figure class='item'>
+                <div class='inner'>
+                  <img id='image' crossorigin='anonymous' class='img-fluid' alt='Responsive image'
+                    src='test.jpg'>
+                </div>
+              </figure>
+              <div class='row mt-1'>
+                <div class='col'>
+                  <div class='box'>
+                    <input type='file' name='f[]' id='input' accept='image/*' class='inputfile inputf'/>
+                    <label for='input'>
+                      <svg width='20' height='17' viewBox='0 0 20 17'>
+                        <path d='M10 0l-5.2 4.9h3.3v5.1h3.8v-5.1h3.3l-5.2-4.9zm9.3 11.5l-3.2-2.1h-2l3.4 2.6h-3.5c-.1 0-.2.1-.2.1l-.8 2.3h-6l-.8-2.2c-.1-.1-.1-.2-.2-.2h-3.6l3.4-2.6h-2l-3.2 2.1c-.4.3-.7 1-.6 1.5l.6 3.1c.1.5.7.9 1.2.9h16.3c.6 0 1.1-.4 1.3-.9l.6-3.1c.1-.5-.2-1.2-.7-1.5z' />
+                      </svg>
+                      <span>Pick Image</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <canvas id='canvas' width=224 height=224></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class='tab-pane text-center col-sm' id='cameratab'>
+          <div class='icdisplay'  style='display: none;'>
+            <div id='fps'></div>
+            <div id='fullscreen'>
+              <i class='fa expand'>
+                <svg aria-hidden='true' data-prefix='fas' data-icon='expand' class='svg-inline--fa fa-expand fa-w-14'
+                  role='img' viewBox='0 0 448 512'>
+                  <path fill='currentColor'
+                    d='M0 180V56c0-13.3 10.7-24 24-24h124c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H64v84c0 6.6-5.4 12-12 12H12c-6.6 0-12-5.4-12-12zM288 44v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12V56c0-13.3-10.7-24-24-24H300c-6.6 0-12 5.4-12 12zm148 276h-40c-6.6 0-12 5.4-12 12v84h-84c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24V332c0-6.6-5.4-12-12-12zM160 468v-40c0-6.6-5.4-12-12-12H64v-84c0-6.6-5.4-12-12-12H12c-6.6 0-12 5.4-12 12v124c0 13.3 10.7 24 24 24h124c6.6 0 12-5.4 12-12z'>
+                  </path>
+                </svg>
+              </i>
+              <i class='fa compress' style='display:none;'>
+                <svg aria-hidden='true' data-prefix='fas' data-icon='compress'
+                  class='svg-inline--fa fa-compress fa-w-14' role='img' viewBox='0 0 448 512'>
+                  <path fill='currentColor'
+                    d='M436 192H312c-13.3 0-24-10.7-24-24V44c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v84h84c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12zm-276-24V44c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v84H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h124c13.3 0 24-10.7 24-24zm0 300V344c0-13.3-10.7-24-24-24H12c-6.6 0-12 5.4-12 12v40c0 6.6 5.4 12 12 12h84v84c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12zm192 0v-84h84c6.6 0 12-5.4 12-12v-40c0-6.6-5.4-12-12-12H312c-13.3 0-24 10.7-24 24v124c0 6.6 5.4 12 12 12h40c6.6 0 12-5.4 12-12z'>
+                  </path>
+                </svg>
+              </i>
+            </div>
+            <video id='video' autoplay playsinline></video>
+          </div>
+        </div>
+
+        <div id='inference' class='shoulddisplay col-sm' style='display: none;'>
+          <div class='row text-center tc' id='inferencetitle'>
+            <div id='inferenceTime'></div>
+          </div>
+          <div class='row text-center' id='inferenceresult'>
+            <table class='table table-sm'>
+              <thead>
+                <tr>
+                  <th scope='col'>#</th>
+                  <th scope='col'>Label</th>
+                  <th scope='col'>Probability</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope='row'>1</th>
+                  <td id='label0'></td>
+                  <td id='prob0'></td>
+                </tr>
+                <tr>
+                  <th scope='row'>2</th>
+                  <td id='label1'></td>
+                  <td id='prob1'></td>
+                </tr>
+                <tr>
+                  <th scope='row'>3</th>
+                  <td id='label2'></td>
+                  <td id='prob2'></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class='container'>
+      <div class='row'>
+        <div class='col-lg-12 col-xs-12 text-lg-center text-center'>
+          <div id='trademark' class='mb-4'></div>
+          <p>&copy;2020 <a href='https://github.com/intel/inference-engine-node'>Inference-Engine-Node</a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <div id='overlay'></div>
+
+  <a class='scrolltop' href='#'>
+    <svg aria-hidden='true' data-prefix='fas' data-icon='chevron-up' class='svg-inline--fa fa-chevron-up fa-w-14'
+      role='img' viewBox='0 0 448 512'>
+      <path fill='currentColor'
+        d='M240.971 130.524l194.343 194.343c9.373 9.373 9.373 24.569 0 33.941l-22.667 22.667c-9.357 9.357-24.522 9.375-33.901.04L224 227.495 69.255 381.516c-9.379 9.335-24.544 9.317-33.901-.04l-22.667-22.667c-9.373-9.373-9.373-24.569 0-33.941L207.03 130.525c9.372-9.373 24.568-9.373 33.941-.001z'>
+      </path>
+    </svg>
+  </a>
+
+  <div class="modal fade" id="subgraphModal" tabindex="-1" role="dialog" aria-labelledby="subgraphModalTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modaltitle">Subgraphs Summary</h5>
+        </div>
+        <div class="modal-body">
+          <div id="timeline">
+            <ul class="timeline" id="subgraph">
+            </ul>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="modal-btn" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
+  <script src='./node_modules/jquery/dist/jquery.min.js'></script>
+  <script src='./node_modules/jquery-migrate/dist/jquery-migrate.min.js'></script>
+  <script src='./node_modules/superfish/dist/js/superfish.min.js'></script>
+  <script src='./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js'></script>
+  <script src='./node_modules/stickyjs/stickyjs.js'></script>
+  <script src='./node_modules/greensock/dist/TweenMax.js'></script>
+  <script src='./static/lib/stats.customized.min.js'></script>
+  <script src='./base.js'></script>
+  <script src='./utils.js'></script>
+  <script src="./ui.js"></script>
+  <script src="./renderer.js"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-147662084-1"></script>
+  <script>if (window.module) module = window.module;</script>
+</body>
+</html>
