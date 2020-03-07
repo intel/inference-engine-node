@@ -164,7 +164,7 @@ async function main() {
   const core = ie.createCore();
   console.log(`Start to create network from ${model_path}.`)
   let start_time = performance.now();
-  let net = await ie.createNetwork(model_path, bin_path);
+  let net = await core.readNetwork(model_path, bin_path);
   const create_network_time = performance.now() - start_time;
   highlight(
       `Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);

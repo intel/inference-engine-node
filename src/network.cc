@@ -16,8 +16,10 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
   ReadNetworkAsyncWorker(Napi::Env& env,
                          const Napi::Value& model,
                          const Napi::Value& weights,
+                         const InferenceEngine::Core& core,
                          Napi::Promise::Deferred& deferred)
       : Napi::AsyncWorker(env),
+        core_(core),
         model_(model.As<Napi::String>()),
         weights_(weights.As<Napi::String>()),
         env_(env),
@@ -27,10 +29,7 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
 
   void Execute() {
     try {
-      ie::CNNNetReader net_reader;
-      net_reader.ReadNetwork(model_);
-      net_reader.ReadWeights(weights_);
-      actual_ = net_reader.getNetwork();
+      actual_ = core_.ReadNetwork(model_, weights_);
     } catch (const std::exception& error) {
       Napi::AsyncWorker::SetError(error.what());
       return;
@@ -52,6 +51,7 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
 
  private:
   InferenceEngine::CNNNetwork actual_;
+  ie::Core core_;
   std::string model_;
   std::string weights_;
   Napi::Env env_;
@@ -81,9 +81,10 @@ Network::Network(const Napi::CallbackInfo& info)
 void Network::NewInstanceAsync(Napi::Env env,
                                const Napi::Value& model,
                                const Napi::Value& weights,
+                               const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred) {
   ReadNetworkAsyncWorker* read_network_worker =
-      new ReadNetworkAsyncWorker(env, model, weights, deferred);
+      new ReadNetworkAsyncWorker(env, model, weights, core, deferred);
   read_network_worker->Queue();
 }
 

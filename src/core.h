@@ -17,6 +17,7 @@ class Core : public Napi::ObjectWrap<Core> {
   static Napi::FunctionReference constructor;
   // APIs
   Napi::Value GetVersions(const Napi::CallbackInfo& info);
+  Napi::Value ReadNetwork(const Napi::CallbackInfo& info);
   Napi::Value LoadNetwork(const Napi::CallbackInfo& info);
 
   InferenceEngine::Core actual_;

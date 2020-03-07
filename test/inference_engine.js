@@ -56,24 +56,4 @@ describe('InferenceEngine Test', () => {
   it('InferenceEngine.createCore should throw for invalid argument', () => {
     expect(() => ie.createCore('foo')).to.throw();
   });
-
-  it('InferenceEngine.createNetwork should be a function', () => {
-    expect(ie.createNetwork).to.be.a('function');
-  });
-
-  it('InferenceEngine.createNetwork should return a Network object',
-     async () => {
-       expect(await ie.createNetwork(model_path, weights_path))
-           .to.be.a('Network');
-     });
-
-  it('InferenceEngine.createNetwork should throw for wrong number of argument',
-     () => {
-       expect(ie.createNetwork()).to.be.rejectedWith(TypeError);
-     });
-
-  it('InferenceEngine.createNetwork should throw for wrong type of argument',
-     () => {
-       expect(ie.createNetwork(1, 2)).to.be.rejectedWith(TypeError);
-     });
 });

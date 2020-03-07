@@ -21,6 +21,7 @@ void Core::Init(const Napi::Env& env) {
   Napi::Function func =
       DefineClass(env, "Core",
                   {InstanceMethod("getVersions", &Core::GetVersions),
+                   InstanceMethod("readNetwork", &Core::ReadNetwork),
                    InstanceMethod("loadNetwork", &Core::LoadNetwork)});
 
   constructor = Napi::Persistent(func);
@@ -96,6 +97,26 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
 
   Napi::Value versions_napi_value = Napi::Value::From(env, versions);
   return versions_napi_value;
+}
+
+Napi::Value Core::ReadNetwork(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+  if (info.Length() < 2) {
+    deferred.Reject(
+      Napi::TypeError::New(env, "Wrong number of arguments").Value());
+    return deferred.Promise();
+  }
+
+  if (!info[0].IsString() || !info[1].IsString()) {
+    deferred.Reject(
+      Napi::TypeError::New(env, "Wrong type of arguments").Value());
+    return deferred.Promise();
+  }
+
+  Network::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
+  return deferred.Promise();
 }
 
 Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {

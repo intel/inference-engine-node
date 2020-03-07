@@ -12,7 +12,8 @@ describe('Network Test', function() {
   before(async () => {
     const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
     const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
-    network = await ie.createNetwork(model_path, weights_path);
+    const core = ie.createCore();
+    network = await core.readNetwork(model_path, weights_path);
   });
 
   it('getName should be a function', () => {
