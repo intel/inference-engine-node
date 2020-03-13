@@ -58,21 +58,29 @@ describe('Core Test', function() {
     expect(core.readNetwork).to.be.a('function');
   });
 
-  it('readNetwork should return a Network object',
-     async () => {
-       expect(await core.readNetwork(model_path, weights_path))
-           .to.be.a('Network');
-     });
+  it('readNetwork should return a Network object', async () => {
+    expect(await core.readNetwork(model_path, weights_path)).to.be.a('Network');
+  });
 
-  it('readNetwork should throw for wrong number of argument',
-     () => {
-       expect(core.readNetwork()).to.be.rejectedWith(TypeError);
-     });
+  it('readNetwork should reject for wrong number of argument', () => {
+    expect(core.readNetwork()).to.be.rejectedWith(TypeError);
+  });
 
-  it('readNetwork should throw for wrong type of argument',
-     () => {
-       expect(core.readNetwork(1, 2)).to.be.rejectedWith(TypeError);
-     });
+  it('readNetwork should reject for wrong type of argument', () => {
+    expect(core.readNetwork(1, 2)).to.be.rejectedWith(TypeError);
+  });
+
+  it('readNetwork should reject for invalid model path', () => {
+    expect(core.readNetwork('model', weights_path)).to.be.rejectedWith(Error);
+  });
+
+  it('readNetwork should reject for invalid weights path', () => {
+    expect(core.readNetwork(model_path, 'weigths')).to.be.rejectedWith(Error);
+  });
+
+  it('readNetwork should reject for invalid arguments', () => {
+    expect(core.readNetwork('model', 'weigths')).to.be.rejectedWith(Error);
+  });
 
   it('loadNetwork should be a function', () => {
     expect(core.loadNetwork).to.be.a('function');
