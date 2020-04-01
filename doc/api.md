@@ -30,6 +30,7 @@ interface PluginVersions {
 interface Core {
   PluginVersions getVersions(DOMString deviceName);
   Promise<Network> readNetwork(DOMString modelFilePath, DOMString weightsFilePath);
+  Promise<Network> readNetworkFromData(DOMString model, ArrayBuffer weights);
   Promise<ExecutableNetwork> loadNetwork(Network network, DOMString deviceName);
 };
 ```

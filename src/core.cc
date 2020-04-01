@@ -18,11 +18,12 @@ Napi::FunctionReference Core::constructor;
 void Core::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "Core",
-                  {InstanceMethod("getVersions", &Core::GetVersions),
-                   InstanceMethod("readNetwork", &Core::ReadNetwork),
-                   InstanceMethod("loadNetwork", &Core::LoadNetwork)});
+  Napi::Function func = DefineClass(
+      env, "Core",
+      {InstanceMethod("getVersions", &Core::GetVersions),
+       InstanceMethod("readNetwork", &Core::ReadNetwork),
+       InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
+       InstanceMethod("loadNetwork", &Core::LoadNetwork)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -105,13 +106,33 @@ Napi::Value Core::ReadNetwork(const Napi::CallbackInfo& info) {
 
   if (info.Length() < 2) {
     deferred.Reject(
-      Napi::TypeError::New(env, "Wrong number of arguments").Value());
+        Napi::TypeError::New(env, "Wrong number of arguments").Value());
     return deferred.Promise();
   }
 
   if (!info[0].IsString() || !info[1].IsString()) {
     deferred.Reject(
-      Napi::TypeError::New(env, "Wrong type of arguments").Value());
+        Napi::TypeError::New(env, "Wrong type of arguments").Value());
+    return deferred.Promise();
+  }
+
+  Network::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
+  return deferred.Promise();
+}
+
+Napi::Value Core::ReadNetworkFromData(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+
+  if (info.Length() < 2) {
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong number of arguments").Value());
+    return deferred.Promise();
+  }
+
+  if (!info[0].IsString() || !info[1].IsArrayBuffer()) {
+    deferred.Reject(
+        Napi::TypeError::New(env, "Wrong type of arguments").Value());
     return deferred.Promise();
   }
 

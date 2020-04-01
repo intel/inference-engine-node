@@ -82,6 +82,48 @@ describe('Core Test', function() {
     expect(core.readNetwork('model', 'weigths')).to.be.rejectedWith(Error);
   });
 
+  it('readNetworkFromData should be a function', () => {
+    expect(core.readNetworkFromData).to.be.a('function');
+  });
+
+  it('readNetworkFromData should return a Network object', async () => {
+    const fs = require('fs').promises;
+    const model_data = await fs.readFile(model_path, {encoding: 'utf-8'});
+    const weigths_buffer = await fs.readFile(weights_path);
+    expect(await core.readNetworkFromData(model_data, weigths_buffer.buffer))
+        .to.be.a('Network');
+  });
+
+  it('readNetworkFromData should reject for wrong number of argument', () => {
+    expect(core.readNetworkFromData()).to.be.rejectedWith(TypeError);
+  });
+
+  it('readNetworkFromData should reject for wrong type of argument', () => {
+    expect(core.readNetworkFromData(1, 2)).to.be.rejectedWith(TypeError);
+  });
+
+  it('readNetworkFromData should reject for invalid model data', async () => {
+    const fs = require('fs').promises;
+    const weigths_buffer = await fs.readFile(weights_path);
+    expect(core.readNetworkFromData(
+               '<?xml version="1.0" ?>', weigths_buffer.buffer))
+        .to.be.rejectedWith(Error);
+  });
+
+  it('readNetworkFromData should reject for invalid weights data', async () => {
+    const fs = require('fs').promises;
+    const model_data = await fs.readFile(model_path, {encoding: 'utf-8'});
+    const buffer = new ArrayBuffer(10);
+    expect(core.readNetworkFromData(model_data, buffer))
+        .to.be.rejectedWith(Error);
+  });
+
+  it('readNetworkFromData should reject for invalid arguments', () => {
+    const buffer = new ArrayBuffer(10);
+    expect(core.readNetworkFromData('<?xml version="1.0" ?>', buffer))
+        .to.be.rejectedWith(Error);
+  });
+
   it('loadNetwork should be a function', () => {
     expect(core.loadNetwork).to.be.a('function');
   });
