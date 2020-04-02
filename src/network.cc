@@ -21,15 +21,30 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
       : Napi::AsyncWorker(env),
         core_(core),
         model_(model.As<Napi::String>()),
-        weights_(weights.As<Napi::String>()),
+        read_from_data_(false),
         env_(env),
-        deferred_(deferred) {}
+        deferred_(deferred) {
+    if (weights.IsString()) {
+      weights_path_ = weights.As<Napi::String>();
+    } else {
+      read_from_data_ = true;
+      ArrayBuffer buffer = weights.As<Napi::ArrayBuffer>();
+      ie::TensorDesc desc(ie::Precision::U8, {buffer.ByteLength()},
+                          ie::Layout::C);
+      weights_blob_ =
+          ie::make_shared_blob<uint8_t>(desc, (uint8_t*)buffer.Data());
+    }
+  }
 
   ~ReadNetworkAsyncWorker() {}
 
   void Execute() {
     try {
-      actual_ = core_.ReadNetwork(model_, weights_);
+      if (read_from_data_) {
+        actual_ = core_.ReadNetwork(model_, weights_blob_);
+      } else {
+        actual_ = core_.ReadNetwork(model_, weights_path_);
+      }
     } catch (const std::exception& error) {
       Napi::AsyncWorker::SetError(error.what());
       return;
@@ -50,10 +65,12 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
   void OnError(Napi::Error const& error) { deferred_.Reject(error.Value()); }
 
  private:
-  InferenceEngine::CNNNetwork actual_;
+  ie::CNNNetwork actual_;
   ie::Core core_;
   std::string model_;
-  std::string weights_;
+  std::string weights_path_;
+  ie::Blob::CPtr weights_blob_;
+  bool read_from_data_;
   Napi::Env env_;
   Napi::Promise::Deferred deferred_;
 };
