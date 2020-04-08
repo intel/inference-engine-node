@@ -191,9 +191,12 @@ async function main() {
   const input_dims = input_info.getDims();
   const input_height = input_dims[2];
   const input_width = input_dims[3];
-  console.log(`Resize image from (${image.bitmap.height}, ${
-      image.bitmap.width}) to (${input_height}, ${input_width}).`);
-  image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
+  if (image.bitmap.height !== input_height &&
+      image.bitmap.width !== input_width) {
+    console.log(`Resize image from (${image.bitmap.height}, ${
+        image.bitmap.width}) to (${input_height}, ${input_width}).`);
+    image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
+  }
   showBreakline();
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
@@ -215,11 +218,11 @@ async function main() {
     const input_data = new Uint8Array(input_blob.buffer());
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
-          // RGBA to GBR
+          // Convert from RGBA to BGR (IE default)
           let i = Math.floor(idx / 4) * 3;
           input_data[i + 2] = image.bitmap.data[idx + 0];  // R
-          input_data[i + 0] = image.bitmap.data[idx + 1];  // G
-          input_data[i + 1] = image.bitmap.data[idx + 2];  // B
+          input_data[i + 1] = image.bitmap.data[idx + 1];  // G
+          input_data[i + 0] = image.bitmap.data[idx + 2];  // B
         });
     input_time.push(performance.now() - start_time);
     start_time = performance.now();
