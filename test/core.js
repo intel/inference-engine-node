@@ -15,7 +15,7 @@ describe('Core Test', function() {
     expect(core.getVersions).to.be.a('function');
   });
 
-  it('getVersions should return a map', () => {
+  it.skip('getVersions should return a map', () => {
     expect(core.getVersions('CPU')).to.be.an('map');
   });
 

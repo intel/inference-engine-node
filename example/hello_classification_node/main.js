@@ -215,7 +215,7 @@ async function main() {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
     const input_blob = infer_req.getBlob(input_info.name());
-    const input_data = new Uint8Array(input_blob.buffer());
+    const input_data = new Uint8Array(input_blob.wmap());
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
@@ -224,6 +224,7 @@ async function main() {
           input_data[i + 1] = image.bitmap.data[idx + 1];  // G
           input_data[i + 0] = image.bitmap.data[idx + 2];  // B
         });
+    input_blob.unmap();
     input_time.push(performance.now() - start_time);
     start_time = performance.now();
     if (sync) {
@@ -241,8 +242,6 @@ async function main() {
       average_infer_time.toFixed(2)} ms.`);
   highlight(`           the throughput is ${
       (1000 / average_infer_time).toFixed(2)} FPS.`);
-  const output_blob = infer_req.getBlob(output_info.name());
-  const output_data = new Float32Array(output_blob.buffer());
   let labels = undefined;
   try {
     const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
@@ -250,7 +249,10 @@ async function main() {
   } catch (error) {
     warning(error);
   }
+  const output_blob = infer_req.getBlob(output_info.name());
+  const output_data = new Float32Array(output_blob.rmap());
   const results = topResults(output_data, labels, top_k);
+  output_blob.unmap();
   console.log(`The top ${top_k} results:`);
   showResults(results);
   showBreakline();

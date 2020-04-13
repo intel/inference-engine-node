@@ -94,9 +94,12 @@ interface Network {
 ### ExecutableNetwork
 ```webidl
 interface Blob {
-  ArrayBuffer buffer();
   unsigned long byteSize();
   unsigned long size();
+  ArrayBuffer rmap();
+  ArrayBuffer wmap();
+  ArrayBuffer rwmap();
+  void unmap();
 };
 
 interface InferRequest {
@@ -140,8 +143,9 @@ const infer_request = executable_network.createInferRequest();
 
 // ----------- 6. Prepare input ------------------------------------------------
 const input_blob = infer_request.getBlob(input_info.name());
-const input_data = new Uint8Array(input_blob.buffer());
+const input_data = new Uint8Array(input_blob.wmap());
 // fill input_data
+input_blob.unmap();
 // -----------------------------------------------------------------------------
 
 // ----------- 7. Do inference asynchronously-----------------------------------
@@ -150,7 +154,8 @@ await infer_request.startAsync();
 
 // ----------- 8. Process output -----------------------------------------------
 const output_blob = infer_request.getBlob(output_info.name());
-const output_data = new Float32Array(output_blob.buffer());
+const output_data = new Float32Array(output_blob.rmap());
 // process output_data
+output_blob.unmap();
 // -----------------------------------------------------------------------------
 ```
