@@ -48,7 +48,8 @@ $ npm test
 
 Setup system environment variables of OpenVINO as test.
 
-[hello_classification_node](example/hello_classification_node/README.md)
+ * [Image Classification in Electron.js](example/hello_classification_electron/README.md)
+ * [Image Classification in Node.js](example/hello_classification_node/README.md)
 
 ### API
 
