@@ -1,4 +1,4 @@
-# A Node.js example of image classification using inference-engine-node
+# An Electron.js example of image classification using inference-engine-node
 
 ### Install
 
@@ -6,7 +6,7 @@
 $ npm install
 ```
 
-### Download Models
+### Use local models
 
 Please follow the instructions of [webml-polyfill/examples/image_classification/model/README.md](https://github.com/intel/webml-polyfill/blob/master/examples/image_classification/model/README.md) to download the OpenVINO models (.xml and .bin), and put them into path `<inference-engine-node>/example/hello_classification_electron/model`:
 
@@ -27,6 +27,6 @@ npm run start
 ### Screenshot
 ![screenshot](screenshot.png)
 
-### Use Online Models
+### Use remote models
 
 If users want to use the online OpenVINO models with URLs, please put URLs that can download model (.{bin,xml}) into the variables `onlineFile` (.xml) and `onlineBinFile` (.bin) of the corresponding model in `base.js`.
