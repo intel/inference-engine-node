@@ -1,6 +1,6 @@
 {
   "name": "inference-engine-node",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inference Engine Binding for Node.js*",
   "main": "lib/ie.js",
   "author": "ningxin.hu@intel.com",
