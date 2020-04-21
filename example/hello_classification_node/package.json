@@ -1,14 +1,14 @@
 {
   "name": "hello-classification-node",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Node.js example of image classification using inference-engine-node",
   "main": "main.js",
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "inference-engine-node": "../../",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
-    "jimp": "^0.9.3"
+    "inference-engine-node": "../../",
+    "jimp": "^0.9.8"
   }
 }

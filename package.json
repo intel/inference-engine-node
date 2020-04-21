@@ -1,13 +1,13 @@
 {
   "name": "inference-engine-node",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Inference Engine Binding for Node.js*",
   "main": "lib/ie.js",
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/intel/inference-engine-node.git"
+    "type": "git",
+    "url": "https://github.com/intel/inference-engine-node.git"
   },
   "directories": {
     "src": "src",
@@ -31,6 +31,6 @@
   "devDependencies": {
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
-    "mocha": "^7.1.0"
+    "mocha": "^7.1.1"
   }
 }
