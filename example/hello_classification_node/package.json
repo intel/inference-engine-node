@@ -1,6 +1,6 @@
 {
   "name": "hello-classification-node",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Node.js example of image classification using inference-engine-node",
   "main": "main.js",
   "author": "ningxin.hu@intel.com",
