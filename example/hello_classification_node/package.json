@@ -6,9 +6,9 @@
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "inference-engine-node": "../../",
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
-    "jimp": "^0.9.3"
+    "inference-engine-node": "../../",
+    "jimp": "^0.9.8"
   }
 }
