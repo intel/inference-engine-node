@@ -62,7 +62,8 @@
                          '<(IE_INCLUDE_DIR)' ],
       'library_dirs' : ['<(IE_LIBRARY_DIR)'],
       'libraries' : [
-        '-linference_engine'
+        '-linference_engine',
+        '-linference_engine_legacy'
       ]
     }
   ]
