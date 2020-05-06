@@ -54,6 +54,14 @@ describe('Core Test', function() {
     expect(apiVersion.minor).to.be.a('number');
   });
 
+  it('getAvailableDevices should be a function', () => {
+    expect(core.getAvailableDevices).to.be.a('function');
+  })
+
+  it('getAvailableDevices should return a array', () => {
+    expect(core.getAvailableDevices()).to.be.a('array');
+  })
+
   it('readNetwork should be a function', () => {
     expect(core.readNetwork).to.be.a('function');
   });

@@ -23,7 +23,8 @@ void Core::Init(const Napi::Env& env) {
       {InstanceMethod("getVersions", &Core::GetVersions),
        InstanceMethod("readNetwork", &Core::ReadNetwork),
        InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
-       InstanceMethod("loadNetwork", &Core::LoadNetwork)});
+       InstanceMethod("loadNetwork", &Core::LoadNetwork),
+       InstanceMethod("getAvailableDevices", &Core::GetAvailableDevices)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -166,6 +167,24 @@ Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {
   ExecutableNetwork::NewInstanceAsync(env, info[0], info[1], actual_, deferred);
 
   return deferred.Promise();
+}
+
+Napi::Value Core::GetAvailableDevices(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+
+  std::vector<std::string> availableDevices = actual_.GetAvailableDevices();
+
+  std::vector<std::string>::iterator iter;
+
+  Napi::Array devices = Napi::Array::New(env);
+  size_t i = 0;
+  for (iter = availableDevices.begin(); iter != availableDevices.end();
+       iter++) {
+    devices[i++] = *iter;
+  }
+
+  Napi::Value available_devices = Napi::Value::From(env, devices);
+  return available_devices;
 }
 
 }  // namespace ienodejs
