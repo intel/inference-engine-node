@@ -4,6 +4,7 @@
 #include "core.h"
 #include "executable_network.h"
 #include "infer_request.h"
+#include "preprocess_info.h"
 #include "input_info.h"
 #include "network.h"
 #include "output_info.h"
@@ -58,8 +59,10 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Network::Init(env);
   ExecutableNetwork::Init(env);
   InferRequest::Init(env);
+  PreProcessInfo::Init(env);
   InputInfo::Init(env);
   OutputInfo::Init(env);
+  
   return exports;
 }
 

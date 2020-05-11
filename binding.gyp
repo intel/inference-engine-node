@@ -26,6 +26,8 @@
         './src/executable_network.h',
         './src/infer_request.cc',
         './src/infer_request.h',
+        './src/preprocess_info.cc',
+        './src/preprocess_info.h',
         './src/input_info.cc',
         './src/input_info.h',
         './src/network.cc',

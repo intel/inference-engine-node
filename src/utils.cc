@@ -70,6 +70,51 @@ std::map<std::string, ie::Layout> layout_type_map = {
     {"blocked", ie::Layout::BLOCKED}
 };
 
+std::map<ie::ColorFormat, std::string> colorformat_name_map = {
+    {ie::ColorFormat::RAW, "raw"},
+    {ie::ColorFormat::RGB, "rgb"},
+    {ie::ColorFormat::BGR, "bgr"},
+    {ie::ColorFormat::RGBX, "rgbx"},
+    {ie::ColorFormat::BGRX, "bgrx"},
+    {ie::ColorFormat::NV12, "nv12"},
+    {ie::ColorFormat::I420, "i429"}
+};
+
+std::map<std::string, ie::ColorFormat> colorformat_type_map = {
+    {"raw", ie::ColorFormat::RAW},
+    {"rgb", ie::ColorFormat::RGB},
+    {"bgr", ie::ColorFormat::BGR},
+    {"rgbx", ie::ColorFormat::RGBX},
+    {"bgrx", ie::ColorFormat::BGRX},
+    {"nv12", ie::ColorFormat::NV12},
+    {"i429", ie::ColorFormat::I420}
+};
+
+std::map<ie::ResizeAlgorithm, std::string> resizeAlgorithm_name_map = {
+    {ie::ResizeAlgorithm::NO_RESIZE, "no_resize"},
+    {ie::ResizeAlgorithm::RESIZE_BILINEAR, "resize_bilinear"},
+    {ie::ResizeAlgorithm::RESIZE_AREA, "resize_area"}
+};
+
+std::map<std::string, ie::ResizeAlgorithm> resizeAlgorithm_type_map = {
+    {"no_resize", ie::ResizeAlgorithm::NO_RESIZE},
+    {"resize_bilinear", ie::ResizeAlgorithm::RESIZE_BILINEAR},
+    {"resize_area", ie::ResizeAlgorithm::RESIZE_AREA}
+};
+
+std::map<ie::MeanVariant, std::string> meanvariant_name_map = {
+    {ie::MeanVariant::MEAN_IMAGE, "mean_image"},
+    {ie::MeanVariant::MEAN_VALUE, "mean_value"},
+    {ie::MeanVariant::NONE, "none"}
+};
+
+std::map<std::string, ie::MeanVariant> meanvariant_type_map = {
+    {"mean_image", ie::MeanVariant::MEAN_IMAGE},
+    {"mean_value", ie::MeanVariant::MEAN_VALUE},
+    {"none", ie::MeanVariant::NONE}
+};
+
+
 bool IsValidLayoutName(const std::string& name) {
   return !(layout_type_map.find(name) == layout_type_map.end());
 }
@@ -92,6 +137,42 @@ ie::Precision GetPrecisionByName(const std::string& name) {
 
 std::string GetNameOfPrecision(const InferenceEngine::Precision& precision) {
   return precision_name_map[precision];
+}
+
+bool IsColorFormatName(const std::string& name) {
+  return !(colorformat_type_map.find(name) == colorformat_type_map.end());
+}
+
+InferenceEngine::ColorFormat GetColorFormatByName(const std::string& name) {
+  return colorformat_type_map[name];
+}
+
+std::string GetNameOfColorFormat(const InferenceEngine::ColorFormat& colorformat) {
+  return colorformat_name_map[colorformat];
+}
+
+bool IsResizeAlgorithmName(const std::string& name) {
+  return !(resizeAlgorithm_type_map.find(name) == resizeAlgorithm_type_map.end());
+}
+
+InferenceEngine::ResizeAlgorithm GetResizeAlgorithmByName(const std::string& name) {
+  return resizeAlgorithm_type_map[name];
+}
+
+std::string GetNameOfResizeAlgorithm(const InferenceEngine::ResizeAlgorithm& resizeAlgorithm) {
+  return resizeAlgorithm_name_map[resizeAlgorithm];
+}
+
+bool IsMeanVariantName(const std::string& name) {
+  return !(meanvariant_type_map.find(name) == meanvariant_type_map.end());
+}
+
+InferenceEngine::MeanVariant GetMeanVariantByName(const std::string& name) {
+  return meanvariant_type_map[name];
+}
+
+std::string GetNameOfMeanVariant(const InferenceEngine::MeanVariant& meanvariant) {
+  return meanvariant_name_map[meanvariant];
 }
 
 }  // namespace utils
