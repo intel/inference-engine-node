@@ -172,10 +172,14 @@ Napi::Value Core::LoadNetwork(const Napi::CallbackInfo& info) {
 Napi::Value Core::GetAvailableDevices(const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
+
   std::vector<std::string> availableDevices = actual_.GetAvailableDevices();
 
   std::vector<std::string>::iterator iter;
-
   Napi::Array devices = Napi::Array::New(env);
   size_t i = 0;
   for (iter = availableDevices.begin(); iter != availableDevices.end();
