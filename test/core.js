@@ -54,6 +54,23 @@ describe('Core Test', function() {
     expect(apiVersion.minor).to.be.a('number');
   });
 
+  it('getAvailableDevices should be a function', () => {
+    expect(core.getAvailableDevices).to.be.a('function');
+  })
+
+  it('getAvailableDevices should throw for wrong number of argument', () => {
+    expect(() => core.getAvailableDevices(1)).to.throw();;
+  })
+
+  it('getAvailableDevices should return a array', () => {
+    expect(core.getAvailableDevices()).to.be.a('array');
+  })
+
+  it('getAvailableDevices should always contain CPU', () => {
+    expect(core.getAvailableDevices()).to.contain('CPU');
+    
+  })
+
   it('readNetwork should be a function', () => {
     expect(core.readNetwork).to.be.a('function');
   });
