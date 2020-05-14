@@ -113,18 +113,20 @@ function topSSDResults(tensor, threshold = 0.5, dims) {
   return result;
 }
 
-function showResults(results) {
-  console.log('classid'.padEnd(10) + 'probability'.padEnd(15) + 'box');
+function showResults(results, labels) {
+  const class_header = labels? 'class': 'classId'
+  console.log(`${class_header}`.padEnd(10) + 'probability'.padEnd(15) + 'box');
   const header = '-------';
   console.log(header.padEnd(10) + header.padEnd(15) + header);
   results.forEach(result => {
     const classId = result.classId.toString();
+    let label =  labels ? labels[classId - 1] : classId;
     const probability = result.probability.toFixed(5).toString();
     const x1 = result.minX.toFixed(2).toString();
     const y1 = result.minY.toFixed(2).toString();
     const x2 = result.maxX.toFixed(2).toString();
     const y2 = result.maxY.toFixed(2).toString();
-    console.log(classId.padEnd(10) + probability.toString().padEnd(15) + `[${x1},${y1},${x2},${y2}]`);
+    console.log(label.padEnd(10) + probability.toString().padEnd(15) + `[${x1},${y1},${x2},${y2}]`);
   })
 }
 
@@ -267,7 +269,7 @@ async function main() {
   const results = topSSDResults(output_data, threshold, inputs_info[0].getDims());
   output_blob.unmap();
   console.log(`Found ${results.length} objects:`);
-  showResults(results);
+  showResults(results, labels);
   showBreakline();
   return 'Done.';
 }

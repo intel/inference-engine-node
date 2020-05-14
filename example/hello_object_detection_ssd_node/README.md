@@ -30,7 +30,7 @@ Options
 
 ### Run
 
-For example on Windows, run SqueezeNet on CPU plugin for 10 iterations:
+For example on Windows, run MobileNet SSD on CPU plugin for 10 iterations:
 ```sh
 $ node main.js -m ..\..\models\mobilinetssd\FP32\mobilinetssd.xml -i test.png -d CPU -n 10
 -------------------------------------------
@@ -39,7 +39,7 @@ Check inference engine version:
   Build: 37988
   Description: API
 -------------------------------------------
-Start to create network from /home/user/Developer/resources/models/IR/OD/ssd_mobilenet_v1_coco/ssd_mobilenet_v1_coco.xml.
+Start to create network from ..\..\models\mobilinetssd\FP32\mobilenetssd.xml.
 Succeeded: read network took 37.40 ms.
 Network name: Function_0
 Input[0]:
@@ -66,12 +66,12 @@ Check CPU plugin version:
 Start to load network to CPU plugin.
 Succeeded: load network took 331.25 ms.
 -------------------------------------------
-Start to infer asynchronously for 1 iterations.
+Start to infer asynchronously for 10 iterations.
 Succeeded: the average inference time is 13.86 ms.
            the throughput is 72.13 FPS.
 Found 1 objects:
-classid   probability    box
+class     probability    box
 -------   -------        -------
-17        0.89799        [0.05,0.22,0.93,0.79]
+cat       0.89799        [0.05,0.22,0.93,0.79]
 -------------------------------------------
 Done.
