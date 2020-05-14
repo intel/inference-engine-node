@@ -110,7 +110,6 @@ function topSSDResults(tensor, threshold = 0.5, dims) {
       }
     }
   }
-  console.log(result.length);
   return result;
 }
 

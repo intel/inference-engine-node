@@ -70,14 +70,9 @@ Succeeded: load network took 147.38 ms.
 Start to infer asynchronously for 10 iterations.
 Succeeded: the average inference time is 6.30 ms.
            the throughput is 158.73 FPS.
-The top 5 results:
-classid   probability    label
+Found 1 objects:
+classid   probability    box
 -------   -------        -------
-387       0.998859       lesser panda, red panda, panda, bear cat, cat bear, Ailurus fulgens
-294       0.000253       brown bear, bruin, Ursus arctos
-277       0.000243       red fox, Vulpes vulpes
-278       0.000180       kit fox, Vulpes macrotis
-298       0.000084       mongoose
+17        0.89799        [0.05,0.22,0.93,0.79]
 -------------------------------------------
 Done.
-```
