@@ -1,0 +1,17 @@
+{
+  "name": "hello-object-detection-ssd-node",
+  "version": "0.1.3",
+  "description": "A Node.js example of object detection SSD using inference-engine-node",
+  "main": "main.js",
+  "scripts": {
+    "main": "node main.js"
+  },
+  "author": "artyom.tugaryov@gmail.com",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "command-line-args": "^5.1.1",
+    "command-line-usage": "^6.1.0",
+    "inference-engine-node": "../../",
+    "jimp": "^0.9.8"
+  }
+}
