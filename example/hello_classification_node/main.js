@@ -27,9 +27,9 @@ const option_definitions = [
     alias: 'd',
     type: String,
     defaultValue: 'CPU',
-    description:
-        'Optional. Specify the target device to infer on; CPU, GPU, FPGA, ' +
-        'HDDL, MYRIAD or HETERO: is acceptable. Default value is CPU.'
+    description: 'Optional. Specify the target device to infer on ' +
+        '(the list of available devices is shown below). ' +
+        'Default value is CPU.'
   },
   {
     name: 'iterations',
@@ -127,6 +127,12 @@ function warning(msg) {
   console.log('\x1b[33m' + msg + '\x1b[0m');
 }
 
+function showAvailableDevices() {
+  const core = ie.createCore();
+  const devices = core.getAvailableDevices();
+  console.log(`Available target devices: ${devices.join(' ')}`);
+}
+
 async function main() {
   const options = commandLineArgs(option_definitions);
   if (options.help || !options.image || !options.model) {
@@ -139,6 +145,7 @@ async function main() {
       {header: 'Options', optionList: option_definitions}
     ]);
     console.log(usage);
+    showAvailableDevices();
     process.exit(0);
   }
 

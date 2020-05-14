@@ -29,6 +29,7 @@ interface PluginVersions {
 
 interface Core {
   PluginVersions getVersions(DOMString deviceName);
+  sequence<DOMString> getAvailableDevices();
   Promise<Network> readNetwork(DOMString modelFilePath, DOMString weightsFilePath);
   Promise<Network> readNetworkFromData(DOMString model, ArrayBuffer weights);
   Promise<ExecutableNetwork> loadNetwork(Network network, DOMString deviceName);
