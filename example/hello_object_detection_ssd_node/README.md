@@ -32,32 +32,31 @@ Options
 
 For example on Windows, run SqueezeNet on CPU plugin for 10 iterations:
 ```sh
-$ node main.js -m ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml -i test.png -d CPU -n 10
-
-Start.
+$ node main.js -m ..\..\models\mobilinetssd\FP32\mobilinetssd.xml -i test.png -d CPU -n 10
 -------------------------------------------
 Check inference engine version:
   API version: 2.1
   Build: 37988
   Description: API
 -------------------------------------------
-Start to create network from ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml.
-Succeeded: read network took 7.13 ms.
-Network name: squeezenet1.1
+Start to create network from /home/user/Developer/resources/models/IR/OD/ssd_mobilenet_v1_coco/ssd_mobilenet_v1_coco.xml.
+Succeeded: read network took 37.40 ms.
+Network name: Function_0
 Input[0]:
-  name: data
+  name: image_tensor
   precision: fp32
   layout: nchw
-  dims: [1,3,227,227]
+  dims: [1,3,300,300]
 Output[0]:
-  name: prob
+  name: DetectionOutput
   precision: fp32
   layout: nchw
-  dims: [1,1000,1,1]
+  dims: [1,1,100,7]
 Change input layout to 'nhwc' and precision to 'u8'.
 -------------------------------------------
-Start to read image from test.png.
+Start to read image from test.jpg.
 Succeeded.
+Resize image from (3120, 4160) to (300, 300).
 -------------------------------------------
 Check CPU plugin version:
   Deivce Name: CPU
@@ -65,11 +64,11 @@ Check CPU plugin version:
   Build: 37988
   Description: MKLDNNPlugin
 Start to load network to CPU plugin.
-Succeeded: load network took 147.38 ms.
+Succeeded: load network took 331.25 ms.
 -------------------------------------------
-Start to infer asynchronously for 10 iterations.
-Succeeded: the average inference time is 6.30 ms.
-           the throughput is 158.73 FPS.
+Start to infer asynchronously for 1 iterations.
+Succeeded: the average inference time is 13.86 ms.
+           the throughput is 72.13 FPS.
 Found 1 objects:
 classid   probability    box
 -------   -------        -------
