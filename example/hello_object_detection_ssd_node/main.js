@@ -266,7 +266,7 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = topSSDResults(output_data, threshold, inputs_info[0].getDims());
+  const results = topSSDResults(output_data, threshold, output_info.getDims());
   output_blob.unmap();
   console.log(`Found ${results.length} objects:`);
   showResults(results, labels);

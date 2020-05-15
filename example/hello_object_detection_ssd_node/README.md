@@ -32,16 +32,16 @@ Options
 
 For example on Windows, run MobileNet SSD on CPU plugin for 10 iterations:
 ```sh
-$ node main.js -m ..\..\models\mobilinetssd\FP32\mobilinetssd.xml -i test.png -d CPU -n 10
+$ node main.js -m ..\..\models\mobilenetssd\FP32\mobilenetssd.xml -i test.png -d CPU -n 10
 -------------------------------------------
 Check inference engine version:
   API version: 2.1
   Build: 37988
   Description: API
 -------------------------------------------
-Start to create network from ..\..\models\mobilinetssd\FP32\mobilenetssd.xml.
+Start to create network from ..\..\models\mobilenetssd\FP32\mobilenetssd.xml.
 Succeeded: read network took 37.40 ms.
-Network name: Function_0
+Network name: mobilenetssd
 Input[0]:
   name: image_tensor
   precision: fp32
