@@ -45,8 +45,7 @@ const option_definitions = [
     alias: 't',
     type: Number,
     defaultValue: 0.5,
-    // TODO: document
-    description: 'Optional. '
+    description: 'Optional. The minimal probability of the visibility object. Default value is 0.5'
   },
   {
     name: 'sync',
@@ -222,7 +221,6 @@ async function main() {
   highlight(`Succeeded: load network took ${load_network_time.toFixed(2)} ms.`);
   showBreakline();
   let infer_req;
-  let input_time = [];
   let infer_time = [];
   console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
       iterations} iterations.`);
@@ -240,7 +238,6 @@ async function main() {
           input_data[i + 0] = image.bitmap.data[idx + 2];  // B
         });
     input_blob.unmap();
-    input_time.push(performance.now() - start_time);
     start_time = performance.now();
     if (sync) {
       infer_req.infer();
@@ -249,8 +246,6 @@ async function main() {
     }
     infer_time.push(performance.now() - start_time);
   }
-  const average_input_time =
-      input_time.reduce((acc, v) => acc + v, 0) / input_time.length;
   const average_infer_time =
       infer_time.reduce((acc, v) => acc + v, 0) / infer_time.length;
   highlight(`Succeeded: the average inference time is ${
