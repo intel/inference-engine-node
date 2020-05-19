@@ -41,8 +41,6 @@ Napi::Object InputInfo::NewInstance(const Napi::Env& env,
   Napi::Object obj = constructor.New({});
   InputInfo* info = Napi::ObjectWrap<InputInfo>::Unwrap(obj);
   info->actual_ = actual;
-  ie::PreProcessInfo preInfo = info->actual_->getPreProcess();
-  info->preProcessInfo_ = PreProcessInfo::NewInstance(env, preInfo);
 
   return scope.Escape(napi_value(obj)).ToObject();
 }
@@ -146,7 +144,7 @@ Napi::Value InputInfo::GetPreProcess(const Napi::CallbackInfo& info) {
     return Napi::Object::New(env);
   }
 
-  return preProcessInfo_;
+  return PreProcessInfo::NewInstance(env, actual_->getPreProcess());
 }
 
 }  // namespace ienodejs

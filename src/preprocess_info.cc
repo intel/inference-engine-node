@@ -34,11 +34,12 @@ PreProcessInfo::PreProcessInfo(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<PreProcessInfo>(info) {}
 
 Napi::Object PreProcessInfo::NewInstance(const Napi::Env& env,
-                                         const ie::PreProcessInfo& actual) {
+                                         ie::PreProcessInfo& actual) {
   Napi::EscapableHandleScope scope(env);
   Napi::Object obj = constructor.New({});
   PreProcessInfo* preInfo = Napi::ObjectWrap<PreProcessInfo>::Unwrap(obj);
-  preInfo->actual_ = actual;
+
+  preInfo->actual_ = &actual;
   return scope.Escape(napi_value(obj)).ToObject();
 }
 
@@ -64,7 +65,7 @@ void PreProcessInfo::SetColorFormat(const Napi::CallbackInfo& info) {
     return;
   }
 
-  actual_.setColorFormat(utils::GetColorFormatByName(colorFormatName));
+  actual_->setColorFormat(utils::GetColorFormatByName(colorFormatName));
 }
 
 Napi::Value PreProcessInfo::GetColorFormat(const Napi::CallbackInfo& info) {
@@ -75,7 +76,7 @@ Napi::Value PreProcessInfo::GetColorFormat(const Napi::CallbackInfo& info) {
   }
 
   return Napi::String::New(
-      env, utils::GetNameOfColorFormat(actual_.getColorFormat()));
+      env, utils::GetNameOfColorFormat(actual_->getColorFormat()));
 }
 
 Napi::Value PreProcessInfo::GetNumberOfChannels(const Napi::CallbackInfo& info) {
@@ -86,7 +87,7 @@ Napi::Value PreProcessInfo::GetNumberOfChannels(const Napi::CallbackInfo& info) 
   }
 
   return Napi::Number::New(
-      env, actual_.getNumberOfChannels());
+      env, actual_->getNumberOfChannels());
 }
 
 void PreProcessInfo::SetResizeAlgorithm(const Napi::CallbackInfo& info) {
@@ -111,7 +112,7 @@ void PreProcessInfo::SetResizeAlgorithm(const Napi::CallbackInfo& info) {
     return;
   }
 
-  actual_.setResizeAlgorithm(utils::GetResizeAlgorithmByName(resizeAlgorithm));
+  actual_->setResizeAlgorithm(utils::GetResizeAlgorithmByName(resizeAlgorithm));
 }
 
 Napi::Value PreProcessInfo::GetResizeAlgorithm(const Napi::CallbackInfo& info) {
@@ -122,7 +123,7 @@ Napi::Value PreProcessInfo::GetResizeAlgorithm(const Napi::CallbackInfo& info) {
   }
 
   return Napi::String::New(
-      env, utils::GetNameOfResizeAlgorithm(actual_.getResizeAlgorithm()));
+      env, utils::GetNameOfResizeAlgorithm(actual_->getResizeAlgorithm()));
 }
 
 void PreProcessInfo::SetVariant(const Napi::CallbackInfo& info) {
@@ -147,7 +148,7 @@ void PreProcessInfo::SetVariant(const Napi::CallbackInfo& info) {
     return;
   }
 
-  actual_.setVariant(utils::GetMeanVariantByName(meanvariant));
+  actual_->setVariant(utils::GetMeanVariantByName(meanvariant));
 }
 
 Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
@@ -158,6 +159,6 @@ Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
   }
 
   return Napi::String::New(
-      env, utils::GetNameOfMeanVariant(actual_.getMeanVariant()));
+      env, utils::GetNameOfMeanVariant(actual_->getMeanVariant()));
 }
 }  // namespace ienodejs
