@@ -12,7 +12,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   static void Init(const Napi::Env& env);
   static Napi::Object NewInstance(
       const Napi::Env& envs,
-      InferenceEngine::PreProcessInfo& actual);
+      InferenceEngine::InputInfo::Ptr actual);
   PreProcessInfo(const Napi::CallbackInfo& info);
 
  private:
@@ -26,7 +26,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   void SetVariant(const Napi::CallbackInfo& info);
   Napi::Value GetMeanVariant(const Napi::CallbackInfo& info);
 
-  InferenceEngine::PreProcessInfo* actual_;
+  InferenceEngine::InputInfo::Ptr  _input_info;
 };
 
 }  // namespace ienodejs

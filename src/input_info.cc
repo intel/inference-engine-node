@@ -144,7 +144,7 @@ Napi::Value InputInfo::GetPreProcess(const Napi::CallbackInfo& info) {
     return Napi::Object::New(env);
   }
 
-  return PreProcessInfo::NewInstance(env, actual_->getPreProcess());
+  return PreProcessInfo::NewInstance(env, actual_);
 }
 
 }  // namespace ienodejs
