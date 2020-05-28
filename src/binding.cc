@@ -4,10 +4,10 @@
 #include "core.h"
 #include "executable_network.h"
 #include "infer_request.h"
-#include "preprocess_info.h"
 #include "input_info.h"
 #include "network.h"
 #include "output_info.h"
+#include "preprocess_info.h"
 
 #include "inference_engine.hpp"
 

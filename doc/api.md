@@ -69,6 +69,29 @@ enum Layout {
   'blocked'
 };
 
+enum ColorFormat {
+  'raw',
+  'rgb',
+  'bgr',
+  'rgbx',
+  'bgrx',
+  'nv12',
+  'i429'
+};
+
+enum ResizeAlgorithm {
+  'no_resize',
+  'resize_bilinear',
+  'resize_area',
+};
+
+enum MeanVariant {
+  'mean_image',
+  'mean_value',
+  'none',
+};
+
+
 interface InputInfo {
   DOMString name();
   Precision getPrecision();
@@ -76,7 +99,18 @@ interface InputInfo {
   Layout getLayout();
   void setLayout(Layout layout);
   sequence<unsigned long long> getDims();
+  PreProcessInfo getPreProcess()
 };
+
+interface PreProcessInfo {
+  void setColorFormat(ColorFormat colorformat);
+  ColorFormat getColorFormat();
+  Int getNumberOfChannels();
+  void setResizeAlgorithm(ResizeAlgorithm resizeAlgorithm);
+  ResizeAlgorithm getResizeAlgorithm();
+  void setVariant(MeanVariant meanVariant);
+  MeanVariant getMeanVariant();
+}
 
 interface OutputInfo {
   DOMString name();
