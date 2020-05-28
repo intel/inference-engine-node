@@ -2,7 +2,7 @@
 
 *Other names and brands may be claimed as the property of others.
 
-### Prerequisites
+## Prerequisites
 
 Instal [Node.js](https://nodejs.org/).
 
@@ -18,18 +18,82 @@ For Linux, install `build-essential` package.
   * Windows 10
   * Ubuntu Linux 16.04
 
-### Install
+## Install
 
-```sh
+The Inference Engine Binding for Node.js supports installation for two operation systems: Windows 10 and Ubuntu 16.04 and
+two build systems: node-gyp and CMake-based and Node-GYP-based. 
+
+### Install on Ubuntu 16.04
+
+To install the Inference Engine Binding for Node.js on Ubuntu 16.04 use the following instruction:
+1. Open a terminal in the repository root folder
+2. Activate the OpenVINO environment:
+
+    If you installed the OpenVINO to the `/opt/intel/openvino` directory (as root) use the following command:
+
+    ```shell script
+    $ source /opt/intel/openvino/bin/setupvars.sh
+    ``` 
+
+    If you installed the OpenVINO to the home directory `~/intel/openvino` directory use the following command:
+
+    ```shell script
+    $ source ~/intel/openvino/bin/setupvars.sh
+    ``` 
+   
+To install Inference Engine Binding for Node.js using node-gyp use the following command in the same terminal:
+   
+```shell script
 $ npm install
 ```
 
-**Note:** For "Error: MSBuild is not set" on VS 2019, please set `msbuild_path`, e.g.
+To install Inference Engine Binding for Node.js using cmake use following commands in the same terminal:
+
+1. Set an environment variable `NODE_PATH` to directory with installed NodeJS.
+
+2. Create an empty directory to build and go to this directory:
+```shell script
+mkdir "cmake-build" && cd "cmake-build"
 ```
-$ npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+    
+3 Run cmake to fetch project dependencies and create Unix makefiles, then run make to build the project:
+```shell script
+cmake -DBUILD_TYPE=Release ../ && \
+cmake --build . --target inference_engine_node -- -j -$(nproc --all)
 ```
 
-### Build
+
+### Install on Windows 10
+
+To install the Inference Engine Binding for Node.js on Windows 10 use the following instruction:
+1. Open a terminal in the repository root folder
+2. Activate the OpenVINO environment:
+    ```shell script
+    > "C:\Program Files (x86)\IntelSWTools\openvino\bin\setupvars.bat"
+    ``` 
+   
+To install Inference Engine Binding for Node.js using node-gyp use the following command in the same terminal:
+    ```shell script
+    > npm install
+    ```
+    
+    **Note:** For "Error: MSBuild is not set" on VS 2019, please set `msbuild_path`, e.g.
+    ```
+    > npm config set msbuild_path "c:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Current\Bin\MSBuild.exe"
+    ```
+    
+To install Inference Engine Binding for Node.js using cmake use following commands in the same terminal:
+    1. Set an environment variable `NODE_PATH` to directory with installed node-gyp. For example:
+    ```shell script
+    > set NODE_PATH=C:\Users\user\AppData\Local\node-gyp\Cache\14.1.0\
+    ```
+    2. Create an empty directory to build and go to this directory:
+    ```shell script
+    > cmake -DBUILD_TYPE=Release ../ && \
+        cmake --build . --target inference_engine_node
+    ``` 
+
+## Build
 ```sh
 $ npm run build
 ```

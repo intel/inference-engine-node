@@ -20,8 +20,7 @@
     {
       'target_name': 'inference_engine_node',
       'sources': [
-        '<!@(ls -1 src/*.cc)',
-        '<!@(ls -1 src/*.h)'
+        "<!@(node -p \"require('fs').readdirSync('./src').map(f=>'src/'+f).join(' ')\")"
       ],
       'cflags!': [ '-fno-exceptions', '-fno-rtti'],
       'cflags_cc!': [ '-fno-exceptions', '-fno-rtti'],
