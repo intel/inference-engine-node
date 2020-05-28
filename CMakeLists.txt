@@ -27,20 +27,21 @@ file(GLOB SOURCE_FILES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cc)
 add_library(${PROJECT_NAME} SHARED ${SOURCE_FILES})
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "-fno-rtti -fno-exceptions")
+    set(CMAKE_CXX_FLAGS "-frtti -fexceptions")
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE "/MP")
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "" SUFFIX ".node")
 
-
 set_target_properties(${PROJECT_NAME} PROPERTIES ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${ARTIFACT_PATH}/${CMAKE_BUILD_TYPE}"
                                                  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${ARTIFACT_PATH}/${CMAKE_BUILD_TYPE}"
                                                  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/${ARTIFACT_PATH}/${CMAKE_BUILD_TYPE}")
 
-
 target_link_libraries(${PROJECT_NAME} PRIVATE ${InferenceEngine_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} PRIVATE "${NODE_PATH}/x64/node.lib")
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${NODE_PATH}/x64/node.lib")
+endif()
 
 add_definitions(-DNAPI_VERSION=4)
