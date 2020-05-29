@@ -32,6 +32,8 @@
         './src/network.h',
         './src/output_info.cc',
         './src/output_info.h',
+        './src/preprocess_info.cc',
+        './src/preprocess_info.h',
         './src/utils.cc',
         './src/utils.h'
       ],

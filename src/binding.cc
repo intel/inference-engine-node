@@ -7,6 +7,7 @@
 #include "input_info.h"
 #include "network.h"
 #include "output_info.h"
+#include "preprocess_info.h"
 
 #include "inference_engine.hpp"
 
@@ -58,6 +59,7 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   Network::Init(env);
   ExecutableNetwork::Init(env);
   InferRequest::Init(env);
+  PreProcessInfo::Init(env);
   InputInfo::Init(env);
   OutputInfo::Init(env);
   return exports;

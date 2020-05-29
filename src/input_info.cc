@@ -1,4 +1,5 @@
 #include "input_info.h"
+#include "preprocess_info.h"
 #include "utils.h"
 
 #include <napi.h>
@@ -24,6 +25,7 @@ void InputInfo::Init(const Napi::Env& env) {
                       InstanceMethod("getLayout", &InputInfo::GetLayout),
                       InstanceMethod("setLayout", &InputInfo::SetLayout),
                       InstanceMethod("getDims", &InputInfo::GetDims),
+                      InstanceMethod("getPreProcess", &InputInfo::GetPreProcess)
                   });
 
   constructor = Napi::Persistent(func);
@@ -39,6 +41,7 @@ Napi::Object InputInfo::NewInstance(const Napi::Env& env,
   Napi::Object obj = constructor.New({});
   InputInfo* info = Napi::ObjectWrap<InputInfo>::Unwrap(obj);
   info->actual_ = actual;
+
   return scope.Escape(napi_value(obj)).ToObject();
 }
 
@@ -132,6 +135,16 @@ Napi::Value InputInfo::GetDims(const Napi::CallbackInfo& info) {
     js_dims[i] = ie_dims[i];
   }
   return js_dims;
+}
+
+Napi::Value InputInfo::GetPreProcess(const Napi::CallbackInfo& info) {
+  Napi::Env env = info.Env();
+  if (info.Length() > 0) {
+    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
+
+  return PreProcessInfo::NewInstance(env, actual_);
 }
 
 }  // namespace ienodejs

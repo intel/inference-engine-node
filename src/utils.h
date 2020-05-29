@@ -15,6 +15,17 @@ bool IsValidPrecisionName(const std::string& name);
 InferenceEngine::Precision GetPrecisionByName(const std::string& name);
 std::string GetNameOfPrecision(const InferenceEngine::Precision& precision);
 
+bool IsColorFormatName(const std::string& name);
+InferenceEngine::ColorFormat GetColorFormatByName(const std::string& name);
+std::string GetNameOfColorFormat(const InferenceEngine::ColorFormat& colorformat); 
+
+bool IsResizeAlgorithmName(const std::string& name);
+InferenceEngine::ResizeAlgorithm GetResizeAlgorithmByName(const std::string& name);
+std::string GetNameOfResizeAlgorithm(const InferenceEngine::ResizeAlgorithm& resizeAlgorithm);
+
+bool IsMeanVariantName(const std::string& name);
+InferenceEngine::MeanVariant GetMeanVariantByName(const std::string& name);
+std::string GetNameOfMeanVariant(const InferenceEngine::MeanVariant& meanvariant);
 }  // namespace utils
 
 }  // namespace ienodejs
