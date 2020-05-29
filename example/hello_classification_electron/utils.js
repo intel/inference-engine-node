@@ -13,7 +13,7 @@ const hasUrlParam =
 let ub = getUrlParam('b');
 let us = getUrlParam('s');
 let um = getUrlParam('m');
-let up = getUrlParam('plugin');
+// let up = getUrlParam('plugin');
 
 let currentBackend = getSearchParamsBackend();
 let currentModel = getSearchParamsModel();
@@ -93,6 +93,7 @@ let singleModelTable =
       return allFormats;
     }
 
+<<<<<<< HEAD
 let getModelClasss =
     () => {
       let ids = [];
@@ -122,6 +123,60 @@ const changeModel = () => {
           um = um + '+' + modelName;
         }
       }
+=======
+let constructDevice =
+    (deviceArray) => {
+      console.log('availabelDevice start')
+      const brows = $('.device');
+
+      for (const device of deviceArray) {
+        const deviceName = device.replace(/ \(.*\)$/, '');
+        const deviceLow = deviceName.toLowerCase();
+
+        brows.append($(`<input type='radio' name='bw' class='d-none' id='${
+            deviceLow}' value='${deviceName}'>`));
+        brows.append($(`<label id='l-${deviceLow}' for='${
+            deviceLow}' class='lml'>${deviceName}</label>`));
+      }
+
+      // deviceBody.prepend(brows);
+      currentDevice = deviceArray[0].toLowerCase();
+      up = currentDevice
+      console.log(currentDevice)
+
+      return
+    }
+
+let getModelClasss =
+    () => {
+      let ids = [];
+      for (let model of $('#query tbody .model')) {
+        ids.push(model.id);
+      }
+      return [...new Set(ids)];
+    }
+
+const changeModel = () => {
+  $('.alert').hide();
+  um = $('input:radio[name="m"]:checked').attr('id');
+  if (currentModel === um) {
+    return;
+  }
+  currentModel = um;
+
+  let modelClasss = getModelClasss();
+  let seatModelClass = $('#' + um).parent().parent().attr('id');
+  if (modelClasss.length > 1) {
+    for (let modelClass of modelClasss) {
+      if (seatModelClass !== modelClass) {
+        let modelName =
+            $('.model[id=' + modelClass + '] input:radio[checked="checked"]')
+                .attr('id');
+        if (typeof modelName !== 'undefined') {
+          um = um + '+' + modelName;
+        }
+      }
+>>>>>>> Use availabelDevice On Electron
     }
 
     currentModel = um;

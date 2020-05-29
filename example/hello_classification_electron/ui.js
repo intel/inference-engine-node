@@ -1,3 +1,5 @@
+const ie = require('inference-engine-node');
+
 let strsearch;
 let skeletonDetectionPath =
     location.pathname.toLocaleLowerCase().indexOf('skeleton_detection');
@@ -6,7 +8,7 @@ const InputElement = document.getElementById('input');
 const ImageElement = document.getElementById('image');
 
 if (!location.search) {
-  strsearch = `?b=openvinojs&plugin=cpu&m=none&s=image`;
+  strsearch = `?b=openvinojs&plugin=none&m=none&s=image`;
   let path = location.href;
   location.href = path + strsearch;
 }
@@ -72,10 +74,13 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  if (hasUrlParam('plugin')) {
-    $('#' + up).attr('checked', 'checked');
-    $('#l-' + up).addClass('checked');
-  }
+  availableDevice = ie.createCore().getAvailableDevices()
+  console.log('Get availabelDevice')
+  console.log(availableDevice)
+  // The defalut Device is the first in the availableDevice
+  constructDevice(availableDevice)
+  $('#' + up).attr('checked', 'checked');
+  $('#l-' + up).addClass('checked');
 });
 
 const showError =
@@ -128,7 +133,7 @@ $(document).ready(() => {
 });
 
 $(window).ready(() => {
-  currentDevice = up;
+  // currentDevice = up;
   currentBackend = ub;
   currentModel = um;
 
