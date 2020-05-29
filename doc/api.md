@@ -76,7 +76,7 @@ enum ColorFormat {
   'rgbx',
   'bgrx',
   'nv12',
-  'i429'
+  'i420'
 };
 
 enum ResizeAlgorithm {
@@ -105,7 +105,7 @@ interface InputInfo {
 interface PreProcessInfo {
   void setColorFormat(ColorFormat colorformat);
   ColorFormat getColorFormat();
-  Int getNumberOfChannels();
+  unsigned long getNumberOfChannels();
   void setResizeAlgorithm(ResizeAlgorithm resizeAlgorithm);
   ResizeAlgorithm getResizeAlgorithm();
   void setVariant(MeanVariant meanVariant);

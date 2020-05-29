@@ -62,7 +62,6 @@ Napi::Object Init(Napi::Env env, Napi::Object exports) {
   PreProcessInfo::Init(env);
   InputInfo::Init(env);
   OutputInfo::Init(env);
-  
   return exports;
 }
 

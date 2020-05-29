@@ -77,7 +77,7 @@ std::map<ie::ColorFormat, std::string> colorformat_name_map = {
     {ie::ColorFormat::RGBX, "rgbx"},
     {ie::ColorFormat::BGRX, "bgrx"},
     {ie::ColorFormat::NV12, "nv12"},
-    {ie::ColorFormat::I420, "i429"}
+    {ie::ColorFormat::I420, "i420"}
 };
 
 std::map<std::string, ie::ColorFormat> colorformat_type_map = {
@@ -87,7 +87,7 @@ std::map<std::string, ie::ColorFormat> colorformat_type_map = {
     {"rgbx", ie::ColorFormat::RGBX},
     {"bgrx", ie::ColorFormat::BGRX},
     {"nv12", ie::ColorFormat::NV12},
-    {"i429", ie::ColorFormat::I420}
+    {"i420", ie::ColorFormat::I420}
 };
 
 std::map<ie::ResizeAlgorithm, std::string> resizeAlgorithm_name_map = {
