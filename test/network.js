@@ -159,6 +159,144 @@ describe('Network Test', function() {
     expect(() => inputInfo.getDims(1)).to.throw(TypeError);
   });
 
+  it('InputInfo.getPreProcess should be a function', () => {
+    const inputInfo = network.getInputsInfo()[0];
+    expect(inputInfo.getPreProcess).to.be.a('function');
+  });
+
+  it('InputInfo.getPreProcess should return a preprocessInfo object', () => {
+    const inputInfo = network.getInputsInfo()[0];
+    expect(inputInfo.getPreProcess()).to.be.a('preprocessInfo');
+  });
+
+  it('InputInfo.getPreProcess should throw for invalid argument', () => {
+    const inputInfo = network.getInputsInfo()[0];
+    expect(() => inputInfo.getPreProcess(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.getColorFormat should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getColorFormat).to.be.a('function');
+  });
+
+  it('PreProcessInfo.getColorFormat should return a string', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getColorFormat()).to.be.a('string');
+  });
+
+  it('PreProcessInfo.getColorFormat should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.getColorFormat(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setColorFormat should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setColorFormat).to.be.a('function');
+  });
+
+  it('PreProcessInfo.setColorFormat should set colorformat "bgr"', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setColorFormat('bgr')).to.be.a('undefined');
+    expect(preprocessInfo.getColorFormat()).to.be.a('string').equal('bgr');
+  });
+
+  it('PreProcessInfo.setColorFormat should throw for wrong type of argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setColorFormat(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setColorFormat should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setColorFormat('foo')).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.getResizeAlgorithm should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getResizeAlgorithm).to.be.a('function');
+  });
+
+  it('PreProcessInfo.getResizeAlgorithm should return a string', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getResizeAlgorithm()).to.be.a('string');
+  });
+
+  it('PreProcessInfo.getResizeAlgorithm should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.getResizeAlgorithm(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setResizeAlgorithm should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setResizeAlgorithm).to.be.a('function');
+  });
+
+  it('PreProcessInfo.setResizeAlgorithm should set algorithm "resize_bilinear"', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setResizeAlgorithm('resize_bilinear')).to.be.a('undefined');
+    expect(preprocessInfo.getResizeAlgorithm()).to.be.a('string').equal('resize_bilinear');
+  });
+
+  it('PreProcessInfo.setResizeAlgorithm should throw for wrong type of argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setResizeAlgorithm(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setResizeAlgorithm should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setResizeAlgorithm('foo')).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.getMeanVariant should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getMeanVariant).to.be.a('function');
+  });
+
+  it('PreProcessInfo.getMeanVariant should return a string', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getMeanVariant()).to.be.a('string');
+  });
+
+  it('PreProcessInfo.getMeanVariant should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.getMeanVariant(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setVariant should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setVariant).to.be.a('function');
+  });
+
+  it('PreProcessInfo.setVariant should set type of mean "mean_value"', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.setVariant('mean_value')).to.be.a('undefined');
+    expect(preprocessInfo.getMeanVariant()).to.be.a('string').equal('mean_value');
+  });
+
+  it('PreProcessInfo.setVariant should throw for wrong type of argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setVariant(1)).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.setVariant should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.setVariant('foo')).to.throw(TypeError);
+  });
+
+  it('PreProcessInfo.getNumberOfChannels should be a function', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getNumberOfChannels).to.be.a('function');
+  });
+
+  it('PreProcessInfo.getNumberOfChannels should return a number', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(preprocessInfo.getNumberOfChannels()).to.be.a('number');
+  });
+
+  it('PreProcessInfo.getNumberOfChannels should throw for invalid argument', () => {
+    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+    expect(() => preprocessInfo.getNumberOfChannels(1)).to.throw(TypeError);
+  });
+
   it('getOutputsInfo should be a function', () => {
     expect(network.getOutputsInfo).to.be.a('function');
   });
@@ -167,11 +305,11 @@ describe('Network Test', function() {
     expect(network.getOutputsInfo()).to.be.a('array');
   });
 
-  it('input info array length should be 1', () => {
+  it('output info array length should be 1', () => {
     expect(network.getOutputsInfo()).to.be.lengthOf(1);
   });
 
-  it('input info array should contain outputInfo objects', () => {
+  it('output info array should contain outputInfo objects', () => {
     const outputInfo = network.getOutputsInfo()[0];
     expect(outputInfo).to.be.a('outputInfo');
   });

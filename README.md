@@ -49,17 +49,20 @@ $ npm install
 
 To install Inference Engine Binding for Node.js using cmake use following commands in the same terminal:
 
-1. Set an environment variable `NODE_PATH` to directory with installed NodeJS.
+1. Set an environment variable `NODE_PATH` to directory with installed NodeJS. For example:
+```shell script
+$ export NODE_PATH=/home/user/.nvm/versions/node/v12.17.0/
+```
 
 2. Create an empty directory to build and go to this directory:
 ```shell script
-mkdir "cmake-build" && cd "cmake-build"
+$ mkdir "cmake-build" && cd "cmake-build"
 ```
     
 3 Run cmake to fetch project dependencies and create Unix makefiles, then run make to build the project:
 ```shell script
-cmake -DBUILD_TYPE=Release ../ && \
-cmake --build . --target inference_engine_node -- -j $(nproc --all)
+$ cmake ../ && \
+$ cmake --build . --target inference_engine_node --config Release -- -j $(nproc --all)
 ```
 
 
@@ -89,8 +92,8 @@ To install Inference Engine Binding for Node.js using cmake use following comman
     ```
     2. Create an empty directory to build and go to this directory:
     ```shell script
-    > cmake -DBUILD_TYPE=Release ../ && \
-        cmake --build . --target inference_engine_node
+    > cmake ../ && \
+        cmake --build . --target inference_engine_node --config Release
     ``` 
 
 ## Build
