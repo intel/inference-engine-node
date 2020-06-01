@@ -61,8 +61,8 @@ $ mkdir "cmake-build" && cd "cmake-build"
     
 3 Run cmake to fetch project dependencies and create Unix makefiles, then run make to build the project:
 ```shell script
-$ cmake ../ && \
-$ cmake --build . --target inference_engine_node --config Release -- -j $(nproc --all)
+$ cmake -DCMAKE_BUILD_TYPE=Release ../ && \
+$ cmake --build . --target inference_engine_node -- -j $(nproc --all)
 ```
 
 
