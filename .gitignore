@@ -1,4 +1,13 @@
+# Build
+cmake-build
 build/
+
+# Node
 node_modules/
+
+# Windows
 .DS_Store
+
+# IDEA
 .vscode
+.idea
