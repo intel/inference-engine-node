@@ -23,6 +23,12 @@ const option_definitions = [
     description: 'Required. Path to an image file.'
   },
   {
+    name: 'labels',
+    alias: 'l',
+    type: String,
+    description: 'Optional. Path to a label file.'
+  },
+  {
     name: 'device',
     alias: 'd',
     type: String,
@@ -55,6 +61,28 @@ const option_definitions = [
     description:
         'Optional. Specify to inference synchronously or asynchronously. ' +
         'Default value is false.'
+  },
+  {
+    name: 'mean',
+    type: String,
+    defaultValue: '[0,0,0]',
+    description: 'Optional. Specify the mean value for input channels. ' +
+        'Default value is "[0,0,0]"'
+  },
+  {
+    name: 'std',
+    type: String,
+    defaultValue: '[1,1,1]',
+    description: 'Optional. Specify the std scale value for input channels. ' +
+        'Default value is "[1,1,1]"'
+  },
+  {
+    name: 'color',
+    type: String,
+    defaultValue: 'bgr',
+    description:
+        'Optional. Specify the color format for input, "bgr" or "rgb". ' +
+        'Default value is "bgr"'
   }
 ];
 
@@ -152,15 +180,47 @@ async function main() {
   const model_path = options.model;
   const re = /\.xml$/g
   const bin_path = model_path.replace(re, '.bin');
-  const labels_path = model_path.replace(re, '.labels');
+  const labels_path =
+      options.labels ? options.labels : model_path.replace(re, '.labels');
   const device_name = options.device;
   const image_path = options.image;
   const iterations = options.iterations;
   const top_k = options.topk;
   const sync = options.sync;
+  let mean, std;
+  try {
+    mean = JSON.parse(options.mean);
+    std = JSON.parse(options.std);
+  } catch (error) {
+    warning(`Error to parse mean or std: ${error}`);
+    process.exit(-1);
+  }
+  const color = options.color;
 
   if (iterations <= 0) {
     warning('The number of iterations should be greater than 0.');
+    process.exit(-1);
+  }
+  if (!(mean instanceof Array)) {
+    warning('The mean is not an array.');
+    process.exit(-1);
+  } else if (mean.length != 3) {
+    warning('The length of mean is not 3.');
+    process.exit(-1);
+  }
+  if (!(std instanceof Array)) {
+    warning('The std is not an array.');
+    process.exit(-1);
+  } else if (std.length != 3) {
+    warning('The length of std is not 3.');
+    process.exit(-1);
+  }
+  const preprocess = (mean[0] === 0 && mean[1] === 0 && mean[2] === 0 &&
+                      std[0] === 1 && std[1] === 1 && std[2] === 1) ?
+      false :
+      true;
+  if (color !== 'bgr' && color !== 'rgb') {
+    warning('The color format should be either "bgr" or "rgb".');
     process.exit(0);
   }
   console.log('Start.')
@@ -187,9 +247,12 @@ async function main() {
     showInputOutputInfo(info);
   });
   const input_info = inputs_info[0];
-  console.log(`Change input layout to 'nhwc' and precision to 'u8'.`);
+  console.log(`Set input layout to 'nhwc'.`);
   input_info.setLayout('nhwc');
-  input_info.setPrecision('u8');
+  if (!preprocess) {
+    console.log(`Set input precision to 'u8'.`);
+    input_info.setPrecision('u8');
+  }
   const output_info = outputs_info[0];
   showBreakline();
   console.log(`Start to read image from ${image_path}.`);
@@ -222,14 +285,23 @@ async function main() {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
     const input_blob = infer_req.getBlob(input_info.name());
-    const input_data = new Uint8Array(input_blob.wmap());
+    let input_data;
+    if (!preprocess) {
+      input_data = new Uint8Array(input_blob.wmap());
+    } else {
+      input_data = new Float32Array(input_blob.wmap());
+    }
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
           let i = Math.floor(idx / 4) * 3;
-          input_data[i + 2] = image.bitmap.data[idx + 0];  // R
-          input_data[i + 1] = image.bitmap.data[idx + 1];  // G
-          input_data[i + 0] = image.bitmap.data[idx + 2];  // B
+          const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
+          input_data[i + rgb.r] =
+              (image.bitmap.data[idx + 0] - mean[0]) / std[0];  // R
+          input_data[i + rgb.g] =
+              (image.bitmap.data[idx + 1] - mean[1]) / std[1];  // G
+          input_data[i + rgb.b] =
+              (image.bitmap.data[idx + 2] - mean[2]) / std[2];  // B
         });
     input_blob.unmap();
     input_time.push(performance.now() - start_time);

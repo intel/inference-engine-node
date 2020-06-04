@@ -26,13 +26,19 @@ Options
   -k, --topk number         Optional. The number of top results to show. Default value is 5.
   -s, --sync                Optional. Specify to inference synchronously or asynchronously. Default value
                             is false.
+  --mean string             Optional. Specify the mean value for input channels. Default value is
+                            "[0,0,0]"
+  --std string              Optional. Specify the std scale value for input channels. Default value is
+                            "[1,1,1]"
+  --color string            Optional. Specify the color format for input, "bgr" or "rgb". Default value
+                            is "bgr"
 ```
 
 ### Run
 
 For example on Windows, run SqueezeNet on CPU plugin for 10 iterations:
-```sh
-$ node main.js -m ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml -i test.png -d CPU -n 10
+```shell script
+> node main.js -m ..\..\models\squeezenet1.1\FP16\squeezenet1.1.xml -i test.png -d CPU -n 10
 
 Start.
 -------------------------------------------
@@ -80,4 +86,16 @@ classid   probability    label
 298       0.000084       mongoose
 -------------------------------------------
 Done.
+```
+
+For example, run MobileNetV2 model in hello_classification_electron folder.
+```shell script
+> node main.js -m ..\hello_classification_electron\model\mobilenet_v2_1.0_224.xml -i test.png \
+  -l ..\hello_classification_electron\model\labels1001.txt \
+  --color rgb --mean [127.5,127.5,127.5] --std [127.5,127.5,127.5]
+```
+
+For example, run ResNet-50 model.
+```shell script
+>node main.js -m ..\hello_classification_electron\model\resnet-50.xml -i test.png -l ..\hello_classification_electron\model\labels1000.txt
 ```
