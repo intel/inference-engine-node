@@ -16,26 +16,26 @@ if (!location.search) {
  */
 
 $(document).ready(() => {
-    $('#img').click(() => {
-      us = 'image';
-      if (currentBackend && currentDevice && currentModel) {
-        strsearch = `?b=${currentBackend}&plugin=${currentDevice}&m=${
-            currentModel}&s=${us}`;
-      } else {
-        strsearch = `?b=${ub}&plugin=${up}&m=${um}&s=${us}`;
-      }
+  $('#img').click(() => {
+    us = 'image';
+    if (currentBackend && currentDevice && currentModel) {
+      strsearch = `?b=${currentBackend}&plugin=${currentDevice}&m=${
+          currentModel}&s=${us}`;
+    } else {
+      strsearch = `?b=${ub}&plugin=${up}&m=${um}&s=${us}`;
+    }
 
-      window.history.pushState(null, null, strsearch);
-      updateScenario();
-    });
-
-    $('#cam').click(() => {
-      us = 'camera';
-      strsearch = `?s=${us}`;
-      window.history.pushState(null, null, strsearch);
-      updateScenario(true);
-    });
+    window.history.pushState(null, null, strsearch);
+    updateScenario();
   });
+
+  $('#cam').click(() => {
+    us = 'camera';
+    strsearch = `?s=${us}`;
+    window.history.pushState(null, null, strsearch);
+    updateScenario(true);
+  });
+});
 
 $(document).ready(() => {
   if (us == 'camera') {
@@ -116,11 +116,11 @@ $(document).ready(() => {
   InputElement.addEventListener('change', (e) => {
     let files = e.target.files;
     if (files.length > 0 && us === 'image') {
-      imageElement.src = URL.createObjectURL(files[0]);  
+      imageElement.src = URL.createObjectURL(files[0]);
     }
   }, false);
 
-  ImageElement.addEventListener('load', ()=> {
+  ImageElement.addEventListener('load', () => {
     if (us === 'image') {
       predictImage(imageElement);
     }
