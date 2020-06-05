@@ -92,37 +92,6 @@ let singleModelTable =
       return allFormats;
     }
 
-<<<<<<< HEAD
-let getModelClasss =
-    () => {
-      let ids = [];
-      for (let model of $('#query tbody .model')) {
-        ids.push(model.id);
-      }
-      return [...new Set(ids)];
-    }
-
-const changeModel = () => {
-  $('.alert').hide();
-  um = $('input:radio[name="m"]:checked').attr('id');
-  if (currentModel === um) {
-    return;
-  }
-  currentModel = um;
-
-  let modelClasss = getModelClasss();
-  let seatModelClass = $('#' + um).parent().parent().attr('id');
-  if (modelClasss.length > 1) {
-    for (let modelClass of modelClasss) {
-      if (seatModelClass !== modelClass) {
-        let modelName =
-            $('.model[id=' + modelClass + '] input:radio[checked="checked"]')
-                .attr('id');
-        if (typeof modelName !== 'undefined') {
-          um = um + '+' + modelName;
-        }
-      }
-=======
 let constructDevice =
     (deviceArray) => {
       const brows = $('.device');
@@ -172,7 +141,6 @@ const changeModel = () => {
           um = um + '+' + modelName;
         }
       }
->>>>>>> Use availabelDevice On Electron
     }
 
     currentModel = um;
