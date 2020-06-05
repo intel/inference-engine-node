@@ -13,7 +13,6 @@ const hasUrlParam =
 let ub = getUrlParam('b');
 let us = getUrlParam('s');
 let um = getUrlParam('m');
-// let up = getUrlParam('plugin');
 
 let currentBackend = getSearchParamsBackend();
 let currentModel = getSearchParamsModel();
@@ -126,7 +125,6 @@ const changeModel = () => {
 =======
 let constructDevice =
     (deviceArray) => {
-      console.log('availabelDevice start')
       const brows = $('.device');
 
       for (const device of deviceArray) {
@@ -139,10 +137,8 @@ let constructDevice =
             deviceLow}' class='lml'>${deviceName}</label>`));
       }
 
-      // deviceBody.prepend(brows);
       currentDevice = deviceArray[0].toLowerCase();
       up = currentDevice
-      console.log(currentDevice)
 
       return
     }

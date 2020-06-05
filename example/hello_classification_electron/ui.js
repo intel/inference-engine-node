@@ -74,11 +74,8 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  availableDevice = ie.createCore().getAvailableDevices()
-  console.log('Get availabelDevice')
-  console.log(availableDevice)
-  // The defalut Device is the first in the availableDevice
-  constructDevice(availableDevice)
+  let availableDevices = ie.createCore().getAvailableDevices()
+  constructDevice(availableDevices)
   $('#' + up).attr('checked', 'checked');
   $('#l-' + up).addClass('checked');
 });
@@ -133,7 +130,6 @@ $(document).ready(() => {
 });
 
 $(window).ready(() => {
-  // currentDevice = up;
   currentBackend = ub;
   currentModel = um;
 
