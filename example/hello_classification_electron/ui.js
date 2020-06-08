@@ -74,8 +74,8 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  let availableDevices = ie.createCore().getAvailableDevices()
-  constructDevice(availableDevices)
+  const availableDevices = ie.createCore().getAvailableDevices()
+  configureDevice(availableDevices)
   $('#' + up).attr('checked', 'checked');
   $('#l-' + up).addClass('checked');
 });

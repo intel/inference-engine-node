@@ -92,7 +92,9 @@ let singleModelTable =
       return allFormats;
     }
 
-let constructDevice =
+// construct the device buttons in html. 
+// The first device in the deviceArray will be used as default
+let configureDevice =
     (deviceArray) => {
       const brows = $('.device');
 
