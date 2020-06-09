@@ -1,4 +1,3 @@
-const ie = require('inference-engine-node');
 const fs = require('fs').promises;
 
 const canvasElement = document.getElementById('canvas');

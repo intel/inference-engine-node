@@ -13,7 +13,6 @@ const hasUrlParam =
 let ub = getUrlParam('b');
 let us = getUrlParam('s');
 let um = getUrlParam('m');
-let up = getUrlParam('plugin');
 
 let currentBackend = getSearchParamsBackend();
 let currentModel = getSearchParamsModel();
@@ -91,6 +90,28 @@ let singleModelTable =
                     </th>`));
       tbody.prepend(trows);
       return allFormats;
+    }
+
+// construct the device buttons in html. 
+// The first device in the deviceArray will be used as default
+let configureDevice =
+    (deviceArray) => {
+      const brows = $('.device');
+
+      for (const device of deviceArray) {
+        const deviceName = device.replace(/ \(.*\)$/, '');
+        const deviceLow = deviceName.toLowerCase();
+
+        brows.append($(`<input type='radio' name='bw' class='d-none' id='${
+            deviceLow}' value='${deviceName}'>`));
+        brows.append($(`<label id='l-${deviceLow}' for='${
+            deviceLow}' class='lml'>${deviceName}</label>`));
+      }
+
+      currentDevice = deviceArray[0].toLowerCase();
+      up = currentDevice
+
+      return
     }
 
 let getModelClasss =
