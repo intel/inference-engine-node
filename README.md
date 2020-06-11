@@ -119,6 +119,7 @@ Setup system environment variables of OpenVINO as test.
 
  * [Image Classification in Electron.js](example/hello_classification_electron/README.md)
  * [Image Classification in Node.js](example/hello_classification_node/README.md)
+ * [Object Detection in Node.js](example/hello_object_detection_ssd_node/README.md)
 
 ### API
 
