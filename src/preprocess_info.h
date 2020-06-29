@@ -18,13 +18,18 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
  private:
   static Napi::FunctionReference constructor;
   // APIs
+
+  void Init(const Napi::CallbackInfo& info);
   void SetColorFormat(const Napi::CallbackInfo& info);
   Napi::Value GetColorFormat(const Napi::CallbackInfo& info);
-  Napi::Value GetNumberOfChannels(const Napi::CallbackInfo& info);
   void SetResizeAlgorithm(const Napi::CallbackInfo& info);
   Napi::Value GetResizeAlgorithm(const Napi::CallbackInfo& info);
   void SetVariant(const Napi::CallbackInfo& info);
   Napi::Value GetMeanVariant(const Napi::CallbackInfo& info);
+
+  Napi::Value GetPreProcessChannel(const Napi::CallbackInfo& info);
+  void SetPreProcessChannel(const Napi::CallbackInfo& info);
+  Napi::Value GetNumberOfChannels(const Napi::CallbackInfo& info);
 
   InferenceEngine::InputInfo::Ptr  _input_info;
 };
