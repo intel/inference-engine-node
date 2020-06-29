@@ -297,15 +297,6 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
     size_t bytelength = meanDataArray.ByteLength();
     void* buffer = meanDataArray.Data();
     std::cout<<buffer<<std::endl;
-
-    // ie::Blob::Ptr meandata = preProcessChannel->meanData;
-    // std::unique_ptr<ie::LockedMemory<void>> locked_memory_;
-    // ie::MemoryBlob::Ptr memory_meandata = ie::as<ie::MemoryBlob>(meandata);
-
-
-
-
-    // channel->meanValue = newChannel.Get("meanData");
   }
 
   return;

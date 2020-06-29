@@ -353,18 +353,6 @@ describe('Network Test', function() {
     expect(() => preprocessInfo.getPreProcessChannel(1, 2)).to.throw(TypeError);
   });
 
-  it('PreProcessInfo.setPreProcessChannel should be a function', () => {
-    const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
-    let buffer = new ArrayBuffer(1 * 3 * 227 * 227 * 4);
-    let uint8 = new Uint8Array(buffer);
-    for (let i =0; i < uint8.length; i++) {
-      uint8[i] = 10;
-    }
-    console.log(buffer.byteLength);
-    console.log(new Uint8Array(buffer));
-    preprocessInfo.setPreProcessChannel(0, {stdScale: 127.5, meanValue: 127.5, meanData: buffer})
-  });
-
   it('getOutputsInfo should be a function', () => {
     expect(network.getOutputsInfo).to.be.a('function');
   });
