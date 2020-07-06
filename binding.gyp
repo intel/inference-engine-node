@@ -12,7 +12,8 @@
     ['OS=="win"', {
       'variables' : {
         'IE_INCLUDE_DIR' : '$(INTEL_OPENVINO_DIR)\\deployment_tools\\inference_engine\\include',
-        'IE_LIBRARY_DIR' : '$(INTEL_OPENVINO_DIR)\\deployment_tools\\inference_engine\\lib\\intel64\\Release'
+        'IE_LIBRARY_DIR' : '$(INTEL_OPENVINO_DIR)\\deployment_tools\\inference_engine\\lib\\intel64\\Release',
+        'IE_PLUGIN_DIR' : '$(INTEL_OPENVINO_DIR)\\deployment_tools\\inference_engine\\include'
       },
     }],
   ],
