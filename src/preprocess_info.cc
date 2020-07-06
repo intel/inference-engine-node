@@ -1,5 +1,4 @@
 #include "preprocess_info.h"
-#include "blob.h"
 #include "utils.h"
 
 #include <napi.h>
@@ -18,17 +17,23 @@ void PreProcessInfo::Init(const Napi::Env& env) {
 
   Napi::Function func = DefineClass(
       env, "PreProcessInfo",
-      {InstanceMethod("init", &PreProcessInfo::Init),
-       InstanceMethod("getColorFormat", &PreProcessInfo::GetColorFormat),
-       InstanceMethod("setColorFormat", &PreProcessInfo::SetColorFormat),
-       InstanceMethod("getResizeAlgorithm", &PreProcessInfo::GetResizeAlgorithm),
-       InstanceMethod("setResizeAlgorithm", &PreProcessInfo::SetResizeAlgorithm),
-       InstanceMethod("getMeanVariant", &PreProcessInfo::GetMeanVariant),
-       InstanceMethod("setVariant", &PreProcessInfo::SetVariant),
-       InstanceMethod("getNumberOfChannels", &PreProcessInfo::GetNumberOfChannels),
-       InstanceMethod("getPreProcessChannel", &PreProcessInfo::GetPreProcessChannel),
-       InstanceMethod("setPreProcessChannel", &PreProcessInfo::SetPreProcessChannel),
-       });
+      {
+          InstanceMethod("init", &PreProcessInfo::Init),
+          InstanceMethod("getColorFormat", &PreProcessInfo::GetColorFormat),
+          InstanceMethod("setColorFormat", &PreProcessInfo::SetColorFormat),
+          InstanceMethod("getResizeAlgorithm",
+                         &PreProcessInfo::GetResizeAlgorithm),
+          InstanceMethod("setResizeAlgorithm",
+                         &PreProcessInfo::SetResizeAlgorithm),
+          InstanceMethod("getMeanVariant", &PreProcessInfo::GetMeanVariant),
+          InstanceMethod("setVariant", &PreProcessInfo::SetVariant),
+          InstanceMethod("getNumberOfChannels",
+                         &PreProcessInfo::GetNumberOfChannels),
+          InstanceMethod("getPreProcessChannel",
+                         &PreProcessInfo::GetPreProcessChannel),
+          InstanceMethod("setPreProcessChannel",
+                         &PreProcessInfo::SetPreProcessChannel),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -91,7 +96,8 @@ void PreProcessInfo::SetColorFormat(const Napi::CallbackInfo& info) {
     return;
   }
 
-  _input_info->getPreProcess().setColorFormat(utils::GetColorFormatByName(colorFormatName));
+  _input_info->getPreProcess().setColorFormat(
+      utils::GetColorFormatByName(colorFormatName));
 }
 
 Napi::Value PreProcessInfo::GetColorFormat(const Napi::CallbackInfo& info) {
@@ -101,19 +107,21 @@ Napi::Value PreProcessInfo::GetColorFormat(const Napi::CallbackInfo& info) {
     return Napi::Object::New(env);
   }
 
-  return Napi::String::New(
-      env, utils::GetNameOfColorFormat(_input_info->getPreProcess().getColorFormat()));
+  return Napi::String::New(env,
+                           utils::GetNameOfColorFormat(
+                               _input_info->getPreProcess().getColorFormat()));
 }
 
-Napi::Value PreProcessInfo::GetNumberOfChannels(const Napi::CallbackInfo& info) {
+Napi::Value PreProcessInfo::GetNumberOfChannels(
+    const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
   if (info.Length() > 0) {
     Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
 
-  return Napi::Number::New(
-      env, _input_info->getPreProcess().getNumberOfChannels());
+  return Napi::Number::New(env,
+                           _input_info->getPreProcess().getNumberOfChannels());
 }
 
 void PreProcessInfo::SetResizeAlgorithm(const Napi::CallbackInfo& info) {
@@ -138,7 +146,8 @@ void PreProcessInfo::SetResizeAlgorithm(const Napi::CallbackInfo& info) {
     return;
   }
 
-  _input_info->getPreProcess().setResizeAlgorithm(utils::GetResizeAlgorithmByName(resizeAlgorithm));
+  _input_info->getPreProcess().setResizeAlgorithm(
+      utils::GetResizeAlgorithmByName(resizeAlgorithm));
 }
 
 Napi::Value PreProcessInfo::GetResizeAlgorithm(const Napi::CallbackInfo& info) {
@@ -149,7 +158,8 @@ Napi::Value PreProcessInfo::GetResizeAlgorithm(const Napi::CallbackInfo& info) {
   }
 
   return Napi::String::New(
-      env, utils::GetNameOfResizeAlgorithm(_input_info->getPreProcess().getResizeAlgorithm()));
+      env, utils::GetNameOfResizeAlgorithm(
+               _input_info->getPreProcess().getResizeAlgorithm()));
 }
 
 void PreProcessInfo::SetVariant(const Napi::CallbackInfo& info) {
@@ -174,7 +184,8 @@ void PreProcessInfo::SetVariant(const Napi::CallbackInfo& info) {
     return;
   }
 
-  _input_info->getPreProcess().setVariant(utils::GetMeanVariantByName(meanvariant));
+  _input_info->getPreProcess().setVariant(
+      utils::GetMeanVariantByName(meanvariant));
 }
 
 Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
@@ -184,28 +195,32 @@ Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
     return Napi::Object::New(env);
   }
 
-  return Napi::String::New(
-      env, utils::GetNameOfMeanVariant(_input_info->getPreProcess().getMeanVariant()));
+  return Napi::String::New(env,
+                           utils::GetNameOfMeanVariant(
+                               _input_info->getPreProcess().getMeanVariant()));
 }
 
-Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info) {
+Napi::Value PreProcessInfo::GetPreProcessChannel(
+    const Napi::CallbackInfo& info) {
   Napi::Env env = info.Env();
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments")
         .ThrowAsJavaScriptException();
-    return Napi::Object::New(env);;
+    return Napi::Object::New(env);
+    ;
   }
 
   if (!info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong type of arguments")
         .ThrowAsJavaScriptException();
-    return Napi::Object::New(env);;
+    return Napi::Object::New(env);
+    ;
   }
 
   size_t index = info[0].ToNumber().Int32Value();
   ie::PreProcessInfo& preInfo = _input_info->getPreProcess();
-  
+
   size_t numberOfChannels = preInfo.getNumberOfChannels();
 
   if (numberOfChannels == 0) {
@@ -215,9 +230,9 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info)
   };
 
   if (index >= numberOfChannels) {
-    std::string errorLog = "pre process index " + std::to_string(index) + " is out of bounds.";
-    Napi::Error::New(env, errorLog)
-        .ThrowAsJavaScriptException();
+    std::string errorLog =
+        "pre process index " + std::to_string(index) + " is out of bounds.";
+    Napi::Error::New(env, errorLog).ThrowAsJavaScriptException();
     return env.Null();
   };
 
@@ -230,18 +245,23 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info)
   std::unique_ptr<ie::LockedMemory<void>> locked_memory_;
   ie::MemoryBlob::Ptr memory_meandata = ie::as<ie::MemoryBlob>(meandata);
   if (!memory_meandata) {
-    preprocess_channel.Set("meanData", Napi::ArrayBuffer::ArrayBuffer(env, env.Null()));
+    preprocess_channel.Set("meanData",
+                           Napi::ArrayBuffer::ArrayBuffer(env, env.Null()));
     Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
-  
+
     return channelInfo;
   }
 
-  locked_memory_.reset(reinterpret_cast<ie::LockedMemory<void>*>(new ie::LockedMemory<const void>(memory_meandata->rmap())));
-  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(env, locked_memory_->as<ie::PrecisionTrait<ie::Precision::I8>::value_type*>(),meandata->byteSize());
+  locked_memory_.reset(reinterpret_cast<ie::LockedMemory<void>*>(
+      new ie::LockedMemory<const void>(memory_meandata->rmap())));
+  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(
+      env,
+      locked_memory_->as<ie::PrecisionTrait<ie::Precision::I8>::value_type*>(),
+      meandata->byteSize());
 
   preprocess_channel.Set("meanData", buffer);
   Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
-  
+
   return channelInfo;
 }
 
@@ -270,7 +290,7 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
   Napi::Object newChannel = info[1].ToObject();
 
   ie::PreProcessInfo& preInfo = _input_info->getPreProcess();
-  
+
   size_t numberOfChannels = preInfo.getNumberOfChannels();
 
   if (numberOfChannels == 0) {
@@ -280,9 +300,9 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
   };
 
   if (index >= numberOfChannels) {
-    std::string errorLog = "pre process index " + std::to_string(index) + " is out of bounds.";
-    Napi::Error::New(env, errorLog)
-        .ThrowAsJavaScriptException();
+    std::string errorLog =
+        "pre process index " + std::to_string(index) + " is out of bounds.";
+    Napi::Error::New(env, errorLog).ThrowAsJavaScriptException();
     return;
   };
 
@@ -296,23 +316,25 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
   }
 
   if (newChannel.Has("meanData")) {
-    Napi::ArrayBuffer meanDataArray = Napi::ArrayBuffer::ArrayBuffer(env, newChannel.Get("meanData"));
+    Napi::ArrayBuffer meanDataArray =
+        Napi::ArrayBuffer::ArrayBuffer(env, newChannel.Get("meanData"));
     size_t bytelength = meanDataArray.ByteLength();
     void* buffer = meanDataArray.Data();
 
     try {
       ie::SizeVector dims_vector = {1, bytelength, 1, 1};
-        ie::TensorDesc tensor(ie::Precision::I8,dims_vector,ie::Layout::NCHW);
-        channel->meanData = ie::make_shared_blob<int8_t>(tensor, reinterpret_cast<int8_t *>(buffer), bytelength);
-      } catch (const std::exception& error) {
-        Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
-        return;
-      } catch (...) {
-        Napi::Error::New(env, "Unknown/internal exception happened.")
+      ie::TensorDesc tensor(ie::Precision::I8, dims_vector, ie::Layout::NCHW);
+      channel->meanData = ie::make_shared_blob<int8_t>(
+          tensor, reinterpret_cast<int8_t*>(buffer), bytelength);
+    } catch (const std::exception& error) {
+      Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
+      return;
+    } catch (...) {
+      Napi::Error::New(env, "Unknown/internal exception happened.")
           .ThrowAsJavaScriptException();
-        return;
-      }
+      return;
     }
+  }
 
   return;
 }

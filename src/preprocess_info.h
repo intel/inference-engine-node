@@ -10,9 +10,8 @@ namespace ienodejs {
 class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
  public:
   static void Init(const Napi::Env& env);
-  static Napi::Object NewInstance(
-      const Napi::Env& envs,
-      InferenceEngine::InputInfo::Ptr actual);
+  static Napi::Object NewInstance(const Napi::Env& envs,
+                                  InferenceEngine::InputInfo::Ptr actual);
   PreProcessInfo(const Napi::CallbackInfo& info);
 
  private:
@@ -31,7 +30,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   void SetPreProcessChannel(const Napi::CallbackInfo& info);
   Napi::Value GetNumberOfChannels(const Napi::CallbackInfo& info);
 
-  InferenceEngine::InputInfo::Ptr  _input_info;
+  InferenceEngine::InputInfo::Ptr _input_info;
 };
 
 }  // namespace ienodejs
