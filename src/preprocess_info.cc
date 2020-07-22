@@ -308,31 +308,45 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
 
   ie::PreProcessChannel::Ptr channel = preInfo[index];
   if (newChannel.Has("stdScale")) {
-    channel->stdScale = newChannel.Get("stdScale").ToNumber().FloatValue();
+    if (newChannel.Get("stdScale").IsNumber()) {
+      channel->stdScale = newChannel.Get("stdScale").ToNumber().FloatValue();
+    } else {
+      Napi::TypeError::New(env, "Wrong stdScale").ThrowAsJavaScriptException();
+    }
   }
 
   if (newChannel.Has("meanValue")) {
-    channel->meanValue = newChannel.Get("meanValue").ToNumber().FloatValue();
+    if (newChannel.Get("meanValue").IsNumber()) {
+      channel->meanValue = newChannel.Get("meanValue").ToNumber().FloatValue();
+    } else {
+      Napi::TypeError::New(env, "Wrong meanValue").ThrowAsJavaScriptException();
+    }
   }
 
   if (newChannel.Has("meanData")) {
-    Napi::ArrayBuffer meanDataArray =
-        Napi::ArrayBuffer::ArrayBuffer(env, newChannel.Get("meanData"));
-    size_t bytelength = meanDataArray.ByteLength();
-    void* buffer = meanDataArray.Data();
+    if (!newChannel.Get("meanData").IsArrayBuffer()) {
+      Napi::TypeError::New(env, "Wrong meanData").ThrowAsJavaScriptException();
+    } else {
+      Napi::ArrayBuffer meanDataArray =
+          Napi::ArrayBuffer::ArrayBuffer(env, newChannel.Get("meanData"));
+      size_t bytelength = meanDataArray.ByteLength();
+      void* buffer = meanDataArray.Data();
 
-    try {
-      ie::SizeVector dims_vector = {1, bytelength, 1, 1};
-      ie::TensorDesc tensor(ie::Precision::I8, dims_vector, ie::Layout::NCHW);
-      channel->meanData = ie::make_shared_blob<int8_t>(
-          tensor, reinterpret_cast<int8_t*>(buffer), bytelength);
-    } catch (const std::exception& error) {
-      Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
-      return;
-    } catch (...) {
-      Napi::Error::New(env, "Unknown/internal exception happened.")
-          .ThrowAsJavaScriptException();
-      return;
+      try {
+        ie::SizeVector dims_vector = {bytelength, 1};
+        ie::TensorDesc tensor(ie::Precision::FP32, dims_vector, ie::Layout::HW);
+        ie::Blob::Ptr meanDataBlob = ie::make_shared_blob<float>(
+            tensor, reinterpret_cast<float_t*>(buffer), bytelength);
+        meanDataBlob->allocate();
+        channel->meanData = meanDataBlob;
+      } catch (const std::exception& error) {
+        Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
+        return;
+      } catch (...) {
+        Napi::Error::New(env, "Unknown/internal exception happened.")
+            .ThrowAsJavaScriptException();
+        return;
+      }
     }
   }
 

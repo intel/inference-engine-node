@@ -377,8 +377,10 @@ describe('Network Test', function() {
   it('PreProcessInfo.setPreProcessChannel should set the stdScale and the meanValue',
      () => {
        const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
-       const typedArray1 = new Int8Array(8);
-       typedArray1[0] = 32;
+       let width = 32;
+       let height = 32;
+       const typedArray1 = new Float32Array(width * height);
+       typedArray1[0] = 32.0;
        preprocessInfo.setPreProcessChannel(0, {
          'stdScale': 127.5,
          'meanValue': 127.5,
@@ -387,7 +389,7 @@ describe('Network Test', function() {
        const perProcessChannel = preprocessInfo.getPreProcessChannel(0);
        expect(perProcessChannel.meanValue).to.be.a('number').equal(127.5);
        expect(perProcessChannel.stdScale).to.be.a('number').equal(127.5);
-       expect(new Int8Array(perProcessChannel.meanData)[0]).equal(32);
+       expect(new Float32Array(perProcessChannel.meanData)[0]).equal(32.0);
      });
 
   it('PreProcessInfo.setPreProcessChannel should should throw for wrong number of arguments',
