@@ -379,12 +379,17 @@ describe('Network Test', function() {
        const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
        let width = 32;
        let height = 32;
-       const typedArray1 = new Float32Array(width * height);
+       let typedArray1 = new Float32Array(width * height);
        typedArray1[0] = 32.0;
-       preprocessInfo.setPreProcessChannel(0, {
+       let dim = new Int32Array([width, height]);
+       let tensorDesc = {precision: 'fp32', dims: dim.buffer, layout: 'hw'};
+       let meanData = {
+         desc: tensorDesc,
+         data: typedArray1.buffer
+       } preprocessInfo.setPreProcessChannel(0, {
          'stdScale': 127.5,
          'meanValue': 127.5,
-         'meanData': typedArray1.buffer
+         'meanData': meanData
        });
        const perProcessChannel = preprocessInfo.getPreProcessChannel(0);
        expect(perProcessChannel.meanValue).to.be.a('number').equal(127.5);
