@@ -386,11 +386,8 @@ describe('Network Test', function() {
        let meanData = {
          desc: tensorDesc,
          data: typedArray1.buffer
-       } preprocessInfo.setPreProcessChannel(0, {
-         'stdScale': 127.5,
-         'meanValue': 127.5,
-         'meanData': meanData
-       });
+       };
+       preprocessInfo.setPreProcessChannel(0, {'stdScale': 127.5, 'meanValue':127.5, 'meanData':meanData});
        const perProcessChannel = preprocessInfo.getPreProcessChannel(0);
        expect(perProcessChannel.meanValue).to.be.a('number').equal(127.5);
        expect(perProcessChannel.stdScale).to.be.a('number').equal(127.5);
