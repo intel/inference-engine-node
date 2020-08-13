@@ -380,14 +380,15 @@ describe('Network Test', function() {
        let width = 32;
        let height = 32;
        let typedArray1 = new Float32Array(width * height);
-       typedArray1[0] = 32.0;
-       let dim = new Int32Array([width, height]);
-       let tensorDesc = {precision: 'fp32', dims: dim.buffer, layout: 'hw'};
-       let meanData = {
-         desc: tensorDesc,
-         data: typedArray1.buffer
+       typedArray1.fill(32.0);
+       let tensorDesc = {
+         precision: 'fp32',
+         dims: [width, height],
+         layout: 'hw'
        };
-       preprocessInfo.setPreProcessChannel(0, {'stdScale': 127.5, 'meanValue':127.5, 'meanData':meanData});
+       let meanData = {desc: tensorDesc, data: typedArray1.buffer};
+       preprocessInfo.setPreProcessChannel(
+           0, {'stdScale': 127.5, 'meanValue': 127.5, 'meanData': meanData});
        const perProcessChannel = preprocessInfo.getPreProcessChannel(0);
        expect(perProcessChannel.meanValue).to.be.a('number').equal(127.5);
        expect(perProcessChannel.stdScale).to.be.a('number').equal(127.5);
@@ -423,6 +424,113 @@ describe('Network Test', function() {
        const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
        expect(() => preprocessInfo.setPreProcessChannel('foo', 'foo2'))
            .to.throw(TypeError);
+     });
+
+  it('PreProcessInfo.setPreProcessChannel should should throw for wrong type of stdScale and meanValue',
+     () => {
+       const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 'foo',
+         'meanValue': 127.5
+       })).to.throw(TypeError);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 'foo'
+       })).to.throw(TypeError);
+     });
+
+  it('PreProcessInfo.setPreProcessChannel should should throw for missing precision, dims, or layout',
+     () => {
+       const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       let width = 32;
+       let height = 32;
+       let typedArray1 = new Float32Array(width * height);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {dims: [width, height], layout: 'hw'},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData':
+             {desc: {precision: 'fp32', layout: 'hw'}, data: typedArray1.buffer}
+       })).to.throw(TypeError);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 'fp32', dims: [width, height]},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
+     });
+
+  it('PreProcessInfo.setPreProcessChannel should should throw for wrong type of precision, dims, and layout',
+     () => {
+       const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       let width = 32;
+       let height = 32;
+       let typedArray1 = new Float32Array(width * height);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 1, dims: [width, height], layout: 'hw'},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 'fp32', dims: 1, layout: 'hw'},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 'fp32', dims: [width, height], layout: 1},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
+     });
+
+  it('PreProcessInfo.setPreProcessChannel should should throw for wrong type of data',
+     () => {
+       const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       let width = 32;
+       let height = 32;
+       let typedArray1 = new Float32Array(width * height);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 'fp32', dims: [width, height], layout: 'hw'},
+           data: typedArray1
+         }
+       })).to.throw(TypeError);
+     });
+
+  it('PreProcessInfo.setPreProcessChannel should should throw for unmatched data and dims',
+     () => {
+       const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       let width = 32;
+       let height = 32;
+       let typedArray1 = new Float32Array(width * height);
+       expect(() => preprocessInfo.setPreProcessChannel(0, 0, {
+         'stdScale': 127.5,
+         'meanValue': 127.5,
+         'meanData': {
+           desc: {precision: 'fp32', dims: [16, height], layout: 'hw'},
+           data: typedArray1.buffer
+         }
+       })).to.throw(TypeError);
      });
 
   it('getOutputsInfo should be a function', () => {

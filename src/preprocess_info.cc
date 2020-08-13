@@ -46,8 +46,8 @@ Napi::Object PreProcessInfo::NewInstance(const Napi::Env& env,
                                          ie::InputInfo::Ptr actual) {
   Napi::EscapableHandleScope scope(env);
   Napi::Object obj = constructor.New({});
-  PreProcessInfo* preInfo = Napi::ObjectWrap<PreProcessInfo>::Unwrap(obj);
-  preInfo->_input_info = actual;
+  PreProcessInfo* pre_info = Napi::ObjectWrap<PreProcessInfo>::Unwrap(obj);
+  pre_info->_input_info = actual;
 
   return scope.Escape(napi_value(obj)).ToObject();
 }
@@ -219,44 +219,40 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(
   }
 
   size_t index = info[0].ToNumber().Int32Value();
-  ie::PreProcessInfo& preInfo = _input_info->getPreProcess();
+  ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
 
-  size_t numberOfChannels = preInfo.getNumberOfChannels();
+  size_t number_of_channels = pre_info.getNumberOfChannels();
 
-  if (numberOfChannels == 0) {
+  if (number_of_channels == 0) {
     Napi::Error::New(env, "accessing pre-process when nothing was set.")
         .ThrowAsJavaScriptException();
     return env.Null();
   };
 
-  if (index >= numberOfChannels || index < 0) {
+  if (index >= number_of_channels || index < 0) {
     std::string errorLog =
         "pre process index " + std::to_string(index) + " is out of bounds.";
     Napi::Error::New(env, errorLog).ThrowAsJavaScriptException();
     return env.Null();
   };
 
-  const ie::PreProcessChannel::Ptr& preProcessChannel = preInfo[index];
+  const ie::PreProcessChannel::Ptr& preProcessChannel = pre_info[index];
   Napi::Object preprocess_channel = Napi::Object::New(env);
   preprocess_channel.Set("stdScale", preProcessChannel->stdScale);
   preprocess_channel.Set("meanValue", preProcessChannel->meanValue);
 
-  ie::Blob::Ptr meandata = preProcessChannel->meanData;
+  ie::Blob::Ptr mean_data = preProcessChannel->meanData;
   std::unique_ptr<ie::LockedMemory<void>> locked_memory_;
-  ie::MemoryBlob::Ptr memory_meandata = ie::as<ie::MemoryBlob>(meandata);
-  if (!memory_meandata) {
+  ie::MemoryBlob::Ptr memory_mean_data = ie::as<ie::MemoryBlob>(mean_data);
+  if (!memory_mean_data) {
     preprocess_channel.Set("meanData", env.Null());
     Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
     return channelInfo;
   }
-
-  locked_memory_.reset(reinterpret_cast<ie::LockedMemory<void>*>(
-      new ie::LockedMemory<const void>(memory_meandata->rmap())));
-  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(
-      env,
-      locked_memory_->as<ie::PrecisionTrait<ie::Precision::I8>::value_type*>(),
-      meandata->byteSize());
-
+  ie::LockedMemory<const void> local_memory = memory_mean_data->rmap();
+  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(env, mean_data->byteSize());
+  void* data = buffer.Data();
+  memcpy(data, local_memory, mean_data->byteSize());
   preprocess_channel.Set("meanData", buffer);
   Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
 
@@ -266,7 +262,7 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(
 bool checkDesc(Napi::Object desc) {
   if (desc.Has("precision") && desc.Has("dims") && desc.Has("layout")) {
     if (desc.Get("precision").IsString() && desc.Get("layout").IsString() &&
-        desc.Get("dims").IsArrayBuffer()) {
+        desc.Get("dims").IsArray()) {
       std::string precision = desc.Get("precision").ToString();
       std::string layout = desc.Get("layout").ToString();
       if (utils::IsValidPrecisionName(precision) &&
@@ -305,105 +301,130 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
   }
 
   size_t index = info[0].ToNumber().Int32Value();
-  Napi::Object newChannel = info[1].ToObject();
+  Napi::Object new_channel = info[1].ToObject();
 
-  ie::PreProcessInfo& preInfo = _input_info->getPreProcess();
+  ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
 
-  size_t numberOfChannels = preInfo.getNumberOfChannels();
+  size_t number_of_channels = pre_info.getNumberOfChannels();
 
-  if (numberOfChannels == 0) {
+  if (number_of_channels == 0) {
     Napi::Error::New(env, "accessing pre-process when nothing was set.")
         .ThrowAsJavaScriptException();
     return;
   };
 
-  if (index >= numberOfChannels || index < 0) {
+  if (index >= number_of_channels || index < 0) {
     std::string errorLog =
         "pre process index " + std::to_string(index) + " is out of bounds.";
     Napi::Error::New(env, errorLog).ThrowAsJavaScriptException();
     return;
   };
 
-  ie::PreProcessChannel::Ptr channel = preInfo[index];
-  if (newChannel.Has("stdScale")) {
-    if (newChannel.Get("stdScale").IsNumber()) {
-      channel->stdScale = newChannel.Get("stdScale").ToNumber().FloatValue();
+  ie::PreProcessChannel::Ptr channel = pre_info[index];
+  if (new_channel.Has("stdScale")) {
+    if (new_channel.Get("stdScale").IsNumber()) {
+      channel->stdScale = new_channel.Get("stdScale").ToNumber().FloatValue();
     } else {
       Napi::TypeError::New(env, "Wrong stdScale").ThrowAsJavaScriptException();
     }
   }
 
-  if (newChannel.Has("meanValue")) {
-    if (newChannel.Get("meanValue").IsNumber()) {
-      channel->meanValue = newChannel.Get("meanValue").ToNumber().FloatValue();
+  if (new_channel.Has("meanValue")) {
+    if (new_channel.Get("meanValue").IsNumber()) {
+      channel->meanValue = new_channel.Get("meanValue").ToNumber().FloatValue();
     } else {
       Napi::TypeError::New(env, "Wrong meanValue").ThrowAsJavaScriptException();
     }
   }
 
-  if (newChannel.Has("meanData")) {
-    if (!newChannel.Get("meanData").IsObject()) {
+  if (new_channel.Has("meanData")) {
+    if (!new_channel.Get("meanData").IsObject()) {
       Napi::TypeError::New(env, "Wrong meanData").ThrowAsJavaScriptException();
       return;
     }
 
-    Napi::Object meanData = newChannel.Get("meanData").ToObject();
+    Napi::Object mean_data = new_channel.Get("meanData").ToObject();
 
-    if (!meanData.Has("desc") || !meanData.Has("data")) {
+    if (!mean_data.Has("desc") || !mean_data.Has("data")) {
       Napi::TypeError::New(env, "Wrong meanData").ThrowAsJavaScriptException();
       return;
     }
 
-    if (!meanData.Get("desc").IsObject()) {
+    if (!mean_data.Get("desc").IsObject()) {
       Napi::TypeError::New(env, "Wrong desc").ThrowAsJavaScriptException();
       return;
     }
 
-    if (!meanData.Get("data").IsArrayBuffer()) {
+    if (!mean_data.Get("data").IsArrayBuffer()) {
       Napi::TypeError::New(env, "Wrong data").ThrowAsJavaScriptException();
       return;
     }
 
-    Napi::Object desc = meanData.Get("desc").ToObject();
+    Napi::Object desc = mean_data.Get("desc").ToObject();
     if (!checkDesc(desc)) {
       Napi::TypeError::New(env, "Wrong desc").ThrowAsJavaScriptException();
       return;
     }
 
     Napi::ArrayBuffer data =
-        Napi::ArrayBuffer::ArrayBuffer(env, meanData.Get("data"));
+        Napi::ArrayBuffer::ArrayBuffer(env, mean_data.Get("data"));
     std::string precision_string = desc.Get("precision").ToString();
     std::string layout_string = desc.Get("layout").ToString();
-    Napi::ArrayBuffer dims =
-        Napi::ArrayBuffer::ArrayBuffer(env, desc.Get("dims"));
+    Napi::Array dims = Napi::Array::Array(env, desc.Get("dims"));
 
-    size_t datalength = data.ByteLength();
-    size_t dimslength = dims.ByteLength() / sizeof(uint32_t);
-    const uint32_t* dimArray = reinterpret_cast<uint32_t*>(dims.Data());
+    size_t data_length = data.ByteLength();
+    size_t dims_length = dims.Length();
     void* buffer = data.Data();
 
     try {
       ie::SizeVector dims_vector = {};
-      for (size_t i = 0; i < dimslength; i++) {
-        dims_vector.push_back(dimArray[i]);
+      size_t dims_product = 1;
+      for (size_t i = 0; i < dims_length; i++) {
+        Napi::Value dims_value = dims[i];
+        dims_vector.push_back(dims_value.ToNumber().Uint32Value());
+        dims_product = dims_product * dims_value.ToNumber().Uint32Value();
       }
       ie::Precision precision = utils::GetPrecisionByName(precision_string);
       ie::Layout layout = utils::GetLayoutByName(layout_string);
       ie::TensorDesc tensor(precision, dims_vector, layout);
-      ie::Blob::Ptr meanDataBlob;
+      ie::Blob::Ptr mean_data_blob;
       switch (precision) {
         case ie::Precision::FP32:
-          meanDataBlob = ie::make_shared_blob<float>(
-              tensor, reinterpret_cast<float_t*>(buffer), datalength);
+          if ((data_length / sizeof(float)) != dims_product) {
+            Napi::TypeError::New(env, "Dims does not match the data")
+                .ThrowAsJavaScriptException();
+            return;
+          }
+          mean_data_blob = ie::make_shared_blob<float>(
+              tensor, reinterpret_cast<float*>(malloc(data_length)),
+              data_length);
+          memcpy(ie::as<ie::MemoryBlob>(mean_data_blob)->wmap(), buffer,
+                 data_length);
           break;
         case ie::Precision::FP16:
         case ie::Precision::I16:
-          meanDataBlob = ie::make_shared_blob<int16_t>(
-              tensor, reinterpret_cast<int16_t*>(buffer), datalength);
+          if ((data_length / sizeof(int16_t)) != dims_product) {
+            Napi::TypeError::New(env, "Dims does not match the data")
+                .ThrowAsJavaScriptException();
+            return;
+          }
+          mean_data_blob = ie::make_shared_blob<int16_t>(
+              tensor, reinterpret_cast<int16_t*>(malloc(data_length)),
+              data_length);
+          memcpy(ie::as<ie::MemoryBlob>(mean_data_blob)->wmap(), buffer,
+                 data_length);
           break;
         case ie::Precision::U8:
-          meanDataBlob = ie::make_shared_blob<uint8_t>(
-              tensor, reinterpret_cast<uint8_t*>(buffer), datalength);
+          if ((data_length / sizeof(uint8_t)) != dims_product) {
+            Napi::TypeError::New(env, "Dims does not match the data")
+                .ThrowAsJavaScriptException();
+            return;
+          }
+          mean_data_blob = ie::make_shared_blob<uint8_t>(
+              tensor, reinterpret_cast<uint8_t*>(malloc(data_length)),
+              data_length);
+          memcpy(ie::as<ie::MemoryBlob>(mean_data_blob)->wmap(), buffer,
+                 data_length);
           break;
         default:
           Napi::TypeError::New(env,
@@ -412,8 +433,8 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
               .ThrowAsJavaScriptException();
           return;
       }
-      meanDataBlob->allocate();
-      channel->meanData = meanDataBlob;
+      mean_data_blob->allocate();
+      channel->meanData = mean_data_blob;
     } catch (const std::exception& error) {
       Napi::TypeError::New(env, error.what()).ThrowAsJavaScriptException();
       return;
