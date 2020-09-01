@@ -367,10 +367,10 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
     }
 
     Napi::ArrayBuffer data =
-        Napi::ArrayBuffer::ArrayBuffer(env, mean_data.Get("data"));
+        Napi::ArrayBuffer(env, mean_data.Get("data"));
     std::string precision_string = desc.Get("precision").ToString();
     std::string layout_string = desc.Get("layout").ToString();
-    Napi::Array dims = Napi::Array::Array(env, desc.Get("dims"));
+    Napi::Array dims = Napi::Array(env, desc.Get("dims"));
 
     size_t data_length = data.ByteLength();
     size_t dims_length = dims.Length();
