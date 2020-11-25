@@ -9,7 +9,7 @@ namespace ienodejs {
 
 class Core : public Napi::ObjectWrap<Core> {
  public:
-  static void Init(const Napi::Env& env);
+  static void Init(const Napi::Env& env, Napi::Object exports);
   static Napi::Object NewInstance(const Napi::Env& env);
   Core(const Napi::CallbackInfo& info);
 

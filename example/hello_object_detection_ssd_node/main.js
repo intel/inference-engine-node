@@ -1,8 +1,16 @@
-const ie = require('inference-engine-node');
+const { Core, getVersion } = require('inference-engine-node');
 const jimp = require('jimp');
 const fs = require('fs').promises;
-const {performance} = require('perf_hooks');
-const {ObjectDetectionPrediction} = require('./box');
+const { performance } = require('perf_hooks');
+const {
+  warning,
+  showBreakLine,
+  highlight,
+  showVersion,
+  showInputOutputInfo,
+  showPluginVersions,
+  object_detection
+} = require('../common');
 
 const option_definitions = [
   {
@@ -61,94 +69,14 @@ const option_definitions = [
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 
-function showInputOutputInfo(info) {
-  console.log(`  name: ${info.name()}`);
-  console.log(`  precision: ${info.getPrecision()}`);
-  console.log(`  layout: ${info.getLayout()}`);
-  console.log(`  dims: [${info.getDims()}]`);
-}
-
-function showVersion(version) {
-  console.log(
-      `  API version: ${version.apiVersion.major}.${version.apiVersion.minor}`);
-  console.log(`  Build: ${version.buildNumber}`);
-  console.log(`  Description: ${version.description}`);
-}
-
-function showPluginVersions(versions) {
-  Object.keys(versions).forEach(name => {
-    console.log(`  Deivce Name: ${name}`);
-    showVersion(versions[name]);
-  });
-}
-
-function topSSDResults(tensor, threshold = 0.5, dims) {
-  const result = []
-  const classIdIndex = 1;
-  const predictionIndex = 2;
-  const x1Index = 3;
-  const y1Index = 4;
-  const x2Index = 5;
-  const y2Index = 6;
-  const dataBoxLength = dims[dims.length - 1];
-
-  for (let b = 0; b < dims[0]; b++) {
-    const batchOffset = b * dims[2];
-    for (let i = 0; i < dims[2]; i++) {
-      const curProposal = batchOffset + dataBoxLength * i;
-
-      const prediction = tensor[curProposal + predictionIndex];
-
-      if (prediction && prediction >= threshold) {
-        const classId = tensor[curProposal + classIdIndex];
-        const x1 = tensor[curProposal + x1Index];
-        const y1 = tensor[curProposal + y1Index];
-        const x2 = tensor[curProposal + x2Index];
-        const y2 = tensor[curProposal + y2Index];
-        result.push(new ObjectDetectionPrediction(x1, y1, x2, y2, prediction, classId));
-      }
-    }
-  }
-  return result;
-}
-
-function showResults(results, labels) {
-  const class_header = labels? 'class': 'classId'
-  console.log(`${class_header}`.padEnd(10) + 'probability'.padEnd(15) + 'box');
-  const header = '-------';
-  console.log(header.padEnd(10) + header.padEnd(15) + header);
-  results.forEach(result => {
-    const classId = result.classId.toString();
-    let label =  labels ? labels[classId - 1] : classId;
-    const probability = result.probability.toFixed(5).toString();
-    const x1 = result.minX.toFixed(2).toString();
-    const y1 = result.minY.toFixed(2).toString();
-    const x2 = result.maxX.toFixed(2).toString();
-    const y2 = result.maxY.toFixed(2).toString();
-    console.log(label.padEnd(10) + probability.toString().padEnd(15) + `[${x1},${y1},${x2},${y2}]`);
-  })
-}
-
-function showBreakline() {
-  console.log('-------------------------------------------');
-}
-
-function highlight(msg) {
-  console.log('\x1b[1m' + msg + '\x1b[0m');
-}
-
-function warning(msg) {
-  console.log('\x1b[33m' + msg + '\x1b[0m');
-}
-
 async function main() {
   const options = commandLineArgs(option_definitions);
   if (options.help || !options.image || !options.model) {
     const usage = commandLineUsage([
       {
-        header: 'Hello Classification',
+        header: 'Hello SSD Object Detection',
         content:
-            'An example of image classification using inference-engine-node.'
+            'An example of SSD object detection using inference-engine-node.'
       },
       {header: 'Options', optionList: option_definitions}
     ]);
@@ -171,11 +99,11 @@ async function main() {
     process.exit(0);
   }
   console.log('Start.')
-  showBreakline();
+  showBreakLine();
   console.log(`Check inference engine version: `);
-  showVersion(ie.getVersion());
-  showBreakline();
-  const core = ie.createCore();
+  showVersion(getVersion());
+  showBreakLine();
+  const core = new Core();
   console.log(`Start to create network from ${model_path}.`)
   let start_time = performance.now();
   let net = await core.readNetwork(model_path, bin_path);
@@ -198,7 +126,7 @@ async function main() {
   input_info.setLayout('nhwc');
   input_info.setPrecision('u8');
   const output_info = outputs_info[0];
-  showBreakline();
+  showBreakLine();
   console.log(`Start to read image from ${image_path}.`);
   const image = await jimp.read(image_path);
   console.log(`Succeeded.`);
@@ -211,7 +139,7 @@ async function main() {
         image.bitmap.width}) to (${input_height}, ${input_width}).`);
     image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
   }
-  showBreakline();
+  showBreakLine();
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
   console.log(`Start to load network to ${device_name} plugin.`)
@@ -219,7 +147,7 @@ async function main() {
   const exec_net = await core.loadNetwork(net, device_name);
   const load_network_time = performance.now() - start_time;
   highlight(`Succeeded: load network took ${load_network_time.toFixed(2)} ms.`);
-  showBreakline();
+  showBreakLine();
   let infer_req;
   let infer_time = [];
   console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
@@ -261,11 +189,11 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = topSSDResults(output_data, threshold, output_info.getDims());
+  const results = object_detection.topSSDResults(output_data, threshold, output_info.getDims());
   output_blob.unmap();
   console.log(`Found ${results.length} objects:`);
-  showResults(results, labels);
-  showBreakline();
+  object_detection.showResults(results, labels);
+  showBreakLine();
   return 'Done.';
 }
 

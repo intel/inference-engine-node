@@ -15,19 +15,20 @@ namespace ienodejs {
 
 Napi::FunctionReference Core::constructor;
 
-void Core::Init(const Napi::Env& env) {
+void Core::Init(const Napi::Env& env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(
-      env, "Core",
-      {InstanceMethod("getVersions", &Core::GetVersions),
-       InstanceMethod("readNetwork", &Core::ReadNetwork),
-       InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
-       InstanceMethod("loadNetwork", &Core::LoadNetwork),
-       InstanceMethod("getAvailableDevices", &Core::GetAvailableDevices)});
+  Napi::Function func = DefineClass(env, "Core", {
+      InstanceMethod("getVersions", &Core::GetVersions),
+      InstanceMethod("readNetwork", &Core::ReadNetwork),
+      InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
+      InstanceMethod("loadNetwork", &Core::LoadNetwork),
+      InstanceMethod("getAvailableDevices", &Core::GetAvailableDevices)
+  });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
+  exports.Set("Core", func);
 }
 
 Core::Core(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Core>(info) {

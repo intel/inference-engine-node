@@ -42,20 +42,10 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   return version;
 }
 
-Napi::Value CreateCore(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  if (info.Length() > 0) {
-    Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
-    return env.Null();
-  }
-  return Core::NewInstance(env);
-}
-
 Napi::Object Init(Napi::Env env, Napi::Object exports) {
   exports.Set("getVersion", Napi::Function::New(env, GetVersion));
-  exports.Set("createCore", Napi::Function::New(env, CreateCore));
   Blob::Init(env);
-  Core::Init(env);
+  Core::Init(env, exports);
   Network::Init(env);
   ExecutableNetwork::Init(env);
   InferRequest::Init(env);

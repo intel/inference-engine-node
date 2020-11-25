@@ -1,4 +1,14 @@
-const ie = require('inference-engine-node');
+const { Core, postProcessing, getVersion } = require('inference-engine-node');
+const {
+    classification,
+    showAvailableDevices,
+    warning,
+    showBreakLine,
+    showVersion,
+    highlight,
+    showInputOutputInfo,
+    showPluginVersions
+} = require('../common');
 const jimp = require('jimp');
 const fs = require('fs').promises;
 const {performance} = require('perf_hooks');
@@ -89,78 +99,6 @@ const option_definitions = [
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 
-function showInputOutputInfo(info) {
-  console.log(`  name: ${info.name()}`);
-  console.log(`  precision: ${info.getPrecision()}`);
-  console.log(`  layout: ${info.getLayout()}`);
-  console.log(`  dims: [${info.getDims()}]`);
-}
-
-function showVersion(version) {
-  console.log(
-      `  API version: ${version.apiVersion.major}.${version.apiVersion.minor}`);
-  console.log(`  Build: ${version.buildNumber}`);
-  console.log(`  Description: ${version.description}`);
-}
-
-function showPluginVersions(versions) {
-  Object.keys(versions).forEach(name => {
-    console.log(`  Deivce Name: ${name}`);
-    showVersion(versions[name]);
-  });
-}
-
-function showResults(results) {
-  console.log('classid'.padEnd(10) + 'probability'.padEnd(15) + 'label');
-  const header = '-------';
-  console.log(header.padEnd(10) + header.padEnd(15) + header);
-  results.forEach(result => {
-    console.log(result.id.padEnd(10) + result.prob.padEnd(15) + result.label);
-  })
-}
-
-function showBreakline() {
-  console.log('-------------------------------------------');
-}
-
-function topResults(tensor, labels, k) {
-  let probs = Array.from(tensor);
-  let indexes = probs.map((prob, index) => [prob, index]);
-  let sorted = indexes.sort((a, b) => {
-    if (a[0] === b[0]) {
-      return 0;
-    }
-    return a[0] < b[0] ? -1 : 1;
-  });
-  sorted.reverse();
-  let classes = [];
-  for (let i = 0; i < k; ++i) {
-    const prob = sorted[i][0];
-    const index = sorted[i][1];
-    const c = {
-      id: index.toString(),
-      label: labels ? labels[index] : '',
-      prob: prob.toFixed(6)
-    };
-    classes.push(c);
-  }
-  return classes;
-}
-
-function highlight(msg) {
-  console.log('\x1b[1m' + msg + '\x1b[0m');
-}
-
-function warning(msg) {
-  console.log('\x1b[33m' + msg + '\x1b[0m');
-}
-
-function showAvailableDevices() {
-  const core = ie.createCore();
-  const devices = core.getAvailableDevices();
-  console.log(`Available target devices: ${devices.join(' ')}`);
-}
-
 async function main() {
   const options = commandLineArgs(option_definitions);
   if (options.help || !options.image || !options.model) {
@@ -170,7 +108,10 @@ async function main() {
         content:
             'An example of image classification using inference-engine-node.'
       },
-      {header: 'Options', optionList: option_definitions}
+      {
+        header: 'Options',
+        optionList: option_definitions
+      }
     ]);
     console.log(usage);
     showAvailableDevices();
@@ -224,11 +165,11 @@ async function main() {
     process.exit(0);
   }
   console.log('Start.')
-  showBreakline();
+  showBreakLine();
   console.log(`Check inference engine version: `);
-  showVersion(ie.getVersion());
-  showBreakline();
-  const core = ie.createCore();
+  showVersion(getVersion());
+  showBreakLine();
+  const core = new Core();
   console.log(`Start to create network from ${model_path}.`)
   let start_time = performance.now();
   let net = await core.readNetwork(model_path, bin_path);
@@ -254,7 +195,7 @@ async function main() {
     input_info.setPrecision('u8');
   }
   const output_info = outputs_info[0];
-  showBreakline();
+  showBreakLine();
   console.log(`Start to read image from ${image_path}.`);
   const image = await jimp.read(image_path);
   console.log(`Succeeded.`);
@@ -267,7 +208,7 @@ async function main() {
         image.bitmap.width}) to (${input_height}, ${input_width}).`);
     image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
   }
-  showBreakline();
+  showBreakLine();
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
   console.log(`Start to load network to ${device_name} plugin.`)
@@ -275,9 +216,9 @@ async function main() {
   const exec_net = await core.loadNetwork(net, device_name);
   const load_network_time = performance.now() - start_time;
   highlight(`Succeeded: load network took ${load_network_time.toFixed(2)} ms.`);
-  showBreakline();
+  showBreakLine();
   let infer_req;
-  let input_time = [];
+  const input_time = [];
   let infer_time = [];
   console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
       iterations} iterations.`);
@@ -313,15 +254,16 @@ async function main() {
     }
     infer_time.push(performance.now() - start_time);
   }
-  const average_input_time =
-      input_time.reduce((acc, v) => acc + v, 0) / input_time.length;
   const average_infer_time =
       infer_time.reduce((acc, v) => acc + v, 0) / infer_time.length;
+
   highlight(`Succeeded: the average inference time is ${
       average_infer_time.toFixed(2)} ms.`);
   highlight(`           the throughput is ${
       (1000 / average_infer_time).toFixed(2)} FPS.`);
+
   let labels = undefined;
+
   try {
     const data = await fs.readFile(labels_path, {encoding: 'utf-8'});
     labels = data.split('\n');
@@ -330,11 +272,11 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = topResults(output_data, labels, top_k);
+  const results = postProcessing.topClassificationResults(output_data, labels, top_k);
   output_blob.unmap();
   console.log(`The top ${top_k} results:`);
-  showResults(results);
-  showBreakline();
+  classification.showResults(results);
+  showBreakLine();
   return 'Done.';
 }
 
