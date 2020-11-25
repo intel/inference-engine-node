@@ -7,7 +7,7 @@ var should = chai.should();
 
 const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
 const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
-const ie = require('../lib/ie');
+const ie = require('../lib/inference-engine-node');
 const core = ie.createCore();
 
 describe('Core Test', function() {
@@ -59,7 +59,7 @@ describe('Core Test', function() {
   })
 
   it('getAvailableDevices should throw for wrong number of argument', () => {
-    expect(() => core.getAvailableDevices(1)).to.throw();;
+    expect(() => core.getAvailableDevices(1)).to.throw();
   })
 
   it('getAvailableDevices should return a array', () => {

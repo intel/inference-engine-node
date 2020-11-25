@@ -1,9 +1,10 @@
 <?xml version="1.0" ?>
-<net batch="1" name="squeezenet1.1" version="6">
+<net name="squeezenet1.1" version="10">
 	<layers>
-		<layer id="0" name="data" precision="FP16" type="Input">
+		<layer id="0" name="data" type="Parameter" version="opset1">
+			<data shape="1,3,227,227" element_type="f16"/>
 			<output>
-				<port id="0">
+				<port id="0" precision="FP16">
 					<dim>1</dim>
 					<dim>3</dim>
 					<dim>227</dim>
@@ -11,7 +12,18 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="1" name="ScaleShift/Add_" precision="FP16" type="ScaleShift">
+		<layer id="1" name="data_add_/copy_const" type="Const" version="opset1">
+			<data offset="0" size="6" shape="1,3,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>3</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="2" name="Add_" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -19,22 +31,35 @@
 					<dim>227</dim>
 					<dim>227</dim>
 				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>3</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>3</dim>
 					<dim>227</dim>
 					<dim>227</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="0" size="6"/>
-				<biases offset="6" size="6"/>
-			</blobs>
 		</layer>
-		<layer id="2" name="conv1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="64" pads_begin="0,0" pads_end="0,0" strides="2,2"/>
+		<layer id="3" name="113/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="6" size="3456" shape="64,3,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="4" name="conv1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="2,2" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -42,21 +67,34 @@
 					<dim>227</dim>
 					<dim>227</dim>
 				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>113</dim>
 					<dim>113</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="12" size="3456"/>
-				<biases offset="3468" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="3" name="relu_conv1" precision="FP16" type="ReLU">
+		<layer id="5" name="conv1/Dims1202/copy_const" type="Const" version="opset1">
+			<data offset="3462" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="6" name="conv1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -64,18 +102,23 @@
 					<dim>113</dim>
 					<dim>113</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
 					<dim>113</dim>
 					<dim>113</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="4" name="pool1" precision="FP16" type="Pooling">
-			<data exclude-pad="true" kernel="3,3" pads_begin="0,0" pads_end="0,0" pool-method="max" rounding_type="ceil" strides="2,2"/>
+		<layer id="7" name="relu_conv1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -85,38 +128,81 @@
 				</port>
 			</input>
 			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>113</dim>
+					<dim>113</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="8" name="pool1" type="MaxPool" version="opset1">
+			<data strides="2,2" kernel="3,3" pads_begin="0,0" pads_end="0,0" rounding_type="ceil"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>113</dim>
+					<dim>113</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="9" name="89/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="3590" size="2048" shape="16,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>16</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="10" name="fire2/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
 				<port id="1">
-					<dim>1</dim>
+					<dim>16</dim>
 					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
-				</port>
-			</output>
-		</layer>
-		<layer id="5" name="fire2/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="16" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
-			<input>
-				<port id="0">
 					<dim>1</dim>
-					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
+					<dim>1</dim>
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="3596" size="2048"/>
-				<biases offset="5644" size="32"/>
-			</blobs>
 		</layer>
-		<layer id="6" name="fire2/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="11" name="fire2/squeeze1x1/Dims1232/copy_const" type="Const" version="opset1">
+			<data offset="5638" size="32" shape="1,16,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="12" name="fire2/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -124,18 +210,23 @@
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="7" name="fire2/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="13" name="fire2/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -145,38 +236,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>64</dim>
+					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="5676" size="2048"/>
-				<biases offset="7724" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="8" name="fire2/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
-				</port>
-			</input>
+		<layer id="14" name="77/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="5670" size="2048" shape="64,16,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="9" name="fire2/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="64" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="15" name="fire2/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -184,21 +264,58 @@
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="7852" size="18432"/>
-				<biases offset="26284" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="10" name="fire2/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="16" name="fire2/expand1x1/Dims1100/copy_const" type="Const" version="opset1">
+			<data offset="7718" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="17" name="fire2/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="18" name="fire2/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -208,7 +325,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>56</dim>
@@ -216,7 +333,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="11" name="fire2/concat" precision="FP16" type="Concat">
+		<layer id="19" name="87/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="7846" size="18432" shape="64,16,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="20" name="fire2/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>16</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="21" name="fire2/expand3x3/Dims1226/copy_const" type="Const" version="opset1">
+			<data offset="26278" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="22" name="fire2/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="23" name="fire2/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="24" name="fire2/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -233,7 +439,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
 					<dim>56</dim>
@@ -241,8 +447,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="12" name="fire3/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="16" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="25" name="79/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="26406" size="4096" shape="16,128,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>16</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="26" name="fire3/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -250,21 +467,34 @@
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
+				<port id="1">
+					<dim>16</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="26412" size="4096"/>
-				<biases offset="30508" size="32"/>
-			</blobs>
 		</layer>
-		<layer id="13" name="fire3/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="27" name="fire3/squeeze1x1/Dims1148/copy_const" type="Const" version="opset1">
+			<data offset="30502" size="32" shape="1,16,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="28" name="fire3/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -272,18 +502,23 @@
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="14" name="fire3/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="29" name="fire3/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -293,38 +528,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>64</dim>
+					<dim>16</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="30540" size="2048"/>
-				<biases offset="32588" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="15" name="fire3/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
-				</port>
-			</input>
+		<layer id="30" name="109/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="30534" size="2048" shape="64,16,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>64</dim>
-					<dim>56</dim>
-					<dim>56</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="16" name="fire3/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="64" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="31" name="fire3/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -332,21 +556,58 @@
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>56</dim>
 					<dim>56</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="32716" size="18432"/>
-				<biases offset="51148" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="17" name="fire3/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="32" name="fire3/expand1x1/Dims1166/copy_const" type="Const" version="opset1">
+			<data offset="32582" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="33" name="fire3/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="34" name="fire3/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -356,7 +617,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>56</dim>
@@ -364,7 +625,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="18" name="fire3/concat" precision="FP16" type="Concat">
+		<layer id="35" name="99/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="32710" size="18432" shape="64,16,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="36" name="fire3/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>16</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>16</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="37" name="fire3/expand3x3/Dims1190/copy_const" type="Const" version="opset1">
+			<data offset="51142" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="38" name="fire3/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="39" name="fire3/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>56</dim>
+					<dim>56</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="40" name="fire3/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -381,7 +731,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
 					<dim>56</dim>
@@ -389,8 +739,8 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="19" name="pool3" precision="FP16" type="Pooling">
-			<data exclude-pad="true" kernel="3,3" pads_begin="0,0" pads_end="0,0" pool-method="max" rounding_type="ceil" strides="2,2"/>
+		<layer id="41" name="pool3" type="MaxPool" version="opset1">
+			<data strides="2,2" kernel="3,3" pads_begin="0,0" pads_end="0,0" rounding_type="ceil"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -400,16 +750,175 @@
 				</port>
 			</input>
 			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="42" name="95/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="51270" size="8192" shape="32,128,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>32</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="43" name="fire4/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>32</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="44" name="fire4/squeeze1x1/Dims1238/copy_const" type="Const" version="opset1">
+			<data offset="59462" size="64" shape="1,32,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="45" name="fire4/squeeze1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="46" name="fire4/relu_squeeze1x1" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="47" name="71/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="59526" size="8192" shape="128,32,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="48" name="fire4/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="49" name="fire4/expand1x1/Dims1136/copy_const" type="Const" version="opset1">
+			<data offset="67718" size="256" shape="1,128,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="50" name="fire4/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
 				<port id="1">
 					<dim>1</dim>
 					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="20" name="fire4/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="32" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="51" name="fire4/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -419,19 +928,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>32</dim>
+					<dim>128</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="51276" size="8192"/>
-				<biases offset="59468" size="64"/>
-			</blobs>
 		</layer>
-		<layer id="21" name="fire4/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="52" name="97/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="67974" size="73728" shape="128,32,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="53" name="fire4/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -439,50 +956,15 @@
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
-					<dim>1</dim>
+					<dim>128</dim>
 					<dim>32</dim>
-					<dim>28</dim>
-					<dim>28</dim>
-				</port>
-			</output>
-		</layer>
-		<layer id="22" name="fire4/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>32</dim>
-					<dim>28</dim>
-					<dim>28</dim>
+					<dim>3</dim>
+					<dim>3</dim>
 				</port>
 			</input>
 			<output>
-				<port id="3">
-					<dim>1</dim>
-					<dim>128</dim>
-					<dim>28</dim>
-					<dim>28</dim>
-				</port>
-			</output>
-			<blobs>
-				<weights offset="59532" size="8192"/>
-				<biases offset="67724" size="256"/>
-			</blobs>
-		</layer>
-		<layer id="23" name="fire4/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>128</dim>
-					<dim>28</dim>
-					<dim>28</dim>
-				</port>
-			</input>
-			<output>
-				<port id="1">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
 					<dim>28</dim>
@@ -490,30 +972,18 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="24" name="fire4/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="128" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>32</dim>
-					<dim>28</dim>
-					<dim>28</dim>
-				</port>
-			</input>
+		<layer id="54" name="fire4/expand3x3/Dims1244/copy_const" type="Const" version="opset1">
+			<data offset="141702" size="256" shape="1,128,1,1" element_type="f16"/>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
-					<dim>28</dim>
-					<dim>28</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="67980" size="73728"/>
-				<biases offset="141708" size="256"/>
-			</blobs>
 		</layer>
-		<layer id="25" name="fire4/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="55" name="fire4/expand3x3" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -521,17 +991,41 @@
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="26" name="fire4/concat" precision="FP16" type="Concat">
+		<layer id="56" name="fire4/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="57" name="fire4/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -548,7 +1042,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>28</dim>
@@ -556,8 +1050,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="27" name="fire5/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="32" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="58" name="105/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="141958" size="16384" shape="32,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>32</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="59" name="fire5/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -565,21 +1070,34 @@
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
+				<port id="1">
+					<dim>32</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>32</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="141964" size="16384"/>
-				<biases offset="158348" size="64"/>
-			</blobs>
 		</layer>
-		<layer id="28" name="fire5/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="60" name="fire5/squeeze1x1/Dims1118/copy_const" type="Const" version="opset1">
+			<data offset="158342" size="64" shape="1,32,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="61" name="fire5/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -587,18 +1105,23 @@
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>32</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="29" name="fire5/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="128" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="62" name="fire5/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -608,38 +1131,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>128</dim>
+					<dim>32</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="158412" size="8192"/>
-				<biases offset="166604" size="256"/>
-			</blobs>
 		</layer>
-		<layer id="30" name="fire5/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>128</dim>
-					<dim>28</dim>
-					<dim>28</dim>
-				</port>
-			</input>
+		<layer id="63" name="81/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="158406" size="8192" shape="128,32,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>128</dim>
-					<dim>28</dim>
-					<dim>28</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="31" name="fire5/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="128" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="64" name="fire5/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -647,21 +1159,58 @@
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
+				<port id="1">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
 					<dim>28</dim>
 					<dim>28</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="166860" size="73728"/>
-				<biases offset="240588" size="256"/>
-			</blobs>
 		</layer>
-		<layer id="32" name="fire5/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="65" name="fire5/expand1x1/Dims1106/copy_const" type="Const" version="opset1">
+			<data offset="166598" size="256" shape="1,128,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="66" name="fire5/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="67" name="fire5/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -671,7 +1220,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>128</dim>
 					<dim>28</dim>
@@ -679,7 +1228,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="33" name="fire5/concat" precision="FP16" type="Concat">
+		<layer id="68" name="119/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="166854" size="73728" shape="128,32,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="69" name="fire5/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>32</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>128</dim>
+					<dim>32</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="70" name="fire5/expand3x3/Dims1208/copy_const" type="Const" version="opset1">
+			<data offset="240582" size="256" shape="1,128,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="71" name="fire5/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="72" name="fire5/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>128</dim>
+					<dim>28</dim>
+					<dim>28</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="73" name="fire5/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -696,7 +1334,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>28</dim>
@@ -704,8 +1342,8 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="34" name="pool5" precision="FP16" type="Pooling">
-			<data exclude-pad="true" kernel="3,3" pads_begin="0,0" pads_end="0,0" pool-method="max" rounding_type="ceil" strides="2,2"/>
+		<layer id="74" name="pool5" type="MaxPool" version="opset1">
+			<data strides="2,2" kernel="3,3" pads_begin="0,0" pads_end="0,0" rounding_type="ceil"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -715,7 +1353,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>14</dim>
@@ -723,8 +1361,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="35" name="fire6/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="48" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="75" name="101/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="240838" size="24576" shape="48,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>48</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="76" name="fire6/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -732,21 +1381,34 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>48</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="240844" size="24576"/>
-				<biases offset="265420" size="96"/>
-			</blobs>
 		</layer>
-		<layer id="36" name="fire6/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="77" name="fire6/squeeze1x1/Dims1160/copy_const" type="Const" version="opset1">
+			<data offset="265414" size="96" shape="1,48,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="78" name="fire6/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -754,18 +1416,23 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="37" name="fire6/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="192" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="79" name="fire6/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -775,38 +1442,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>192</dim>
+					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="265516" size="18432"/>
-				<biases offset="283948" size="384"/>
-			</blobs>
 		</layer>
-		<layer id="38" name="fire6/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>192</dim>
-					<dim>14</dim>
-					<dim>14</dim>
-				</port>
-			</input>
+		<layer id="80" name="91/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="265510" size="18432" shape="192,48,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>192</dim>
-					<dim>14</dim>
-					<dim>14</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="39" name="fire6/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="192" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="81" name="fire6/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -814,21 +1470,58 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>192</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="284332" size="165888"/>
-				<biases offset="450220" size="384"/>
-			</blobs>
 		</layer>
-		<layer id="40" name="fire6/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="82" name="fire6/expand1x1/Dims1154/copy_const" type="Const" version="opset1">
+			<data offset="283942" size="384" shape="1,192,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="83" name="fire6/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="84" name="fire6/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -838,7 +1531,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>192</dim>
 					<dim>14</dim>
@@ -846,7 +1539,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="41" name="fire6/concat" precision="FP16" type="Concat">
+		<layer id="85" name="69/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="284326" size="165888" shape="192,48,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="86" name="fire6/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>48</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="87" name="fire6/expand3x3/Dims1214/copy_const" type="Const" version="opset1">
+			<data offset="450214" size="384" shape="1,192,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="88" name="fire6/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="89" name="fire6/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="90" name="fire6/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -863,7 +1645,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>384</dim>
 					<dim>14</dim>
@@ -871,8 +1653,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="42" name="fire7/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="48" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="91" name="103/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="450598" size="36864" shape="48,384,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>48</dim>
+					<dim>384</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="92" name="fire7/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -880,21 +1673,34 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>48</dim>
+					<dim>384</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="450604" size="36864"/>
-				<biases offset="487468" size="96"/>
-			</blobs>
 		</layer>
-		<layer id="43" name="fire7/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="93" name="fire7/squeeze1x1/Dims1196/copy_const" type="Const" version="opset1">
+			<data offset="487462" size="96" shape="1,48,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="94" name="fire7/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -902,18 +1708,23 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="44" name="fire7/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="192" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="95" name="fire7/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -923,38 +1734,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>192</dim>
+					<dim>48</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="487564" size="18432"/>
-				<biases offset="505996" size="384"/>
-			</blobs>
 		</layer>
-		<layer id="45" name="fire7/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>192</dim>
-					<dim>14</dim>
-					<dim>14</dim>
-				</port>
-			</input>
+		<layer id="96" name="115/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="487558" size="18432" shape="192,48,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>192</dim>
-					<dim>14</dim>
-					<dim>14</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="46" name="fire7/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="192" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="97" name="fire7/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -962,21 +1762,58 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>192</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="506380" size="165888"/>
-				<biases offset="672268" size="384"/>
-			</blobs>
 		</layer>
-		<layer id="47" name="fire7/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="98" name="fire7/expand1x1/Dims1124/copy_const" type="Const" version="opset1">
+			<data offset="505990" size="384" shape="1,192,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="99" name="fire7/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="100" name="fire7/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -986,7 +1823,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>192</dim>
 					<dim>14</dim>
@@ -994,7 +1831,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="48" name="fire7/concat" precision="FP16" type="Concat">
+		<layer id="101" name="93/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="506374" size="165888" shape="192,48,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="102" name="fire7/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>48</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>192</dim>
+					<dim>48</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="103" name="fire7/expand3x3/Dims1184/copy_const" type="Const" version="opset1">
+			<data offset="672262" size="384" shape="1,192,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="104" name="fire7/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="105" name="fire7/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>192</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="106" name="fire7/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -1011,7 +1937,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>384</dim>
 					<dim>14</dim>
@@ -1019,8 +1945,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="49" name="fire8/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="107" name="111/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="672646" size="49152" shape="64,384,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>64</dim>
+					<dim>384</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="108" name="fire8/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1028,21 +1965,34 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>384</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="672652" size="49152"/>
-				<biases offset="721804" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="50" name="fire8/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="109" name="fire8/squeeze1x1/Dims1178/copy_const" type="Const" version="opset1">
+			<data offset="721798" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="110" name="fire8/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1050,18 +2000,23 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="51" name="fire8/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="111" name="fire8/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1071,38 +2026,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>256</dim>
+					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="721932" size="32768"/>
-				<biases offset="754700" size="512"/>
-			</blobs>
 		</layer>
-		<layer id="52" name="fire8/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>256</dim>
-					<dim>14</dim>
-					<dim>14</dim>
-				</port>
-			</input>
+		<layer id="112" name="83/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="721926" size="32768" shape="256,64,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>256</dim>
-					<dim>14</dim>
-					<dim>14</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="53" name="fire8/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="113" name="fire8/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1110,21 +2054,58 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="755212" size="294912"/>
-				<biases offset="1050124" size="512"/>
-			</blobs>
 		</layer>
-		<layer id="54" name="fire8/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="114" name="fire8/expand1x1/Dims1220/copy_const" type="Const" version="opset1">
+			<data offset="754694" size="512" shape="1,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="115" name="fire8/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="116" name="fire8/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1134,7 +2115,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>14</dim>
@@ -1142,7 +2123,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="55" name="fire8/concat" precision="FP16" type="Concat">
+		<layer id="117" name="85/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="755206" size="294912" shape="256,64,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="118" name="fire8/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="119" name="fire8/expand3x3/Dims1112/copy_const" type="Const" version="opset1">
+			<data offset="1050118" size="512" shape="1,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="120" name="fire8/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="121" name="fire8/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="122" name="fire8/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -1159,7 +2229,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>512</dim>
 					<dim>14</dim>
@@ -1167,8 +2237,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="56" name="fire9/squeeze1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="64" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="123" name="75/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="1050630" size="65536" shape="64,512,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>64</dim>
+					<dim>512</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="124" name="fire9/squeeze1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1176,21 +2257,34 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>64</dim>
+					<dim>512</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="1050636" size="65536"/>
-				<biases offset="1116172" size="128"/>
-			</blobs>
 		</layer>
-		<layer id="57" name="fire9/relu_squeeze1x1" precision="FP16" type="ReLU">
+		<layer id="125" name="fire9/squeeze1x1/Dims1172/copy_const" type="Const" version="opset1">
+			<data offset="1116166" size="128" shape="1,64,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="126" name="fire9/squeeze1x1" type="Add" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1198,18 +2292,23 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
-			</input>
-			<output>
 				<port id="1">
 					<dim>1</dim>
 					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="58" name="fire9/expand1x1" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="256" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="127" name="fire9/relu_squeeze1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1219,38 +2318,27 @@
 				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
-					<dim>256</dim>
+					<dim>64</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="1116300" size="32768"/>
-				<biases offset="1149068" size="512"/>
-			</blobs>
 		</layer>
-		<layer id="59" name="fire9/relu_expand1x1" precision="FP16" type="ReLU">
-			<input>
-				<port id="0">
-					<dim>1</dim>
-					<dim>256</dim>
-					<dim>14</dim>
-					<dim>14</dim>
-				</port>
-			</input>
+		<layer id="128" name="107/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="1116294" size="32768" shape="256,64,1,1" element_type="f16"/>
 			<output>
-				<port id="1">
-					<dim>1</dim>
+				<port id="1" precision="FP16">
 					<dim>256</dim>
-					<dim>14</dim>
-					<dim>14</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
 				</port>
 			</output>
 		</layer>
-		<layer id="60" name="fire9/expand3x3" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="3,3" output="256" pads_begin="1,1" pads_end="1,1" strides="1,1"/>
+		<layer id="129" name="fire9/expand1x1/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1258,21 +2346,58 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="1149580" size="294912"/>
-				<biases offset="1444492" size="512"/>
-			</blobs>
 		</layer>
-		<layer id="61" name="fire9/relu_expand3x3" precision="FP16" type="ReLU">
+		<layer id="130" name="fire9/expand1x1/Dims1250/copy_const" type="Const" version="opset1">
+			<data offset="1149062" size="512" shape="1,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="131" name="fire9/expand1x1" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="132" name="fire9/relu_expand1x1" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1282,7 +2407,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>256</dim>
 					<dim>14</dim>
@@ -1290,7 +2415,96 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="62" name="fire9/concat" precision="FP16" type="Concat">
+		<layer id="133" name="117/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="1149574" size="294912" shape="256,64,3,3" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="134" name="fire9/expand3x3/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="1,1" pads_end="1,1" output_padding="0,0"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>64</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>256</dim>
+					<dim>64</dim>
+					<dim>3</dim>
+					<dim>3</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="135" name="fire9/expand3x3/Dims1130/copy_const" type="Const" version="opset1">
+			<data offset="1444486" size="512" shape="1,256,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="136" name="fire9/expand3x3" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="137" name="fire9/relu_expand3x3" type="ReLU" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>256</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="138" name="fire9/concat" type="Concat" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -1307,7 +2521,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="2">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>512</dim>
 					<dim>14</dim>
@@ -1315,8 +2529,19 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="63" name="conv10" precision="FP16" type="Convolution">
-			<data dilations="1,1" group="1" kernel="1,1" output="1000" pads_begin="0,0" pads_end="0,0" strides="1,1"/>
+		<layer id="139" name="73/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="1444998" size="1024000" shape="1000,512,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1000</dim>
+					<dim>512</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="140" name="conv10/WithoutBiases" type="Convolution" version="opset1">
+			<data strides="1,1" dilations="1,1" pads_begin="0,0" pads_end="0,0" output_padding="0,0"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1324,21 +2549,58 @@
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
+				<port id="1">
+					<dim>1000</dim>
+					<dim>512</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
 			</input>
 			<output>
-				<port id="3">
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>1000</dim>
 					<dim>14</dim>
 					<dim>14</dim>
 				</port>
 			</output>
-			<blobs>
-				<weights offset="1445004" size="1024000"/>
-				<biases offset="2469004" size="2000"/>
-			</blobs>
 		</layer>
-		<layer id="64" name="relu_conv10" precision="FP16" type="ReLU">
+		<layer id="141" name="conv10/Dims1142/copy_const" type="Const" version="opset1">
+			<data offset="2468998" size="2000" shape="1,1000,1,1" element_type="f16"/>
+			<output>
+				<port id="1" precision="FP16">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="142" name="conv10" type="Add" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="143" name="relu_conv10" type="ReLU" version="opset1">
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1348,7 +2610,7 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>1000</dim>
 					<dim>14</dim>
@@ -1356,8 +2618,14 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="65" name="pool10" precision="FP16" type="Pooling">
-			<data exclude-pad="false" kernel="14,14" pads_begin="0,0" pads_end="0,0" pool-method="avg" rounding_type="ceil" strides="1,1"/>
+		<layer id="144" name="122/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="2470998" size="8" shape="" element_type="i64"/>
+			<output>
+				<port id="1" precision="I64"/>
+			</output>
+		</layer>
+		<layer id="145" name="pool10/input_rank/shape_of" type="ShapeOf" version="opset3">
+			<data output_type="i64"/>
 			<input>
 				<port id="0">
 					<dim>1</dim>
@@ -1367,7 +2635,79 @@
 				</port>
 			</input>
 			<output>
+				<port id="1" precision="I64">
+					<dim>4</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="146" name="pool10/input_rank/rank_of" type="ShapeOf" version="opset3">
+			<data output_type="i64"/>
+			<input>
+				<port id="0">
+					<dim>4</dim>
+				</port>
+			</input>
+			<output>
+				<port id="1" precision="I64">
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="147" name="pool10/input_rank/0d_rank_of/value/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="2471006" size="8" shape="1" element_type="i64"/>
+			<output>
+				<port id="1" precision="I64">
+					<dim>1</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="148" name="pool10/input_rank" type="Squeeze" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+				</port>
 				<port id="1">
+					<dim>1</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="I64"/>
+			</output>
+		</layer>
+		<layer id="149" name="124/Output_0/Data__const" type="Const" version="opset1">
+			<data offset="2471014" size="8" shape="" element_type="i64"/>
+			<output>
+				<port id="1" precision="I64"/>
+			</output>
+		</layer>
+		<layer id="150" name="pool10/global_pooling_reduce_axis" type="Range" version="opset4">
+			<data output_type="i64"/>
+			<input>
+				<port id="0"/>
+				<port id="1"/>
+				<port id="2"/>
+			</input>
+			<output>
+				<port id="3" precision="I64">
+					<dim>2</dim>
+				</port>
+			</output>
+		</layer>
+		<layer id="151" name="pool10/reduce" type="ReduceMean" version="opset1">
+			<data keep_dims="True"/>
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>14</dim>
+					<dim>14</dim>
+				</port>
+				<port id="1">
+					<dim>2</dim>
+				</port>
+			</input>
+			<output>
+				<port id="2" precision="FP16">
 					<dim>1</dim>
 					<dim>1000</dim>
 					<dim>1</dim>
@@ -1375,7 +2715,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="66" name="prob" precision="FP16" type="SoftMax">
+		<layer id="152" name="prob" type="SoftMax" version="opset1">
 			<data axis="1"/>
 			<input>
 				<port id="0">
@@ -1386,133 +2726,231 @@
 				</port>
 			</input>
 			<output>
-				<port id="1">
+				<port id="1" precision="FP16">
 					<dim>1</dim>
 					<dim>1000</dim>
 					<dim>1</dim>
 					<dim>1</dim>
 				</port>
 			</output>
+		</layer>
+		<layer id="153" name="prob/sink_port_0" type="Result" version="opset1">
+			<input>
+				<port id="0">
+					<dim>1</dim>
+					<dim>1000</dim>
+					<dim>1</dim>
+					<dim>1</dim>
+				</port>
+			</input>
 		</layer>
 	</layers>
 	<edges>
-		<edge from-layer="0" from-port="0" to-layer="1" to-port="0"/>
-		<edge from-layer="1" from-port="3" to-layer="2" to-port="0"/>
-		<edge from-layer="2" from-port="3" to-layer="3" to-port="0"/>
-		<edge from-layer="3" from-port="1" to-layer="4" to-port="0"/>
-		<edge from-layer="4" from-port="1" to-layer="5" to-port="0"/>
-		<edge from-layer="5" from-port="3" to-layer="6" to-port="0"/>
-		<edge from-layer="6" from-port="1" to-layer="7" to-port="0"/>
-		<edge from-layer="7" from-port="3" to-layer="8" to-port="0"/>
-		<edge from-layer="6" from-port="1" to-layer="9" to-port="0"/>
-		<edge from-layer="9" from-port="3" to-layer="10" to-port="0"/>
-		<edge from-layer="8" from-port="1" to-layer="11" to-port="0"/>
-		<edge from-layer="10" from-port="1" to-layer="11" to-port="1"/>
-		<edge from-layer="11" from-port="2" to-layer="12" to-port="0"/>
-		<edge from-layer="12" from-port="3" to-layer="13" to-port="0"/>
-		<edge from-layer="13" from-port="1" to-layer="14" to-port="0"/>
-		<edge from-layer="14" from-port="3" to-layer="15" to-port="0"/>
-		<edge from-layer="13" from-port="1" to-layer="16" to-port="0"/>
-		<edge from-layer="16" from-port="3" to-layer="17" to-port="0"/>
-		<edge from-layer="15" from-port="1" to-layer="18" to-port="0"/>
-		<edge from-layer="17" from-port="1" to-layer="18" to-port="1"/>
-		<edge from-layer="18" from-port="2" to-layer="19" to-port="0"/>
-		<edge from-layer="19" from-port="1" to-layer="20" to-port="0"/>
-		<edge from-layer="20" from-port="3" to-layer="21" to-port="0"/>
-		<edge from-layer="21" from-port="1" to-layer="22" to-port="0"/>
-		<edge from-layer="22" from-port="3" to-layer="23" to-port="0"/>
-		<edge from-layer="21" from-port="1" to-layer="24" to-port="0"/>
-		<edge from-layer="24" from-port="3" to-layer="25" to-port="0"/>
-		<edge from-layer="23" from-port="1" to-layer="26" to-port="0"/>
+		<edge from-layer="0" from-port="0" to-layer="2" to-port="0"/>
+		<edge from-layer="1" from-port="1" to-layer="2" to-port="1"/>
+		<edge from-layer="2" from-port="2" to-layer="4" to-port="0"/>
+		<edge from-layer="3" from-port="1" to-layer="4" to-port="1"/>
+		<edge from-layer="4" from-port="2" to-layer="6" to-port="0"/>
+		<edge from-layer="5" from-port="1" to-layer="6" to-port="1"/>
+		<edge from-layer="6" from-port="2" to-layer="7" to-port="0"/>
+		<edge from-layer="7" from-port="1" to-layer="8" to-port="0"/>
+		<edge from-layer="8" from-port="1" to-layer="10" to-port="0"/>
+		<edge from-layer="9" from-port="1" to-layer="10" to-port="1"/>
+		<edge from-layer="10" from-port="2" to-layer="12" to-port="0"/>
+		<edge from-layer="11" from-port="1" to-layer="12" to-port="1"/>
+		<edge from-layer="12" from-port="2" to-layer="13" to-port="0"/>
+		<edge from-layer="13" from-port="1" to-layer="15" to-port="0"/>
+		<edge from-layer="14" from-port="1" to-layer="15" to-port="1"/>
+		<edge from-layer="15" from-port="2" to-layer="17" to-port="0"/>
+		<edge from-layer="16" from-port="1" to-layer="17" to-port="1"/>
+		<edge from-layer="17" from-port="2" to-layer="18" to-port="0"/>
+		<edge from-layer="13" from-port="1" to-layer="20" to-port="0"/>
+		<edge from-layer="19" from-port="1" to-layer="20" to-port="1"/>
+		<edge from-layer="20" from-port="2" to-layer="22" to-port="0"/>
+		<edge from-layer="21" from-port="1" to-layer="22" to-port="1"/>
+		<edge from-layer="22" from-port="2" to-layer="23" to-port="0"/>
+		<edge from-layer="18" from-port="1" to-layer="24" to-port="0"/>
+		<edge from-layer="23" from-port="1" to-layer="24" to-port="1"/>
+		<edge from-layer="24" from-port="2" to-layer="26" to-port="0"/>
 		<edge from-layer="25" from-port="1" to-layer="26" to-port="1"/>
-		<edge from-layer="26" from-port="2" to-layer="27" to-port="0"/>
-		<edge from-layer="27" from-port="3" to-layer="28" to-port="0"/>
-		<edge from-layer="28" from-port="1" to-layer="29" to-port="0"/>
-		<edge from-layer="29" from-port="3" to-layer="30" to-port="0"/>
-		<edge from-layer="28" from-port="1" to-layer="31" to-port="0"/>
-		<edge from-layer="31" from-port="3" to-layer="32" to-port="0"/>
-		<edge from-layer="30" from-port="1" to-layer="33" to-port="0"/>
+		<edge from-layer="26" from-port="2" to-layer="28" to-port="0"/>
+		<edge from-layer="27" from-port="1" to-layer="28" to-port="1"/>
+		<edge from-layer="28" from-port="2" to-layer="29" to-port="0"/>
+		<edge from-layer="29" from-port="1" to-layer="31" to-port="0"/>
+		<edge from-layer="30" from-port="1" to-layer="31" to-port="1"/>
+		<edge from-layer="31" from-port="2" to-layer="33" to-port="0"/>
 		<edge from-layer="32" from-port="1" to-layer="33" to-port="1"/>
 		<edge from-layer="33" from-port="2" to-layer="34" to-port="0"/>
-		<edge from-layer="34" from-port="1" to-layer="35" to-port="0"/>
-		<edge from-layer="35" from-port="3" to-layer="36" to-port="0"/>
-		<edge from-layer="36" from-port="1" to-layer="37" to-port="0"/>
-		<edge from-layer="37" from-port="3" to-layer="38" to-port="0"/>
-		<edge from-layer="36" from-port="1" to-layer="39" to-port="0"/>
-		<edge from-layer="39" from-port="3" to-layer="40" to-port="0"/>
-		<edge from-layer="38" from-port="1" to-layer="41" to-port="0"/>
-		<edge from-layer="40" from-port="1" to-layer="41" to-port="1"/>
-		<edge from-layer="41" from-port="2" to-layer="42" to-port="0"/>
-		<edge from-layer="42" from-port="3" to-layer="43" to-port="0"/>
-		<edge from-layer="43" from-port="1" to-layer="44" to-port="0"/>
-		<edge from-layer="44" from-port="3" to-layer="45" to-port="0"/>
-		<edge from-layer="43" from-port="1" to-layer="46" to-port="0"/>
-		<edge from-layer="46" from-port="3" to-layer="47" to-port="0"/>
-		<edge from-layer="45" from-port="1" to-layer="48" to-port="0"/>
+		<edge from-layer="29" from-port="1" to-layer="36" to-port="0"/>
+		<edge from-layer="35" from-port="1" to-layer="36" to-port="1"/>
+		<edge from-layer="36" from-port="2" to-layer="38" to-port="0"/>
+		<edge from-layer="37" from-port="1" to-layer="38" to-port="1"/>
+		<edge from-layer="38" from-port="2" to-layer="39" to-port="0"/>
+		<edge from-layer="34" from-port="1" to-layer="40" to-port="0"/>
+		<edge from-layer="39" from-port="1" to-layer="40" to-port="1"/>
+		<edge from-layer="40" from-port="2" to-layer="41" to-port="0"/>
+		<edge from-layer="41" from-port="1" to-layer="43" to-port="0"/>
+		<edge from-layer="42" from-port="1" to-layer="43" to-port="1"/>
+		<edge from-layer="43" from-port="2" to-layer="45" to-port="0"/>
+		<edge from-layer="44" from-port="1" to-layer="45" to-port="1"/>
+		<edge from-layer="45" from-port="2" to-layer="46" to-port="0"/>
+		<edge from-layer="46" from-port="1" to-layer="48" to-port="0"/>
 		<edge from-layer="47" from-port="1" to-layer="48" to-port="1"/>
-		<edge from-layer="48" from-port="2" to-layer="49" to-port="0"/>
-		<edge from-layer="49" from-port="3" to-layer="50" to-port="0"/>
-		<edge from-layer="50" from-port="1" to-layer="51" to-port="0"/>
-		<edge from-layer="51" from-port="3" to-layer="52" to-port="0"/>
-		<edge from-layer="50" from-port="1" to-layer="53" to-port="0"/>
-		<edge from-layer="53" from-port="3" to-layer="54" to-port="0"/>
-		<edge from-layer="52" from-port="1" to-layer="55" to-port="0"/>
+		<edge from-layer="48" from-port="2" to-layer="50" to-port="0"/>
+		<edge from-layer="49" from-port="1" to-layer="50" to-port="1"/>
+		<edge from-layer="50" from-port="2" to-layer="51" to-port="0"/>
+		<edge from-layer="46" from-port="1" to-layer="53" to-port="0"/>
+		<edge from-layer="52" from-port="1" to-layer="53" to-port="1"/>
+		<edge from-layer="53" from-port="2" to-layer="55" to-port="0"/>
 		<edge from-layer="54" from-port="1" to-layer="55" to-port="1"/>
 		<edge from-layer="55" from-port="2" to-layer="56" to-port="0"/>
-		<edge from-layer="56" from-port="3" to-layer="57" to-port="0"/>
-		<edge from-layer="57" from-port="1" to-layer="58" to-port="0"/>
-		<edge from-layer="58" from-port="3" to-layer="59" to-port="0"/>
-		<edge from-layer="57" from-port="1" to-layer="60" to-port="0"/>
-		<edge from-layer="60" from-port="3" to-layer="61" to-port="0"/>
-		<edge from-layer="59" from-port="1" to-layer="62" to-port="0"/>
-		<edge from-layer="61" from-port="1" to-layer="62" to-port="1"/>
-		<edge from-layer="62" from-port="2" to-layer="63" to-port="0"/>
-		<edge from-layer="63" from-port="3" to-layer="64" to-port="0"/>
-		<edge from-layer="64" from-port="1" to-layer="65" to-port="0"/>
-		<edge from-layer="65" from-port="1" to-layer="66" to-port="0"/>
+		<edge from-layer="51" from-port="1" to-layer="57" to-port="0"/>
+		<edge from-layer="56" from-port="1" to-layer="57" to-port="1"/>
+		<edge from-layer="57" from-port="2" to-layer="59" to-port="0"/>
+		<edge from-layer="58" from-port="1" to-layer="59" to-port="1"/>
+		<edge from-layer="59" from-port="2" to-layer="61" to-port="0"/>
+		<edge from-layer="60" from-port="1" to-layer="61" to-port="1"/>
+		<edge from-layer="61" from-port="2" to-layer="62" to-port="0"/>
+		<edge from-layer="62" from-port="1" to-layer="64" to-port="0"/>
+		<edge from-layer="63" from-port="1" to-layer="64" to-port="1"/>
+		<edge from-layer="64" from-port="2" to-layer="66" to-port="0"/>
+		<edge from-layer="65" from-port="1" to-layer="66" to-port="1"/>
+		<edge from-layer="66" from-port="2" to-layer="67" to-port="0"/>
+		<edge from-layer="62" from-port="1" to-layer="69" to-port="0"/>
+		<edge from-layer="68" from-port="1" to-layer="69" to-port="1"/>
+		<edge from-layer="69" from-port="2" to-layer="71" to-port="0"/>
+		<edge from-layer="70" from-port="1" to-layer="71" to-port="1"/>
+		<edge from-layer="71" from-port="2" to-layer="72" to-port="0"/>
+		<edge from-layer="67" from-port="1" to-layer="73" to-port="0"/>
+		<edge from-layer="72" from-port="1" to-layer="73" to-port="1"/>
+		<edge from-layer="73" from-port="2" to-layer="74" to-port="0"/>
+		<edge from-layer="74" from-port="1" to-layer="76" to-port="0"/>
+		<edge from-layer="75" from-port="1" to-layer="76" to-port="1"/>
+		<edge from-layer="76" from-port="2" to-layer="78" to-port="0"/>
+		<edge from-layer="77" from-port="1" to-layer="78" to-port="1"/>
+		<edge from-layer="78" from-port="2" to-layer="79" to-port="0"/>
+		<edge from-layer="79" from-port="1" to-layer="81" to-port="0"/>
+		<edge from-layer="80" from-port="1" to-layer="81" to-port="1"/>
+		<edge from-layer="81" from-port="2" to-layer="83" to-port="0"/>
+		<edge from-layer="82" from-port="1" to-layer="83" to-port="1"/>
+		<edge from-layer="83" from-port="2" to-layer="84" to-port="0"/>
+		<edge from-layer="79" from-port="1" to-layer="86" to-port="0"/>
+		<edge from-layer="85" from-port="1" to-layer="86" to-port="1"/>
+		<edge from-layer="86" from-port="2" to-layer="88" to-port="0"/>
+		<edge from-layer="87" from-port="1" to-layer="88" to-port="1"/>
+		<edge from-layer="88" from-port="2" to-layer="89" to-port="0"/>
+		<edge from-layer="84" from-port="1" to-layer="90" to-port="0"/>
+		<edge from-layer="89" from-port="1" to-layer="90" to-port="1"/>
+		<edge from-layer="90" from-port="2" to-layer="92" to-port="0"/>
+		<edge from-layer="91" from-port="1" to-layer="92" to-port="1"/>
+		<edge from-layer="92" from-port="2" to-layer="94" to-port="0"/>
+		<edge from-layer="93" from-port="1" to-layer="94" to-port="1"/>
+		<edge from-layer="94" from-port="2" to-layer="95" to-port="0"/>
+		<edge from-layer="95" from-port="1" to-layer="97" to-port="0"/>
+		<edge from-layer="96" from-port="1" to-layer="97" to-port="1"/>
+		<edge from-layer="97" from-port="2" to-layer="99" to-port="0"/>
+		<edge from-layer="98" from-port="1" to-layer="99" to-port="1"/>
+		<edge from-layer="99" from-port="2" to-layer="100" to-port="0"/>
+		<edge from-layer="95" from-port="1" to-layer="102" to-port="0"/>
+		<edge from-layer="101" from-port="1" to-layer="102" to-port="1"/>
+		<edge from-layer="102" from-port="2" to-layer="104" to-port="0"/>
+		<edge from-layer="103" from-port="1" to-layer="104" to-port="1"/>
+		<edge from-layer="104" from-port="2" to-layer="105" to-port="0"/>
+		<edge from-layer="100" from-port="1" to-layer="106" to-port="0"/>
+		<edge from-layer="105" from-port="1" to-layer="106" to-port="1"/>
+		<edge from-layer="106" from-port="2" to-layer="108" to-port="0"/>
+		<edge from-layer="107" from-port="1" to-layer="108" to-port="1"/>
+		<edge from-layer="108" from-port="2" to-layer="110" to-port="0"/>
+		<edge from-layer="109" from-port="1" to-layer="110" to-port="1"/>
+		<edge from-layer="110" from-port="2" to-layer="111" to-port="0"/>
+		<edge from-layer="111" from-port="1" to-layer="113" to-port="0"/>
+		<edge from-layer="112" from-port="1" to-layer="113" to-port="1"/>
+		<edge from-layer="113" from-port="2" to-layer="115" to-port="0"/>
+		<edge from-layer="114" from-port="1" to-layer="115" to-port="1"/>
+		<edge from-layer="115" from-port="2" to-layer="116" to-port="0"/>
+		<edge from-layer="111" from-port="1" to-layer="118" to-port="0"/>
+		<edge from-layer="117" from-port="1" to-layer="118" to-port="1"/>
+		<edge from-layer="118" from-port="2" to-layer="120" to-port="0"/>
+		<edge from-layer="119" from-port="1" to-layer="120" to-port="1"/>
+		<edge from-layer="120" from-port="2" to-layer="121" to-port="0"/>
+		<edge from-layer="116" from-port="1" to-layer="122" to-port="0"/>
+		<edge from-layer="121" from-port="1" to-layer="122" to-port="1"/>
+		<edge from-layer="122" from-port="2" to-layer="124" to-port="0"/>
+		<edge from-layer="123" from-port="1" to-layer="124" to-port="1"/>
+		<edge from-layer="124" from-port="2" to-layer="126" to-port="0"/>
+		<edge from-layer="125" from-port="1" to-layer="126" to-port="1"/>
+		<edge from-layer="126" from-port="2" to-layer="127" to-port="0"/>
+		<edge from-layer="127" from-port="1" to-layer="129" to-port="0"/>
+		<edge from-layer="128" from-port="1" to-layer="129" to-port="1"/>
+		<edge from-layer="129" from-port="2" to-layer="131" to-port="0"/>
+		<edge from-layer="130" from-port="1" to-layer="131" to-port="1"/>
+		<edge from-layer="131" from-port="2" to-layer="132" to-port="0"/>
+		<edge from-layer="127" from-port="1" to-layer="134" to-port="0"/>
+		<edge from-layer="133" from-port="1" to-layer="134" to-port="1"/>
+		<edge from-layer="134" from-port="2" to-layer="136" to-port="0"/>
+		<edge from-layer="135" from-port="1" to-layer="136" to-port="1"/>
+		<edge from-layer="136" from-port="2" to-layer="137" to-port="0"/>
+		<edge from-layer="132" from-port="1" to-layer="138" to-port="0"/>
+		<edge from-layer="137" from-port="1" to-layer="138" to-port="1"/>
+		<edge from-layer="138" from-port="2" to-layer="140" to-port="0"/>
+		<edge from-layer="139" from-port="1" to-layer="140" to-port="1"/>
+		<edge from-layer="140" from-port="2" to-layer="142" to-port="0"/>
+		<edge from-layer="141" from-port="1" to-layer="142" to-port="1"/>
+		<edge from-layer="142" from-port="2" to-layer="143" to-port="0"/>
+		<edge from-layer="143" from-port="1" to-layer="145" to-port="0"/>
+		<edge from-layer="145" from-port="1" to-layer="146" to-port="0"/>
+		<edge from-layer="146" from-port="1" to-layer="148" to-port="0"/>
+		<edge from-layer="147" from-port="1" to-layer="148" to-port="1"/>
+		<edge from-layer="144" from-port="1" to-layer="150" to-port="0"/>
+		<edge from-layer="148" from-port="2" to-layer="150" to-port="1"/>
+		<edge from-layer="149" from-port="1" to-layer="150" to-port="2"/>
+		<edge from-layer="143" from-port="1" to-layer="151" to-port="0"/>
+		<edge from-layer="150" from-port="3" to-layer="151" to-port="1"/>
+		<edge from-layer="151" from-port="2" to-layer="152" to-port="0"/>
+		<edge from-layer="152" from-port="1" to-layer="153" to-port="0"/>
 	</edges>
 	<meta_data>
-		<MO_version value="2019.3.0-408-gac8584cb7"/>
+		<MO_version value="2021.2.0-1728-518c0b6bd78"/>
 		<cli_parameters>
-			<blobs_as_inputs value="False"/>
 			<caffe_parser_path value="DIR"/>
 			<data_type value="FP16"/>
 			<disable_nhwc_to_nchw value="False"/>
 			<disable_omitting_optional value="False"/>
 			<disable_resnet_optimization value="False"/>
+			<disable_weights_compression value="False"/>
 			<enable_concat_optimization value="False"/>
 			<enable_flattening_nested_params value="False"/>
 			<enable_ssd_gluoncv value="False"/>
 			<extensions value="DIR"/>
 			<framework value="caffe"/>
 			<freeze_placeholder_with_value value="{}"/>
-			<generate_experimental_IR_V10 value="False"/>
-			<input value="data"/>
-			<input_model value="DIR\squeezenet1.1.caffemodel"/>
+			<generate_deprecated_IR_V7 value="False"/>
+			<input value="DIR"/>
+			<input_model value="DIR/squeezenet1.1.caffemodel"/>
 			<input_model_is_text value="False"/>
-			<input_proto value="DIR\squeezenet1.1.prototxt"/>
+			<input_proto value="DIR/squeezenet1.1.prototxt"/>
 			<input_shape value="[1,3,227,227]"/>
-			<k value="DIR\CustomLayersMapping.xml"/>
-			<keep_quantize_ops_in_IR value="False"/>
-			<keep_shape_ops value="False"/>
+			<k value="DIR/CustomLayersMapping.xml"/>
+			<keep_shape_ops value="True"/>
 			<legacy_mxnet_model value="False"/>
 			<log_level value="ERROR"/>
 			<mean_scale_values value="{'data': {'mean': array([104., 117., 123.]), 'scale': None}}"/>
 			<mean_values value="data[104.0,117.0,123.0]"/>
 			<model_name value="squeezenet1.1"/>
-			<move_to_preprocess value="False"/>
 			<output value="['prob']"/>
 			<output_dir value="DIR"/>
-			<placeholder_shapes value="{'data': array([  1,   3, 227, 227], dtype=int64)}"/>
+			<placeholder_data_types value="{}"/>
+			<placeholder_shapes value="{'data': array([  1,   3, 227, 227])}"/>
+			<progress value="False"/>
 			<remove_memory value="False"/>
 			<remove_output_softmax value="False"/>
 			<reverse_input_channels value="False"/>
 			<save_params_from_nd value="False"/>
 			<scale_values value="()"/>
 			<silent value="False"/>
-			<steps value="False"/>
-			<version value="False"/>
-			<unset unset_cli_parameters="batch, counts, disable_fusing, disable_gfusing, finegrain_fusing, generate_deprecated_IR_V2, input_checkpoint, input_meta_graph, input_symbol, mean_file, mean_file_offsets, nd_prefix_name, pretrained_model_name, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_operation_patterns, tensorflow_subgraph_patterns, tensorflow_use_custom_operations_config"/>
+			<static_shape value="False"/>
+			<stream_output value="False"/>
+			<unset unset_cli_parameters="batch, counts, disable_fusing, disable_gfusing, finegrain_fusing, input_checkpoint, input_meta_graph, input_symbol, mean_file, mean_file_offsets, move_to_preprocess, nd_prefix_name, pretrained_model_name, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_use_custom_operations_config, transformations_config"/>
 		</cli_parameters>
 	</meta_data>
 </net>

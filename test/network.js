@@ -5,7 +5,7 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 var should = chai.should();
 
-const ie = require('../lib/ie');
+const ie = require('../lib/inference-engine-node');
 const {it} = require('mocha');
 
 describe('Network Test', function() {
