@@ -2,7 +2,7 @@
   "name": "inference-engine-node",
   "version": "0.1.4",
   "description": "Inference Engine Binding for Node.js*",
-  "main": "lib/ie.js",
+  "main": "lib/inference-engine-node.js",
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
   "repository": {
@@ -18,10 +18,13 @@
   },
   "scripts": {
     "build": "node-gyp build",
-    "test": "mocha"
+    "test": "mocha",
+    "example:classification-node": "node example/hello_classification_node",
+    "example:object-detection-node": "node example/hello_object_detection_ssd_node"
   },
   "dependencies": {
     "bindings": "~1.3.0",
+    "hello-classification-node": "file:example/hello_classification_node",
     "node-addon-api": "*"
   },
   "gypfile": true,

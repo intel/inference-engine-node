@@ -5,7 +5,7 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 var assert = chai.assert;
 
-const ie = require('../lib/ie');
+const ie = require('../lib/inference-engine-node');
 
 // Reference results from C++ sample
 const output_references = [0.000021, 0.000089, 0.000050, 0.000424, 0.006300];

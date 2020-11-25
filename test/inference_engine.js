@@ -5,13 +5,13 @@ chai.use(chaiAsPromised);
 var expect = chai.expect;
 var should = chai.should();
 
-const ie = require('../lib/ie');
+const ie = require('../lib/inference-engine-node');
 const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
 const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
 
 describe('InferenceEngine Test', () => {
   it('InferenceEngine should be exported', () => {
-    should.exist(require('../lib/ie'));
+    should.exist(require('../lib/inference-engine-node'));
   });
 
   it('InferenceEngine.getVersion should be a fnction', () => {
