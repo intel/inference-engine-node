@@ -1,5 +1,5 @@
-#include "../include/preprocess_info.h"
-#include "../include/utils.h"
+#include "preprocess_info.h"
+#include "utils.h"
 
 #include <napi.h>
 #include <uv.h>

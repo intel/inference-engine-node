@@ -1,6 +1,6 @@
-#include "../include/input_info.h"
-#include "../include/preprocess_info.h"
-#include "../include/utils.h"
+#include "input_info.h"
+#include "preprocess_info.h"
+#include "utils.h"
 
 #include <napi.h>
 #include <uv.h>

@@ -1,5 +1,5 @@
-#include "../include/blob.h"
-#include "../include/infer_request.h"
+#include "blob.h"
+#include "infer_request.h"
 
 #include <napi.h>
 #include <uv.h>
