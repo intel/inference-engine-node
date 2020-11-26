@@ -1,5 +1,7 @@
 const { Core, postProcessing, getVersion } = require('inference-engine-node');
+
 const {
+    binPathFromXML,
     classification,
     showAvailableDevices,
     warning,
@@ -7,11 +9,13 @@ const {
     showVersion,
     highlight,
     showInputOutputInfo,
-    showPluginVersions
+    showPluginVersions,
+    labelsPathFromXML
 } = require('../common');
+
 const jimp = require('jimp');
 const fs = require('fs').promises;
-const {performance} = require('perf_hooks');
+const { performance } = require('perf_hooks');
 
 const option_definitions = [
   {
@@ -119,15 +123,19 @@ async function main() {
   }
 
   const model_path = options.model;
-  const re = /\.xml$/g
-  const bin_path = model_path.replace(re, '.bin');
-  const labels_path =
-      options.labels ? options.labels : model_path.replace(re, '.labels');
+  const bin_path = binPathFromXML(model_path)
+  const labels_path = options.labels ? options.labels : labelsPathFromXML(model_path)
   const device_name = options.device;
   const image_path = options.image;
   const iterations = options.iterations;
   const top_k = options.topk;
   const sync = options.sync;
+
+  if (iterations <= 0) {
+    warning('The number of iterations should be greater than 0.');
+    process.exit(-1);
+  }
+
   let mean, std;
   try {
     mean = JSON.parse(options.mean);
@@ -136,57 +144,58 @@ async function main() {
     warning(`Error to parse mean or std: ${error}`);
     process.exit(-1);
   }
-  const color = options.color;
 
-  if (iterations <= 0) {
-    warning('The number of iterations should be greater than 0.');
-    process.exit(-1);
-  }
   if (!(mean instanceof Array)) {
     warning('The mean is not an array.');
     process.exit(-1);
-  } else if (mean.length != 3) {
+  } else if (mean.length !== 3) {
     warning('The length of mean is not 3.');
     process.exit(-1);
   }
   if (!(std instanceof Array)) {
     warning('The std is not an array.');
     process.exit(-1);
-  } else if (std.length != 3) {
+  } else if (std.length !== 3) {
     warning('The length of std is not 3.');
     process.exit(-1);
   }
-  const preprocess = (mean[0] === 0 && mean[1] === 0 && mean[2] === 0 &&
-                      std[0] === 1 && std[1] === 1 && std[2] === 1) ?
-      false :
-      true;
+  const preprocess = !(mean[0] === 0 && mean[1] === 0 && mean[2] === 0 &&
+                       std[0]  === 1 && std[1]  === 1 && std[2]  === 1);
+  const color = options.color;
+
   if (color !== 'bgr' && color !== 'rgb') {
     warning('The color format should be either "bgr" or "rgb".');
     process.exit(0);
   }
+
   console.log('Start.')
   showBreakLine();
+
   console.log(`Check inference engine version: `);
   showVersion(getVersion());
   showBreakLine();
+
   const core = new Core();
   console.log(`Start to create network from ${model_path}.`)
+
   let start_time = performance.now();
   let net = await core.readNetwork(model_path, bin_path);
   const create_network_time = performance.now() - start_time;
-  highlight(
-      `Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);
+  highlight(`Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);
   console.log(`Network name: ${net.getName()}`);
+
   const inputs_info = net.getInputsInfo();
   inputs_info.forEach((info, i) => {
     console.log(`Input[${i}]:`)
     showInputOutputInfo(info);
   });
+
   const outputs_info = net.getOutputsInfo();
   outputs_info.forEach((info, i) => {
     console.log(`Output[${i}]:`)
     showInputOutputInfo(info);
   });
+
   const input_info = inputs_info[0];
   console.log(`Set input layout to 'nhwc'.`);
   input_info.setLayout('nhwc');
@@ -194,34 +203,40 @@ async function main() {
     console.log(`Set input precision to 'u8'.`);
     input_info.setPrecision('u8');
   }
+
   const output_info = outputs_info[0];
   showBreakLine();
+
   console.log(`Start to read image from ${image_path}.`);
   const image = await jimp.read(image_path);
+
   console.log(`Succeeded.`);
+
   const input_dims = input_info.getDims();
   const input_height = input_dims[2];
   const input_width = input_dims[3];
-  if (image.bitmap.height !== input_height &&
-      image.bitmap.width !== input_width) {
+  if (image.bitmap.height !== input_height || image.bitmap.width !== input_width) {
     console.log(`Resize image from (${image.bitmap.height}, ${
         image.bitmap.width}) to (${input_height}, ${input_width}).`);
     image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
   }
   showBreakLine();
+
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
+
   console.log(`Start to load network to ${device_name} plugin.`)
   start_time = performance.now();
   const exec_net = await core.loadNetwork(net, device_name);
   const load_network_time = performance.now() - start_time;
   highlight(`Succeeded: load network took ${load_network_time.toFixed(2)} ms.`);
   showBreakLine();
+
   let infer_req;
-  const input_time = [];
   let infer_time = [];
-  console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
-      iterations} iterations.`);
+
+  console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${iterations} iterations.`);
+
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
@@ -232,6 +247,7 @@ async function main() {
     } else {
       input_data = new Float32Array(input_blob.wmap());
     }
+
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
@@ -245,8 +261,8 @@ async function main() {
               (image.bitmap.data[idx + 2] - mean[2]) / std[2];  // B
         });
     input_blob.unmap();
-    input_time.push(performance.now() - start_time);
-    start_time = performance.now();
+    start_time = performance.now()
+
     if (sync) {
       infer_req.infer();
     } else {

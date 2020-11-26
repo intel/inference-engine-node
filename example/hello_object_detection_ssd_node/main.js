@@ -1,7 +1,9 @@
 const { Core, getVersion } = require('inference-engine-node');
+
 const jimp = require('jimp');
 const fs = require('fs').promises;
 const { performance } = require('perf_hooks');
+
 const {
   warning,
   showBreakLine,
@@ -9,7 +11,9 @@ const {
   showVersion,
   showInputOutputInfo,
   showPluginVersions,
-  object_detection
+  objectDetection,
+  binPathFromXML,
+  labelsPathFromXML
 } = require('../common');
 
 const option_definitions = [
@@ -85,9 +89,8 @@ async function main() {
   }
 
   const model_path = options.model;
-  const re = /\.xml$/g
-  const bin_path = model_path.replace(re, '.bin');
-  const labels_path = model_path.replace(re, '.labels');
+  const bin_path = binPathFromXML(model_path)
+  const labels_path = options.labels ? options.labels : labelsPathFromXML(model_path)
   const device_name = options.device;
   const image_path = options.image;
   const iterations = options.iterations;
@@ -98,11 +101,14 @@ async function main() {
     warning('The number of iterations should be greater than 0.');
     process.exit(0);
   }
+
   console.log('Start.')
   showBreakLine();
+
   console.log(`Check inference engine version: `);
   showVersion(getVersion());
   showBreakLine();
+
   const core = new Core();
   console.log(`Start to create network from ${model_path}.`)
   let start_time = performance.now();
@@ -189,10 +195,10 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = object_detection.topSSDResults(output_data, threshold, output_info.getDims());
+  const results = objectDetection.topSSDResults(output_data, threshold, output_info.getDims());
   output_blob.unmap();
   console.log(`Found ${results.length} objects:`);
-  object_detection.showResults(results, labels);
+  objectDetection.showResults(results, labels);
   showBreakLine();
   return 'Done.';
 }

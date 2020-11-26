@@ -17,14 +17,14 @@ Napi::FunctionReference Blob::constructor;
 void Blob::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func = DefineClass(
-      env, "Blob",
-      {InstanceMethod("byteSize", &Blob::ByteSize),
-       InstanceMethod("size", &Blob::Size),
-       InstanceMethod("rmap", &Blob::Rmap),
-       InstanceMethod("rwmap", &Blob::Rwmap),
-       InstanceMethod("wmap", &Blob::Wmap),
-       InstanceMethod("unmap", &Blob::Unmap)});
+  Napi::Function func = DefineClass(env, "Blob", {
+      InstanceMethod("byteSize", &Blob::ByteSize),
+      InstanceMethod("size", &Blob::Size),
+      InstanceMethod("rmap", &Blob::Rmap),
+      InstanceMethod("rwmap", &Blob::Rwmap),
+      InstanceMethod("wmap", &Blob::Wmap),
+      InstanceMethod("unmap", &Blob::Unmap)
+  });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();

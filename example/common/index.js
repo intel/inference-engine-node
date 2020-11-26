@@ -1,5 +1,5 @@
 const classification = require('./classification');
-const object_detection = require('./object_detection');
+const objectDetection = require('./object_detection');
 
 
 function showInputOutputInfo(info) {
@@ -40,14 +40,26 @@ function showAvailableDevices(core) {
     console.log(`Available target devices: ${devices.join(' ')}`);
 }
 
+const xmlExtensionPattern = /\.xml$/g
+
+function binPathFromXML(xmlPath) {
+    return xmlPath.replace(xmlExtensionPattern, '.bin');
+}
+
+function labelsPathFromXML(xmlPath) {
+    return xmlPath.replace(xmlExtensionPattern, '.labels');
+}
+
 module.exports = {
+    binPathFromXML,
     classification,
-    object_detection,
+    highlight,
+    labelsPathFromXML,
+    objectDetection,
+    showAvailableDevices,
+    showBreakLine,
     showInputOutputInfo,
     showVersion,
     showPluginVersions,
-    showBreakLine,
-    highlight,
-    warning,
-    showAvailableDevices
+    warning
 };
