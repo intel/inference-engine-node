@@ -1,6 +1,6 @@
-#include "network.h"
-#include "input_info.h"
-#include "output_info.h"
+#include "../include/network.h"
+#include "../include/input_info.h"
+#include "../include/output_info.h"
 
 #include <napi.h>
 #include <uv.h>

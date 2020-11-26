@@ -18,7 +18,8 @@ else()
     message(FATAL_ERROR "NODE_PATH environment variable is not set")
 endif()
 
-include_directories("${InferenceEngine_INCLUDE_DIRS}"
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include"
+                    "${InferenceEngine_INCLUDE_DIRS}"
                     "${NODE_NODULES_PATH}/node-addon-api"
                     "${NODE_PATH}/include/node")
 

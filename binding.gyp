@@ -47,6 +47,7 @@
         }
       },
       'include_dirs' : [
+        "include",
         '<!@(node -p "require(\'node-addon-api\').include")',
         '<(IE_INCLUDE_DIR)'
       ],

@@ -1,7 +1,7 @@
-#include "executable_network.h"
+#include "../include/executable_network.h"
 
-#include "infer_request.h"
-#include "network.h"
+#include "../include/infer_request.h"
+#include "../include/network.h"
 
 #include <napi.h>
 #include <uv.h>

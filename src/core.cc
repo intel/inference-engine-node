@@ -1,6 +1,6 @@
-#include "core.h"
-#include "executable_network.h"
-#include "network.h"
+#include "../include/core.h"
+#include "../include/executable_network.h"
+#include "../include/network.h"
 
 #include <napi.h>
 #include <uv.h>

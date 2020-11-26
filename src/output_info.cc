@@ -1,5 +1,5 @@
-#include "output_info.h"
-#include "utils.h"
+#include "../include/output_info.h"
+#include "../include/utils.h"
 
 #include <napi.h>
 #include <uv.h>
