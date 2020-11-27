@@ -1,8 +1,8 @@
-const { Core, getVersion } = require('inference-engine-node');
+const {Core, getVersion} = require('inference-engine-node');
 
 const jimp = require('jimp');
 const fs = require('fs').promises;
-const { performance } = require('perf_hooks');
+const {performance} = require('perf_hooks');
 
 const {
   warning,
@@ -57,7 +57,8 @@ const option_definitions = [
     alias: 't',
     type: Number,
     defaultValue: 0.5,
-    description: 'Optional. The minimal probability of the visibility object. Default value is 0.5'
+    description:
+        'Optional. The minimal probability of the visibility object. Default value is 0.5'
   },
   {
     name: 'sync',
@@ -90,7 +91,8 @@ async function main() {
 
   const model_path = options.model;
   const bin_path = binPathFromXML(model_path)
-  const labels_path = options.labels ? options.labels : labelsPathFromXML(model_path)
+  const labels_path =
+      options.labels ? options.labels : labelsPathFromXML(model_path)
   const device_name = options.device;
   const image_path = options.image;
   const iterations = options.iterations;
@@ -195,7 +197,8 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = objectDetection.topSSDResults(output_data, threshold, output_info.getDims());
+  const results = objectDetection.topSSDResults(
+      output_data, threshold, output_info.getDims());
   output_blob.unmap();
   console.log(`Found ${results.length} objects:`);
   objectDetection.showResults(results, labels);

@@ -1,21 +1,21 @@
-const { Core, postProcessing, getVersion } = require('inference-engine-node');
+const {Core, postProcessing, getVersion} = require('inference-engine-node');
 
 const {
-    binPathFromXML,
-    classification,
-    showAvailableDevices,
-    warning,
-    showBreakLine,
-    showVersion,
-    highlight,
-    showInputOutputInfo,
-    showPluginVersions,
-    labelsPathFromXML
+  binPathFromXML,
+  classification,
+  showAvailableDevices,
+  warning,
+  showBreakLine,
+  showVersion,
+  highlight,
+  showInputOutputInfo,
+  showPluginVersions,
+  labelsPathFromXML
 } = require('../common');
 
 const jimp = require('jimp');
 const fs = require('fs').promises;
-const { performance } = require('perf_hooks');
+const {performance} = require('perf_hooks');
 
 const option_definitions = [
   {
@@ -112,10 +112,7 @@ async function main() {
         content:
             'An example of image classification using inference-engine-node.'
       },
-      {
-        header: 'Options',
-        optionList: option_definitions
-      }
+      {header: 'Options', optionList: option_definitions}
     ]);
     console.log(usage);
     showAvailableDevices();
@@ -124,7 +121,8 @@ async function main() {
 
   const model_path = options.model;
   const bin_path = binPathFromXML(model_path)
-  const labels_path = options.labels ? options.labels : labelsPathFromXML(model_path)
+  const labels_path =
+      options.labels ? options.labels : labelsPathFromXML(model_path)
   const device_name = options.device;
   const image_path = options.image;
   const iterations = options.iterations;
@@ -159,8 +157,9 @@ async function main() {
     warning('The length of std is not 3.');
     process.exit(-1);
   }
-  const preprocess = !(mean[0] === 0 && mean[1] === 0 && mean[2] === 0 &&
-                       std[0]  === 1 && std[1]  === 1 && std[2]  === 1);
+  const preprocess =
+      !(mean[0] === 0 && mean[1] === 0 && mean[2] === 0 && std[0] === 1 &&
+        std[1] === 1 && std[2] === 1);
   const color = options.color;
 
   if (color !== 'bgr' && color !== 'rgb') {
@@ -181,7 +180,8 @@ async function main() {
   let start_time = performance.now();
   let net = await core.readNetwork(model_path, bin_path);
   const create_network_time = performance.now() - start_time;
-  highlight(`Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);
+  highlight(
+      `Succeeded: read network took ${create_network_time.toFixed(2)} ms.`);
   console.log(`Network name: ${net.getName()}`);
 
   const inputs_info = net.getInputsInfo();
@@ -215,7 +215,8 @@ async function main() {
   const input_dims = input_info.getDims();
   const input_height = input_dims[2];
   const input_width = input_dims[3];
-  if (image.bitmap.height !== input_height || image.bitmap.width !== input_width) {
+  if (image.bitmap.height !== input_height ||
+      image.bitmap.width !== input_width) {
     console.log(`Resize image from (${image.bitmap.height}, ${
         image.bitmap.width}) to (${input_height}, ${input_width}).`);
     image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
@@ -235,7 +236,8 @@ async function main() {
   let infer_req;
   let infer_time = [];
 
-  console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${iterations} iterations.`);
+  console.log(`Start to infer ${sync ? '' : 'a'}synchronously for ${
+      iterations} iterations.`);
 
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
@@ -265,7 +267,8 @@ async function main() {
 
     if (sync) {
       infer_req.infer();
-    } else {
+    }
+    else {
       await infer_req.startAsync();
     }
     infer_time.push(performance.now() - start_time);
@@ -288,7 +291,8 @@ async function main() {
   }
   const output_blob = infer_req.getBlob(output_info.name());
   const output_data = new Float32Array(output_blob.rmap());
-  const results = postProcessing.topClassificationResults(output_data, labels, top_k);
+  const results =
+      postProcessing.topClassificationResults(output_data, labels, top_k);
   output_blob.unmap();
   console.log(`The top ${top_k} results:`);
   classification.showResults(results);
