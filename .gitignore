@@ -1,5 +1,6 @@
 # Build
 cmake-build
+cmake-build-debug
 build/
 
 # Node

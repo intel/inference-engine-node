@@ -20,8 +20,7 @@ void Blob::Init(const Napi::Env& env) {
   Napi::Function func = DefineClass(
       env, "Blob",
       {InstanceMethod("byteSize", &Blob::ByteSize),
-       InstanceMethod("size", &Blob::Size),
-       InstanceMethod("rmap", &Blob::Rmap),
+       InstanceMethod("size", &Blob::Size), InstanceMethod("rmap", &Blob::Rmap),
        InstanceMethod("rwmap", &Blob::Rwmap),
        InstanceMethod("wmap", &Blob::Wmap),
        InstanceMethod("unmap", &Blob::Unmap)});

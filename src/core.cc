@@ -15,7 +15,7 @@ namespace ienodejs {
 
 Napi::FunctionReference Core::constructor;
 
-void Core::Init(const Napi::Env& env) {
+void Core::Init(const Napi::Env& env, Napi::Object exports) {
   Napi::HandleScope scope(env);
 
   Napi::Function func = DefineClass(
@@ -28,6 +28,7 @@ void Core::Init(const Napi::Env& env) {
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
+  exports.Set("Core", func);
 }
 
 Core::Core(const Napi::CallbackInfo& info) : Napi::ObjectWrap<Core>(info) {
