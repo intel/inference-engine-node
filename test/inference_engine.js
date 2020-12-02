@@ -46,4 +46,8 @@ describe('InferenceEngine Test', () => {
   it('new InferenceEngine.Core should return a Core object', () => {
     expect(new ie.Core()).to.be.a('Core');
   });
+
+  it('InferenceEngine.Core should return a Core object', () => {
+    expect(new ie.Core()).to.be.a('Core');
+  });
 });
