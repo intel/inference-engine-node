@@ -22,14 +22,15 @@ let streaming = false;
 let track;
 
 function topResults(tensor, labels, k) {
-
   let temp = Array.from(tensor);
   let softmax = postOptions.softmax || false;
   let probs;
 
-  if(softmax){
-    let sum = temp.map(y => Math.exp(y)).reduce((a, b) => {return a+b})
-    probs = temp.map((prob) => {return Math.exp(prob)/sum;});
+  if (softmax) {
+    let sum = temp.map(y => Math.exp(y)).reduce((a, b) => {return a + b})
+    probs = temp.map((prob) => {
+      return Math.exp(prob) / sum;
+    });
   } else {
     probs = temp;
   }
@@ -71,7 +72,7 @@ function showResults(results, time) {
       let labelElement = document.getElementById(`label${i}`);
       let probElement = document.getElementById(`prob${i}`);
       labelElement.innerHTML = `${c.label.split(',')[0]}`;
-      probElement.innerHTML = `${(c.prob*100).toFixed(2)}%`;
+      probElement.innerHTML = `${(c.prob * 100).toFixed(2)}%`;
     });
   } catch (e) {
     console.log(e);
@@ -101,16 +102,17 @@ async function prepareInputInfo(image, input_data, width, height) {
   const norm = preOptions.norm || false;
   const imageChannels = 4;
 
-  if(norm) {
-      pixels = new Float32Array(pixels).map(p => p / 255);
+  if (norm) {
+    pixels = new Float32Array(pixels).map(p => p / 255);
   }
 
   if (channelScheme === 'RGB') {
     for (let y = 0; y < height; ++y) {
       for (let x = 0; x < width; ++x) {
         for (let c = 0; c < channels; ++c) {
-          let value = pixels[y*width*imageChannels + x*imageChannels + c];
-          input_data[y*width*channels + x*channels + c] = (value - mean[c]) / std[c];
+          let value = pixels[y * width * imageChannels + x * imageChannels + c];
+          input_data[y * width * channels + x * channels + c] =
+              (value - mean[c]) / std[c];
         }
       }
     }
@@ -118,8 +120,10 @@ async function prepareInputInfo(image, input_data, width, height) {
     for (let y = 0; y < height; ++y) {
       for (let x = 0; x < width; ++x) {
         for (let c = 0; c < channels; ++c) {
-          let value = pixels[y*width*imageChannels + x*imageChannels + (channels-c-1)];
-          input_data[y*width*channels + x*channels + c] = (value - mean[c]) / std[c];
+          let value =
+              pixels[y * width * imageChannels + x * imageChannels + (channels - c - 1)];
+          input_data[y * width * channels + x * channels + c] =
+              (value - mean[c]) / std[c];
         }
       }
     }
@@ -130,22 +134,21 @@ async function prepareInputInfo(image, input_data, width, height) {
 
 
 /**
- * 
+ *
  * Common predict method for image mode and live camera
- * 
- * @param {imageElement} imageSource 
+ *
+ * @param {imageElement} imageSource
  */
 async function predict(imageSource) {
-
   if (!initialized) {
     console.log('Network is not initialized.');
     return;
   }
-  
+
   let infer_req = exec_net.createInferRequest();
   const input_blob = infer_req.getBlob(input_info.name());
   const input_data = new Float32Array(input_blob.wmap());
-  
+
   prepareInputInfo(
       imageSource, input_data, input_info.getDims()[2],
       input_info.getDims()[3]);
@@ -159,7 +162,7 @@ async function predict(imageSource) {
   const output_data = new Float32Array(output_blob.rmap());
 
   const canvasResults = topResults(output_data, labels, 3);
- 
+
   return {
     result: canvasResults,
     time: inferenceTime,
@@ -171,7 +174,6 @@ async function predict(imageSource) {
  *  Load model and UI control
  */
 async function loadModel(model) {
-
   initialized = false;
 
   let model_path = model.modelFile;
@@ -179,7 +181,7 @@ async function loadModel(model) {
   let model_inputSize = model.inputSize;
   canvasElement.height = model_inputSize[0];
   canvasElement.width = model_inputSize[1];
-  canvasContext = canvasElement.getContext("2d");
+  canvasContext = canvasElement.getContext('2d');
 
   try {
     const data = await fs.readFile(lablePath, {encoding: 'utf-8'});
@@ -206,38 +208,38 @@ async function loadModel(model) {
     ie_net = await core.readNetwork(xml_path, model_path);
 
   } catch {
-    console.log("Start to get files online");
+    console.log('Start to get files online');
     try {
       let onlineModelUrl = model.onlineFile;
       let onlineBinUrl = model.onlineBinFile;
-      if(onlineModelUrl === '' || onlineBinFile === ''){
+      if (onlineModelUrl === '' || onlineBinFile === '') {
         $('#progressmodel').hide();
         $('#resulterror').fadeIn();
         progress = false;
-          showAlert(
-            new Error('Failed to load models. Please check local files or URLs'));
+        showAlert(new Error(
+            'Failed to load models. Please check local files or URLs'));
         return;
       }
 
       let modelTemp = await loadUrl(onlineModelUrl, false);
       let binTemp = await loadUrl(onlineBinUrl, true);
       let binBytes = new Uint8Array(binTemp);
-      console.log("Get the model online");
+      console.log('Get the model online');
 
       ie_net = await core.readNetworkFromData(modelTemp, binBytes.buffer);
-      
+
     } catch (e) {
       $('#progressmodel').hide();
       $('#resulterror').fadeIn();
       progress = false;
-      showAlert(
-        new Error('Failed to load model. Please check the local xml files or your internets'));
+      showAlert(new Error(
+          'Failed to load model. Please check the local xml files or your internets'));
       return;
     }
   }
 
   await showProgress('done', 'current', 'pending');
-  
+
   const inputs_info = ie_net.getInputsInfo();
   const outputs_info = ie_net.getOutputsInfo();
 
@@ -245,7 +247,7 @@ async function loadModel(model) {
   input_info.setLayout('nhwc');
   output_info = outputs_info[0];
 
-  try{
+  try {
     exec_net = await core.loadNetwork(ie_net, currentDevice.toUpperCase());
     initialized = true;
     $('#progressmodel').hide();
@@ -258,13 +260,15 @@ async function loadModel(model) {
     $('#progressmodel').hide();
     $('#resulterror').fadeIn();
     progress = false;
-    showAlert(
-        new Error('Failed to load model on Device '+ currentDevice.toUpperCase() + '. Please check the device'));
+    showAlert(new Error(
+        'Failed to load model on Device ' + currentDevice.toUpperCase() +
+        '. Please check the device'));
     return;
   }
 }
 
-const startPredictCamera = async () => {
+const startPredictCamera =
+    async () => {
   if (streaming) {
     try {
       stats.begin();
@@ -278,7 +282,8 @@ const startPredictCamera = async () => {
   }
 }
 
-async function predictImage(ImageSource) {
+async function
+predictImage(ImageSource) {
   streaming = false;
   if (track) {
     track.stop();
@@ -300,7 +305,8 @@ async function predictImage(ImageSource) {
   }
 }
 
-async function predictCamera() {
+async function
+predictCamera() {
   if (!initialized) {
     console.log('Network is not initialized.');
     return;

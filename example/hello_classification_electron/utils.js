@@ -92,7 +92,7 @@ let singleModelTable =
       return allFormats;
     }
 
-// construct the device buttons in html. 
+// construct the device buttons in html.
 // The first device in the deviceArray will be used as default
 let configureDevice =
     (deviceArray) => {
@@ -329,8 +329,7 @@ const showProgress =
           ${updateicon}<span class='prog_list_title'>Model compilation</span>
         </li>
         <li class='prog prog-${pi}'>
-          ${
-      inferenceicon}<span class='prog_list_title'>Model inferencing</span>
+          ${inferenceicon}<span class='prog_list_title'>Model inferencing</span>
         </li>
       </ul>
     </nav>

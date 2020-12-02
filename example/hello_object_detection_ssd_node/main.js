@@ -73,7 +73,7 @@ const option_definitions = [
 
 const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
-const {showAvailableDevices} = require("../common");
+const {showAvailableDevices} = require('../common');
 
 async function main() {
   const core = new Core();
