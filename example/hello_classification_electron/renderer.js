@@ -3,7 +3,6 @@ const fs = require('fs').promises;
 const canvasElement = document.getElementById('canvas');
 const videoElement = document.getElementById('video');
 const imageElement = document.getElementById('image');
-const progressBar = document.getElementById('progressBar');
 var canvasContext = canvasElement.getContext('2d');
 
 var core;
@@ -201,7 +200,7 @@ async function loadModel(model) {
   $('#resulterror').hide();
   progress = true;
 
-  core = ie.createCore();
+  core = new ie.Core();
   try {
     $('.loading-page .counter h1').html(``);
     ie_net = await core.readNetwork(xml_path, model_path);

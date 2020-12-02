@@ -74,7 +74,7 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  const availableDevices = ie.createCore().getAvailableDevices()
+  const availableDevices = new ie.Core().getAvailableDevices()
   configureDevice(availableDevices)
   $('#' + up).attr('checked', 'checked');
   $('#l-' + up).addClass('checked');

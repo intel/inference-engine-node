@@ -104,6 +104,8 @@ const commandLineArgs = require('command-line-args');
 const commandLineUsage = require('command-line-usage');
 
 async function main() {
+  const core = new Core();
+
   const options = commandLineArgs(option_definitions);
   if (options.help || !options.image || !options.model) {
     const usage = commandLineUsage([
@@ -115,7 +117,7 @@ async function main() {
       {header: 'Options', optionList: option_definitions}
     ]);
     console.log(usage);
-    showAvailableDevices();
+    showAvailableDevices(core);
     process.exit(0);
   }
 
@@ -174,7 +176,6 @@ async function main() {
   showVersion(getVersion());
   showBreakLine();
 
-  const core = new Core();
   console.log(`Start to create network from ${model_path}.`)
 
   let start_time = performance.now();

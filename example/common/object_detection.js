@@ -1,4 +1,4 @@
-const { postProcessing } = require('inference-engine-node');
+const { postProcessing } = require('../../lib/inference-engine-node');
 
 function showResults(results, labels) {
     const class_header = labels ? 'class' : 'classId'
