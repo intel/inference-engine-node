@@ -1,4 +1,4 @@
-const {Core, postProcessing, getVersion} = require('inference-engine-node');
+const {Core, postProcessing, getVersion} = require('../../lib/inference-engine-node');
 
 const {
   binPathFromXML,

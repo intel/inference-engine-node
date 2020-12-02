@@ -1,4 +1,4 @@
-const {Core, getVersion} = require('inference-engine-node');
+const {Core, getVersion} = require('../../lib/inference-engine-node');
 
 const jimp = require('jimp');
 const fs = require('fs').promises;

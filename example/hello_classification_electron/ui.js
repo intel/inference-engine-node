@@ -1,4 +1,4 @@
-const ie = require('inference-engine-node');
+const ie = require('../../lib/inference-engine-node');
 
 let strsearch;
 let skeletonDetectionPath =
