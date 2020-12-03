@@ -43,11 +43,11 @@ describe('InferenceEngine Test', () => {
     expect(apiVersion.minor).to.be.a('number');
   });
 
-  it('new InferenceEngine.Core should return a Core object', () => {
-    expect(new ie.Core()).to.be.a('Core');
+  it('InferenceEngine.Core should be a function', () => {
+    expect(ie.Core).to.be.a('function');
   });
 
-  it('InferenceEngine.Core should return a Core object', () => {
+  it('new InferenceEngine.Core() should return a Core object', () => {
     expect(new ie.Core()).to.be.a('Core');
   });
 });
