@@ -228,6 +228,15 @@ async function main() {
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
 
+  const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
+
+  const preProcessInfo = input_info.getPreProcess();
+  preProcessInfo.init(3);
+  preProcessInfo.setPreProcessChannel(rgb.r, {'stdScale': std[rgb.r], 'meanValue': mean[rgb.r]});
+  preProcessInfo.setPreProcessChannel(rgb.g, {'stdScale': std[rgb.g], 'meanValue': mean[rgb.g]});
+  preProcessInfo.setPreProcessChannel(rgb.b, {'stdScale': std[rgb.b], 'meanValue': mean[rgb.b]});
+  preProcessInfo.setVariant('mean_value');
+
   console.log(`Start to load network to ${device_name} plugin.`)
   start_time = performance.now();
   const exec_net = await core.loadNetwork(net, device_name);
@@ -244,15 +253,10 @@ async function main() {
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
-    const input_blob = infer_req.getBlob(input_info.name());
-    let input_data;
-    if (!preprocess) {
-      input_data = new Uint8Array(input_blob.wmap());
-    } else {
-      input_data = new Float32Array(input_blob.wmap());
-    }
 
-    const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
+    const input_blob = infer_req.getBlob(input_info.name());
+    let input_data = new Float32Array(input_blob.wmap());
+
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
@@ -262,13 +266,6 @@ async function main() {
           input_data[i + rgb.b] = image.bitmap.data[idx + 2];  // B
         });
     input_blob.unmap();
-
-    const preProcessInfo = input_info.getPreProcess();
-
-    preProcessInfo.init(3);
-    preProcessInfo.setPreProcessChannel(rgb.r, {'stdScale': std[rgb.r], 'meanValue': mean[rgb.r]});
-    preProcessInfo.setPreProcessChannel(rgb.g, {'stdScale': std[rgb.g], 'meanValue': mean[rgb.g]});
-    preProcessInfo.setPreProcessChannel(rgb.b, {'stdScale': std[rgb.b], 'meanValue': mean[rgb.b]});
 
     start_time = performance.now()
 

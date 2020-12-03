@@ -181,9 +181,7 @@ void PreProcessInfo::SetVariant(const Napi::CallbackInfo& info) {
     Napi::TypeError::New(env, "Invalid argument").ThrowAsJavaScriptException();
     return;
   }
-
-  _input_info->getPreProcess().setVariant(
-      utils::GetMeanVariantByName(meanvariant));
+  _input_info->getPreProcess().setVariant(utils::GetMeanVariantByName(meanvariant));
 }
 
 Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
@@ -334,7 +332,6 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
       Napi::TypeError::New(env, "Wrong meanValue").ThrowAsJavaScriptException();
     }
   }
-
   if (new_channel.Has("meanData")) {
     if (!new_channel.Get("meanData").IsObject()) {
       Napi::TypeError::New(env, "Wrong meanData").ThrowAsJavaScriptException();
@@ -443,7 +440,7 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
     }
   }
 
-  return;
+
 }
 
 }  // namespace ienodejs
