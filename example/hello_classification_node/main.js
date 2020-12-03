@@ -252,19 +252,24 @@ async function main() {
       input_data = new Float32Array(input_blob.wmap());
     }
 
+    const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
           let i = Math.floor(idx / 4) * 3;
-          const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
-          input_data[i + rgb.r] =
-              (image.bitmap.data[idx + 0] - mean[0]) / std[0];  // R
-          input_data[i + rgb.g] =
-              (image.bitmap.data[idx + 1] - mean[1]) / std[1];  // G
-          input_data[i + rgb.b] =
-              (image.bitmap.data[idx + 2] - mean[2]) / std[2];  // B
+          input_data[i + rgb.r] = image.bitmap.data[idx + 0];  // R
+          input_data[i + rgb.g] = image.bitmap.data[idx + 1];  // G
+          input_data[i + rgb.b] = image.bitmap.data[idx + 2];  // B
         });
     input_blob.unmap();
+
+    const preProcessInfo = input_info.getPreProcess();
+
+    preProcessInfo.init(3);
+    preProcessInfo.setPreProcessChannel(rgb.r, {'stdScale': std[rgb.r], 'meanValue': mean[rgb.r]});
+    preProcessInfo.setPreProcessChannel(rgb.g, {'stdScale': std[rgb.g], 'meanValue': mean[rgb.g]});
+    preProcessInfo.setPreProcessChannel(rgb.b, {'stdScale': std[rgb.b], 'meanValue': mean[rgb.b]});
+
     start_time = performance.now()
 
     if (sync) {
