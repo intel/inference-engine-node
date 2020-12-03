@@ -3,6 +3,7 @@ const fs = require('fs').promises;
 const canvasElement = document.getElementById('canvas');
 const videoElement = document.getElementById('video');
 const imageElement = document.getElementById('image');
+const progressBar = document.getElementById('progressBar');
 var canvasContext = canvasElement.getContext('2d');
 
 var core;
