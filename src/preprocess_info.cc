@@ -70,8 +70,6 @@ void PreProcessInfo::Init(const Napi::CallbackInfo& info) {
   size_t numOfChannels = info[0].ToNumber().Int32Value();
 
   _input_info->getPreProcess().init(numOfChannels);
-
-  return;
 }
 
 void PreProcessInfo::SetColorFormat(const Napi::CallbackInfo& info) {
