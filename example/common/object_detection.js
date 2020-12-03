@@ -20,7 +20,8 @@ function showResults(results, labels) {
 }
 
 function topSSDResults(tensor, threshold = 0.5, dims) {
-  const result = []; const classIdIndex = 1;
+  const result = [];
+  const classIdIndex = 1;
   const predictionIndex = 2;
   const x1Index = 3;
   const y1Index = 4;
