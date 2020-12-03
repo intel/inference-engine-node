@@ -1,4 +1,4 @@
-const ie = require('inference-engine-node');
+const ie = require('../../lib/inference-engine-node');
 
 let strsearch;
 let skeletonDetectionPath =
@@ -74,7 +74,7 @@ $(document).ready(() => {
 });
 
 $(document).ready(() => {
-  const availableDevices = ie.createCore().getAvailableDevices()
+  const availableDevices = new ie.Core().getAvailableDevices()
   configureDevice(availableDevices)
   $('#' + up).attr('checked', 'checked');
   $('#l-' + up).addClass('checked');

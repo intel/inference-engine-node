@@ -6,8 +6,6 @@ var expect = chai.expect;
 var should = chai.should();
 
 const ie = require('../lib/inference-engine-node');
-const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
-const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
 
 describe('InferenceEngine Test', () => {
   it('InferenceEngine should be exported', () => {
@@ -45,15 +43,11 @@ describe('InferenceEngine Test', () => {
     expect(apiVersion.minor).to.be.a('number');
   });
 
-  it('InferenceEngine.createCore should be a function', () => {
-    expect(ie.createCore).to.be.a('function');
+  it('InferenceEngine.Core should be a function', () => {
+    expect(ie.Core).to.be.a('function');
   });
 
-  it('InferenceEngine.createCore should return a Core object', () => {
-    expect(ie.createCore()).to.be.a('Core');
-  });
-
-  it('InferenceEngine.createCore should throw for invalid argument', () => {
-    expect(() => ie.createCore('foo')).to.throw();
+  it('new InferenceEngine.Core() should return a Core object', () => {
+    expect(new ie.Core()).to.be.a('Core');
   });
 });

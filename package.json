@@ -2,7 +2,7 @@
   "name": "inference-engine-node",
   "version": "0.1.4",
   "description": "Inference Engine Binding for Node.js*",
-  "main": "lib/inference-engine-node.js",
+  "main": "./lib/inference-engine-node.js",
   "author": "ningxin.hu@intel.com",
   "license": "Apache-2.0",
   "repository": {

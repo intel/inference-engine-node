@@ -8,7 +8,7 @@ var should = chai.should();
 const model_path = './models/squeezenet1.1/FP16/squeezenet1.1.xml';
 const weights_path = './models/squeezenet1.1/FP16/squeezenet1.1.bin';
 const ie = require('../lib/inference-engine-node');
-const core = ie.createCore();
+const core = new ie.Core();
 
 describe('Core Test', function() {
   it('getVersions should be a function', () => {

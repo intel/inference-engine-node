@@ -14,7 +14,7 @@ For Linux, install `build-essential` package.
 
 **Verified configurations:**
   * Node.js 12 LTS
-  * OpenVINO 2020.2
+  * OpenVINO 2021.1
   * Windows 10
   * Ubuntu Linux 16.04
 

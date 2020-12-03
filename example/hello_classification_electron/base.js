@@ -108,15 +108,17 @@ for (const modelListName in modelZoo) {
   window[modelListName] = modelZoo[modelListName];
 }
 
-const getSearchParamsBackend = () => {
-  let searchParams = new URLSearchParams(location.search);
-  return searchParams.has('b') ? searchParams.get('b') : '';
-} 
+const getSearchParamsBackend =
+    () => {
+      let searchParams = new URLSearchParams(location.search);
+      return searchParams.has('b') ? searchParams.get('b') : '';
+    }
 
-const getSearchParamsModel = () => {
-  let searchParams = new URLSearchParams(location.search);
-  return searchParams.has('m') ? searchParams.get('m') : 'none';
-} 
+const getSearchParamsModel =
+    () => {
+      let searchParams = new URLSearchParams(location.search);
+      return searchParams.has('m') ? searchParams.get('m') : 'none';
+    }
 
 const getSearchParamsPlugin = () => {
   let searchParams = new URLSearchParams(location.search);
