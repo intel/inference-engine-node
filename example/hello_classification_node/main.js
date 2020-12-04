@@ -201,10 +201,10 @@ async function main() {
   const input_info = inputs_info[0];
   console.log(`Set input layout to 'nhwc'.`);
   input_info.setLayout('nhwc');
-  if (!preprocess) {
-    console.log(`Set input precision to 'u8'.`);
-    input_info.setPrecision('u8');
-  }
+  // if (!preprocess) {
+  //   console.log(`Set input precision to 'u8'.`);
+  //   input_info.setPrecision('u8');
+  // }
 
   const output_info = outputs_info[0];
   showBreakLine();
@@ -224,6 +224,17 @@ async function main() {
     image.resize(input_width, input_height, jimp.RESIZE_BILINEAR);
   }
   showBreakLine();
+
+  const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
+
+  const preProcessInfo = input_info.getPreProcess();
+  preProcessInfo.init(3);
+  console.log("Mean is : " + mean);
+  console.log("Std is : " + std);
+  preProcessInfo.setPreProcessChannel(rgb.r, {'stdScale': std[rgb.r], 'meanValue': mean[rgb.r]});
+  preProcessInfo.setPreProcessChannel(rgb.g, {'stdScale': std[rgb.g], 'meanValue': mean[rgb.g]});
+  preProcessInfo.setPreProcessChannel(rgb.b, {'stdScale': std[rgb.b], 'meanValue': mean[rgb.b]});
+  preProcessInfo.setVariant('mean_value');
 
   console.log(`Check ${device_name} plugin version:`);
   showPluginVersions(core.getVersions(device_name));
@@ -245,12 +256,14 @@ async function main() {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
     const input_blob = infer_req.getBlob(input_info.name());
-    let input_data;
-    if (!preprocess) {
-      input_data = new Uint8Array(input_blob.wmap());
-    } else {
-      input_data = new Float32Array(input_blob.wmap());
-    }
+    // let input_data;
+    // if (!preprocess) {
+    //   input_data = new Uint8Array(input_blob.wmap());
+    // } else {
+    //   input_data = new Float32Array(input_blob.wmap());
+    // }
+    
+    let input_data = new Float32Array(input_blob.wmap())
 
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {

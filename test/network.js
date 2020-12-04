@@ -389,15 +389,18 @@ describe('Network Test', function() {
        let meanData = {desc: tensorDesc, data: typedArray1.buffer};
        preprocessInfo.setPreProcessChannel(
            0, {'stdScale': 127.5, 'meanValue': 127.5, 'meanData': meanData});
-       const perProcessChannel = preprocessInfo.getPreProcessChannel(0);
-       expect(perProcessChannel.meanValue).to.be.a('number').equal(127.5);
-       expect(perProcessChannel.stdScale).to.be.a('number').equal(127.5);
-       expect(new Float32Array(perProcessChannel.meanData)[0]).equal(32.0);
+       const preProcessChannel = preprocessInfo.getPreProcessChannel(0);
+       expect(preProcessChannel.meanValue).to.be.a('number').equal(127.5);
+       expect(preProcessChannel.stdScale).to.be.a('number').equal(127.5);
+       expect(new Float32Array(preProcessChannel.meanData)[0]).equal(32.0);
      });
 
   it('PreProcessInfo.setPreProcessChannel should should throw for wrong number of arguments',
      () => {
        const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+       const preProcessChannel = preprocessInfo.getPreProcessChannel(0);
+       console.log(new Float32Array(preProcessChannel.meanData)[0])
+
        expect(() => preprocessInfo.setPreProcessChannel(1)).to.throw(TypeError);
      });
 
