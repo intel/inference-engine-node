@@ -232,10 +232,17 @@ async function main() {
 
   const preProcessInfo = input_info.getPreProcess();
   preProcessInfo.init(3);
-  preProcessInfo.setPreProcessChannel(rgb.r, {'stdScale': std[rgb.r], 'meanValue': mean[rgb.r]});
-  preProcessInfo.setPreProcessChannel(rgb.g, {'stdScale': std[rgb.g], 'meanValue': mean[rgb.g]});
-  preProcessInfo.setPreProcessChannel(rgb.b, {'stdScale': std[rgb.b], 'meanValue': mean[rgb.b]});
+  preProcessInfo.getPreProcessChannel(rgb.r).stdScale = std[rgb.r];
+  preProcessInfo.getPreProcessChannel(rgb.g).stdScale = std[rgb.g];
+  preProcessInfo.getPreProcessChannel(rgb.b).stdScale = std[rgb.b];
+
+  preProcessInfo.getPreProcessChannel(rgb.r).meanValue = mean[rgb.r];
+  preProcessInfo.getPreProcessChannel(rgb.g).meanValue = mean[rgb.g];
+  preProcessInfo.getPreProcessChannel(rgb.b).meanValue = mean[rgb.b];
   preProcessInfo.setVariant('mean_value');
+
+
+  console.log(preProcessInfo.getPreProcessChannel(rgb.r).meanValue);
 
   console.log(`Start to load network to ${device_name} plugin.`)
   start_time = performance.now();
@@ -267,8 +274,7 @@ async function main() {
         });
     input_blob.unmap();
 
-    start_time = performance.now()
-
+    start_time = performance.now();
     if (sync) {
       infer_req.infer();
     }

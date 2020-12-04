@@ -12,7 +12,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   static void Init(const Napi::Env& env);
   static Napi::Object NewInstance(const Napi::Env& envs,
                                   InferenceEngine::InputInfo::Ptr actual);
-  PreProcessInfo(const Napi::CallbackInfo& info);
+  explicit PreProcessInfo(const Napi::CallbackInfo& info);
 
  private:
   static Napi::FunctionReference constructor;

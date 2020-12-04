@@ -1,6 +1,8 @@
 #include "preprocess_info.h"
+#include "preprocess_channel.h"
 #include "utils.h"
 
+#include <core.h>
 #include <napi.h>
 #include <uv.h>
 
@@ -196,63 +198,25 @@ Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
                                _input_info->getPreProcess().getMeanVariant()));
 }
 
-Napi::Value PreProcessInfo::GetPreProcessChannel(
-    const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
+Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  auto deferred = Napi::Promise::Deferred::New(env);
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments")
         .ThrowAsJavaScriptException();
     return Napi::Object::New(env);
-    ;
   }
 
   if (!info[0].IsNumber()) {
     Napi::TypeError::New(env, "Wrong type of arguments")
         .ThrowAsJavaScriptException();
     return Napi::Object::New(env);
-    ;
   }
 
   size_t index = info[0].ToNumber().Int32Value();
   ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
-
-  size_t number_of_channels = pre_info.getNumberOfChannels();
-
-  if (number_of_channels == 0) {
-    Napi::Error::New(env, "accessing pre-process when nothing was set.")
-        .ThrowAsJavaScriptException();
-    return env.Null();
-  };
-
-  if (index >= number_of_channels || index < 0) {
-    std::string errorLog =
-        "pre process index " + std::to_string(index) + " is out of bounds.";
-    Napi::Error::New(env, errorLog).ThrowAsJavaScriptException();
-    return env.Null();
-  };
-
-  const ie::PreProcessChannel::Ptr& preProcessChannel = pre_info[index];
-  Napi::Object preprocess_channel = Napi::Object::New(env);
-  preprocess_channel.Set("stdScale", preProcessChannel->stdScale);
-  preprocess_channel.Set("meanValue", preProcessChannel->meanValue);
-
-  ie::Blob::Ptr mean_data = preProcessChannel->meanData;
-  std::unique_ptr<ie::LockedMemory<void>> locked_memory_;
-  ie::MemoryBlob::Ptr memory_mean_data = ie::as<ie::MemoryBlob>(mean_data);
-  if (!memory_mean_data) {
-    preprocess_channel.Set("meanData", env.Null());
-    Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
-    return channelInfo;
-  }
-  ie::LockedMemory<const void> local_memory = memory_mean_data->rmap();
-  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(env, mean_data->byteSize());
-  void* data = buffer.Data();
-  memcpy(data, local_memory, mean_data->byteSize());
-  preprocess_channel.Set("meanData", buffer);
-  Napi::Value channelInfo = Napi::Value::From(env, preprocess_channel);
-
-  return channelInfo;
+  return PreProcessChannel::NewInstanceAsync(env, pre_info, index, deferred);
 }
 
 bool checkDesc(Napi::Object desc) {
