@@ -35,7 +35,7 @@ Napi::Value PreProcessChannel::GetSTDScale(const Napi::CallbackInfo& info) {
 
 void PreProcessChannel::SetSTDScale(const Napi::CallbackInfo& info,
                                     const Napi::Value& value) {
-  Napi::Number arg = value.As<Napi::Number>();
+  auto arg = value.As<Napi::Number>();
   this->_actual->stdScale = arg.FloatValue();
 }
 
@@ -46,8 +46,7 @@ Napi::Value PreProcessChannel::GetMean(const Napi::CallbackInfo& info) {
 
 void PreProcessChannel::SetMean(const Napi::CallbackInfo& info,
                                 const Napi::Value& value) {
-  Napi::Number arg = value.As<Napi::Number>();
-  std::cout << arg.FloatValue() << std::endl;
+  auto arg = value.As<Napi::Number>();
   this->_actual->meanValue = arg.FloatValue();
 }
 
