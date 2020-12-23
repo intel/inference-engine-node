@@ -28,26 +28,24 @@ void PreProcessChannel::Init(const Napi::Env& env) {
   constructor.SuppressDestruct();
 }
 
-Napi::Value PreProcessChannel::GetSTDScale(const Napi::CallbackInfo& info) {
-  auto stdScale = this->_actual->stdScale;
-  return Napi::Number::New(info.Env(), stdScale);
-}
-
-void PreProcessChannel::SetSTDScale(const Napi::CallbackInfo& info,
-                                    const Napi::Value& value) {
-  auto arg = value.As<Napi::Number>();
-  this->_actual->stdScale = arg.FloatValue();
-}
-
 Napi::Value PreProcessChannel::GetMean(const Napi::CallbackInfo& info) {
-  auto meanValue = this->_actual->meanValue;
-  return Napi::Number::New(info.Env(), meanValue);
+  return Napi::Number::New(info.Env(), this->_actual->meanValue);
 }
 
 void PreProcessChannel::SetMean(const Napi::CallbackInfo& info,
                                 const Napi::Value& value) {
-  auto arg = value.As<Napi::Number>();
-  this->_actual->meanValue = arg.FloatValue();
+  auto meanValue = value.As<Napi::Number>();
+  this->_actual->meanValue = meanValue.FloatValue();
+}
+
+Napi::Value PreProcessChannel::GetSTDScale(const Napi::CallbackInfo& info) {
+  return Napi::Number::New(info.Env(), this->_actual->stdScale);
+}
+
+void PreProcessChannel::SetSTDScale(const Napi::CallbackInfo& info,
+                                    const Napi::Value& value) {
+  auto stdScale = value.As<Napi::Number>();
+  this->_actual->stdScale = stdScale.FloatValue();
 }
 
 Napi::Object PreProcessChannel::NewInstanceAsync(

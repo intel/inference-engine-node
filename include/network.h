@@ -12,8 +12,7 @@ class Network : public Napi::ObjectWrap<Network> {
  public:
   static void Init(const Napi::Env& env);
   static void NewInstanceAsync(Napi::Env env,
-                               const Napi::Value& model,
-                               const Napi::Value& weights,
+                               const Napi::CallbackInfo& info,
                                const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred);
   Network(const Napi::CallbackInfo& info);

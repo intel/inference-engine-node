@@ -82,8 +82,7 @@ void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
                                          const Napi::Value& dev_name,
                                          const ie::Core& core,
                                          Napi::Promise::Deferred& deferred) {
-  LoadNetworkAsyncWorker* load_network_worker =
-      new LoadNetworkAsyncWorker(env, network, dev_name, core, deferred);
+  auto load_network_worker = new LoadNetworkAsyncWorker(env, network, dev_name, core, deferred);
   load_network_worker->Queue();
 }
 
