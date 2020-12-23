@@ -4,11 +4,12 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = chai.expect;
 
-const model_path = '/home/user/Developer/repositories/inference-engine-node/test/data/simple.xml';
+const model_path =
+    '/home/user/Developer/repositories/inference-engine-node/test/data/simple.xml';
 const ie = require('../lib/inference-engine-node');
 const core = new ie.Core();
 
-describe('PreProcessingChannel Test', function () {
+describe('PreProcessingChannel Test', function() {
   it('check setting of mean PreProcessChannel', async () => {
     const net = await core.readNetwork(model_path)
 
@@ -47,9 +48,9 @@ describe('PreProcessingChannel Test', function () {
 
     outputBlob.unmap();
 
-    expect(outputData).to.eql(
-        inputData.map( (num)=> { return num - meanValue; })
-    );
+    expect(outputData).to.eql(inputData.map((num) => {
+      return num - meanValue;
+    }));
   });
 
 
@@ -92,9 +93,8 @@ describe('PreProcessingChannel Test', function () {
 
     outputBlob.unmap();
 
-    expect(outputData).to.eql(
-        inputData.map( (num)=> { return num * scaleValue; })
-    );
+    expect(outputData).to.eql(inputData.map((num) => {
+      return num * scaleValue;
+    }));
   });
-
 });

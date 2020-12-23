@@ -281,21 +281,6 @@ void PreProcessInfo::SetPreProcessChannel(const Napi::CallbackInfo& info) {
   };
 
   ie::PreProcessChannel::Ptr channel = pre_info[index];
-  if (new_channel.Has("stdScale")) {
-    if (new_channel.Get("stdScale").IsNumber()) {
-      channel->stdScale = new_channel.Get("stdScale").ToNumber().FloatValue();
-    } else {
-      Napi::TypeError::New(env, "Wrong stdScale").ThrowAsJavaScriptException();
-    }
-  }
-
-  if (new_channel.Has("meanValue")) {
-    if (new_channel.Get("meanValue").IsNumber()) {
-      channel->meanValue = new_channel.Get("meanValue").ToNumber().FloatValue();
-    } else {
-      Napi::TypeError::New(env, "Wrong meanValue").ThrowAsJavaScriptException();
-    }
-  }
   if (new_channel.Has("meanData")) {
     if (!new_channel.Get("meanData").IsObject()) {
       Napi::TypeError::New(env, "Wrong meanData").ThrowAsJavaScriptException();

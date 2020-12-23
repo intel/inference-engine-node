@@ -3,7 +3,7 @@
 
 #include <napi.h>
 
-#include "inference_engine.hpp"
+#include <inference_engine.hpp>
 
 namespace ienodejs {
 
@@ -18,14 +18,14 @@ class PreProcessChannel : public Napi::ObjectWrap<PreProcessChannel> {
   explicit PreProcessChannel(const Napi::CallbackInfo& info);
 
  private:
-
   static Napi::FunctionReference constructor;
   // APIs
 
-  Napi::Value GetSTDScale(const Napi::CallbackInfo& info);
-  void SetSTDScale(const Napi::CallbackInfo& info, const Napi::Value& value);
   Napi::Value GetMean(const Napi::CallbackInfo& info);
   void SetMean(const Napi::CallbackInfo& info, const Napi::Value& value);
+
+  Napi::Value GetSTDScale(const Napi::CallbackInfo& info);
+  void SetSTDScale(const Napi::CallbackInfo& info, const Napi::Value& value);
 
   InferenceEngine::PreProcessChannel::Ptr _actual;
 };

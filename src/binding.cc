@@ -1,6 +1,6 @@
 #include "napi.h"
-#include "blob.h"
 
+#include "blob.h"
 #include "core.h"
 #include "executable_network.h"
 #include "infer_request.h"

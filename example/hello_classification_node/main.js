@@ -265,15 +265,13 @@ async function main() {
           input_data[i + rgb.r] = image.bitmap.data[idx + 0];  // R
           input_data[i + rgb.g] = image.bitmap.data[idx + 1];  // G
           input_data[i + rgb.b] = image.bitmap.data[idx + 2];  // B
-
         });
     input_blob.unmap();
 
     start_time = performance.now();
     if (sync) {
       infer_req.infer();
-    }
-    else {
+    } else {
       await infer_req.startAsync();
     }
     infer_time.push(performance.now() - start_time);

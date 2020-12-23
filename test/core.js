@@ -68,7 +68,6 @@ describe('Core Test', function() {
 
   it('getAvailableDevices should always contain CPU', () => {
     expect(core.getAvailableDevices()).to.contain('CPU');
-    
   })
 
   it('readNetwork should be a function', () => {

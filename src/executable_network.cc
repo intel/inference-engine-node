@@ -4,7 +4,6 @@
 #include "network.h"
 
 #include <napi.h>
-#include <uv.h>
 
 using namespace Napi;
 namespace ie = InferenceEngine;
@@ -26,9 +25,9 @@ class LoadNetworkAsyncWorker : public Napi::AsyncWorker {
     network_ = Napi::ObjectWrap<Network>::Unwrap(network.ToObject())->actual_;
   }
 
-  ~LoadNetworkAsyncWorker() {}
+  ~LoadNetworkAsyncWorker() override = default;
 
-  void Execute() {
+  void Execute() override {
     try {
       executable_network_ = core_.LoadNetwork(network_, device_name_);
     } catch (const std::exception& error) {
@@ -40,7 +39,7 @@ class LoadNetworkAsyncWorker : public Napi::AsyncWorker {
     }
   }
 
-  void OnOK() {
+  void OnOK() override {
     Napi::EscapableHandleScope scope(env_);
     Napi::Object obj = ExecutableNetwork::constructor.New({});
     ExecutableNetwork* exec_network =
@@ -49,7 +48,7 @@ class LoadNetworkAsyncWorker : public Napi::AsyncWorker {
     deferred_.Resolve(scope.Escape(napi_value(obj)).ToObject());
   }
 
-  void OnError(Napi::Error const& error) { deferred_.Reject(error.Value()); }
+  void OnError(Napi::Error const& error) override { deferred_.Reject(error.Value()); }
 
  private:
   ie::CNNNetwork network_;
@@ -82,7 +81,8 @@ void ExecutableNetwork::NewInstanceAsync(Napi::Env& env,
                                          const Napi::Value& dev_name,
                                          const ie::Core& core,
                                          Napi::Promise::Deferred& deferred) {
-  auto load_network_worker = new LoadNetworkAsyncWorker(env, network, dev_name, core, deferred);
+  auto load_network_worker =
+      new LoadNetworkAsyncWorker(env, network, dev_name, core, deferred);
   load_network_worker->Queue();
 }
 

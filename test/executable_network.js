@@ -99,7 +99,10 @@ describe('ExecutableNetwork Test', function() {
 
   it('Blob.wmap should throw if already mapped', () => {
     const blob = exec_net.createInferRequest().getBlob('data');
-    expect(() => {blob.wmap(); blob.wmap();}).to.throw(TypeError);
+    expect(() => {
+      blob.wmap();
+      blob.wmap();
+    }).to.throw(TypeError);
   });
 
   it('Blob.rwmap should be a function', () => {
@@ -123,7 +126,10 @@ describe('ExecutableNetwork Test', function() {
 
   it('Blob.rwmap should throw if already mapped', () => {
     const blob = exec_net.createInferRequest().getBlob('data');
-    expect(() => {blob.rwmap(); blob.rwmap();}).to.throw(TypeError);
+    expect(() => {
+      blob.rwmap();
+      blob.rwmap();
+    }).to.throw(TypeError);
   });
 
   it('Blob.rmap should be a function', () => {
@@ -147,7 +153,10 @@ describe('ExecutableNetwork Test', function() {
 
   it('Blob.rmap should throw if already mapped', () => {
     const blob = exec_net.createInferRequest().getBlob('prob');
-    expect(() => {blob.rmap(); blob.rmap();}).to.throw(TypeError);
+    expect(() => {
+      blob.rmap();
+      blob.rmap();
+    }).to.throw(TypeError);
   });
 
   it('Blob.size should be a function', () => {
