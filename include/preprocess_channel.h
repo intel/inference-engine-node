@@ -10,11 +10,10 @@ namespace ienodejs {
 class PreProcessChannel : public Napi::ObjectWrap<PreProcessChannel> {
  public:
   static void Init(const Napi::Env& env);
-  static Napi::Object NewInstanceAsync(
+  static Napi::Object NewInstance(
       const Napi::Env& env,
       const InferenceEngine::PreProcessInfo& preProcessInfo,
-      const size_t& index,
-      Napi::Promise::Deferred& deferred);
+      const size_t& index);
   explicit PreProcessChannel(const Napi::CallbackInfo& info);
 
  private:

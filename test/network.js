@@ -3,7 +3,6 @@ var chai = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = chai.expect;
-var should = chai.should();
 
 const ie = require('../lib/inference-engine-node');
 const {it} = require('mocha');
@@ -339,9 +338,9 @@ describe('Network Test', function() {
 
   it('PreProcessChannel should throw when the number of channels is 0',
      () => {
-         // const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
-         // expect(preprocessInfo.getNumberOfChannels()).to.be.a('number').equal(0);
-         // expect(() => preprocessInfo.getPreProcessChannel(0)).to.throw();
+         const preprocessInfo = network.getInputsInfo()[0].getPreProcess();
+         expect(preprocessInfo.getNumberOfChannels()).to.be.a('number').equal(0);
+         expect(() => preprocessInfo.getPreProcessChannel(0)).to.throw();
      });
 
   it('Check the properties of PreProcessChannel',

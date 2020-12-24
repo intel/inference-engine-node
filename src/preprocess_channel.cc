@@ -48,14 +48,20 @@ void PreProcessChannel::SetSTDScale(const Napi::CallbackInfo& info,
   this->_actual->stdScale = stdScale.FloatValue();
 }
 
-Napi::Object PreProcessChannel::NewInstanceAsync(
+Napi::Object PreProcessChannel::NewInstance(
     const Napi::Env& env,
     const InferenceEngine::PreProcessInfo& preProcessInfo,
-    const size_t& index,
-    Napi::Promise::Deferred& deferred) {
+    const size_t& index) {
   Napi::EscapableHandleScope scope(env);
   auto obj = constructor.New({});
   auto preProcessChannel = Napi::ObjectWrap<PreProcessChannel>::Unwrap(obj);
+
+  auto numberOfChannels = preProcessInfo.getNumberOfChannels();
+
+  if (numberOfChannels == 0) {
+    Napi::Error::New(env, "Opppa").ThrowAsJavaScriptException();
+    return Napi::Object::New(env);
+  }
   preProcessChannel->_actual = preProcessInfo[index];
   return scope.Escape(napi_value(obj)).ToObject();
 }

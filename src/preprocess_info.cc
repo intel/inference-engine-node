@@ -200,7 +200,6 @@ Napi::Value PreProcessInfo::GetMeanVariant(const Napi::CallbackInfo& info) {
 
 Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info) {
   auto env = info.Env();
-  auto deferred = Napi::Promise::Deferred::New(env);
 
   if (info.Length() != 1) {
     Napi::TypeError::New(env, "Wrong number of arguments")
@@ -215,8 +214,9 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(const Napi::CallbackInfo& info)
   }
 
   size_t index = info[0].ToNumber().Int32Value();
+//  if (_input_info->)
   ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
-  return PreProcessChannel::NewInstanceAsync(env, pre_info, index, deferred);
+  return PreProcessChannel::NewInstance(env, pre_info, index);
 }
 
 bool checkDesc(Napi::Object desc) {

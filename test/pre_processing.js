@@ -55,6 +55,7 @@ describe('PreProcessingChannel Test', function() {
 
 
   it('check setting of std PreProcessChannel', async () => {
+
     const net = await core.readNetwork(model_path)
 
     const inputInfo = net.getInputsInfo()[0];
