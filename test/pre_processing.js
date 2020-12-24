@@ -10,7 +10,7 @@ const ie = require('../lib/inference-engine-node');
 const core = new ie.Core();
 
 describe('PreProcessingChannel Test', function() {
-  it('check setting of mean PreProcessChannel', async () => {
+  it('Subtraction of mean value from the input', async () => {
     const net = await core.readNetwork(model_path)
 
     const inputInfo = net.getInputsInfo()[0];
@@ -54,8 +54,7 @@ describe('PreProcessingChannel Test', function() {
   });
 
 
-  it('check setting of std PreProcessChannel', async () => {
-
+  it.skip('Multiplication the input by stdScale value', async () => {
     const net = await core.readNetwork(model_path)
 
     const inputInfo = net.getInputsInfo()[0];

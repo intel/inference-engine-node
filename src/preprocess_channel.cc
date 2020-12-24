@@ -58,8 +58,9 @@ Napi::Object PreProcessChannel::NewInstance(
 
   auto numberOfChannels = preProcessInfo.getNumberOfChannels();
 
-  if (numberOfChannels == 0) {
-    Napi::Error::New(env, "Opppa").ThrowAsJavaScriptException();
+  if (index >= numberOfChannels || index < 0) {
+    auto errorMessage = "PreprocessChannel index " + std::to_string(index) + " is out of bounds.";
+    Napi::Error::New(env, errorMessage).ThrowAsJavaScriptException();
     return Napi::Object::New(env);
   }
   preProcessChannel->_actual = preProcessInfo[index];
