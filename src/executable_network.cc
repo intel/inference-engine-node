@@ -48,7 +48,9 @@ class LoadNetworkAsyncWorker : public Napi::AsyncWorker {
     deferred_.Resolve(scope.Escape(napi_value(obj)).ToObject());
   }
 
-  void OnError(Napi::Error const& error) override { deferred_.Reject(error.Value()); }
+  void OnError(Napi::Error const& error) override {
+    deferred_.Reject(error.Value());
+  }
 
  private:
   ie::CNNNetwork network_;

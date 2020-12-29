@@ -26,6 +26,9 @@ class PreProcessChannel : public Napi::ObjectWrap<PreProcessChannel> {
   Napi::Value GetSTDScale(const Napi::CallbackInfo& info);
   void SetSTDScale(const Napi::CallbackInfo& info, const Napi::Value& value);
 
+  Napi::Value GetMeanData(const Napi::CallbackInfo& info);
+  void SetMeanData(const Napi::CallbackInfo& info, const Napi::Value& value);
+
   InferenceEngine::PreProcessChannel::Ptr _actual;
 };
 

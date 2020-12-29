@@ -1,11 +1,14 @@
 #ifndef IE_NODE_UTILS_H
 #define IE_NODE_UTILS_H
 
+#include <napi.h>
 #include "inference_engine.hpp"
 
 namespace ienodejs {
 
 namespace utils {
+
+bool checkTensorDesc(const Napi::Object& tensorDesc);
 
 bool IsValidLayoutName(const std::string& name);
 InferenceEngine::Layout GetLayoutByName(const std::string& name);

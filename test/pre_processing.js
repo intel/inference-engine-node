@@ -97,4 +97,50 @@ describe('PreProcessingChannel Test', function() {
       return num * scaleValue;
     }));
   });
+  it('Subtraction of mean data from the input', async () => {
+    const net = await core.readNetwork(model_path)
+
+    const inputInfo = net.getInputsInfo()[0];
+
+    const preProcessInfo = inputInfo.getPreProcess();
+    preProcessInfo.init(3);
+
+    let width = 3;
+    let height = 3;
+    let typedArray = new Float32Array(width * height);
+    const meanValue = -15.0
+    typedArray.fill(meanValue);
+    let tensorDesc = {precision: 'fp32', dims: [width, height], layout: 'hw'};
+    let meanData = {tensorDesc: tensorDesc, data: typedArray.buffer};
+
+    preProcessInfo.getPreProcessChannel(0).meanData = meanData;
+    preProcessInfo.getPreProcessChannel(1).meanData = meanData;
+    preProcessInfo.getPreProcessChannel(2).meanData = meanData;
+    preProcessInfo.setVariant('mean_image');
+
+    const execNet = await core.loadNetwork(net, 'CPU');
+
+    const inferReq = await execNet.createInferRequest();
+    const inputBlob = inferReq.getBlob(inputInfo.name());
+
+    const inputData = new Float32Array(inputBlob.wmap());
+
+    for (let i = 0; i < inputData.length; i++) {
+      inputData[i] = i;
+    }
+
+    inputBlob.unmap();
+
+    inferReq.infer();
+
+    const outputInfo = net.getOutputsInfo()[0];
+    const outputBlob = inferReq.getBlob(outputInfo.name());
+    const outputData = new Float32Array(outputBlob.rmap());
+
+    outputBlob.unmap();
+
+    expect(outputData).to.eql(inputData.map((num) => {
+      return num - meanValue;
+    }));
+  });
 });

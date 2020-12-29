@@ -7,8 +7,8 @@
 #include "input_info.h"
 #include "network.h"
 #include "output_info.h"
-#include "preprocess_info.h"
 #include "preprocess_channel.h"
+#include "preprocess_info.h"
 
 #include "inference_engine.hpp"
 

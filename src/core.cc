@@ -117,9 +117,10 @@ Napi::Value Core::ReadNetwork(const Napi::CallbackInfo& info) {
         Napi::TypeError::New(env, "Wrong type of the first argument").Value());
     return deferred.Promise();
   }
-  if (info.Length() == 2 && !info[1].IsString()){
+  if (info.Length() == 2 && !info[1].IsString()) {
     deferred.Reject(
-        Napi::TypeError::New(env, "Wrong type of the second arguments").Value());
+        Napi::TypeError::New(env, "Wrong type of the second arguments")
+            .Value());
     return deferred.Promise();
   }
 

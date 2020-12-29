@@ -16,16 +16,14 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
   ReadNetworkAsyncWorker(Napi::Env& env,
                          const Napi::Value& model,
                          const InferenceEngine::Core& core,
-                         Napi::Promise::Deferred& deferred):
-  Napi::AsyncWorker(env),
-      core_(core),
-      model_(model.As<Napi::String>()),
-  read_from_data_(false),
-  without_weights_(true),
-  env_(env),
-  deferred_(deferred) {
-
-  }
+                         Napi::Promise::Deferred& deferred)
+      : Napi::AsyncWorker(env),
+        core_(core),
+        model_(model.As<Napi::String>()),
+        read_from_data_(false),
+        without_weights_(true),
+        env_(env),
+        deferred_(deferred) {}
 
   ReadNetworkAsyncWorker(Napi::Env& env,
                          const Napi::Value& model,
@@ -116,11 +114,13 @@ void Network::NewInstanceAsync(Napi::Env env,
                                const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred) {
   ReadNetworkAsyncWorker* read_network_worker;
-  if (info.Length() == 2){
-    read_network_worker = new ReadNetworkAsyncWorker(env, info[0],info[1], core, deferred);
+  if (info.Length() == 2) {
+    read_network_worker =
+        new ReadNetworkAsyncWorker(env, info[0], info[1], core, deferred);
   }
-  if (info.Length() == 1){
-    read_network_worker = new ReadNetworkAsyncWorker(env, info[0], core, deferred);
+  if (info.Length() == 1) {
+    read_network_worker =
+        new ReadNetworkAsyncWorker(env, info[0], core, deferred);
   }
   read_network_worker->Queue();
 }

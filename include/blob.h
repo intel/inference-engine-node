@@ -12,7 +12,7 @@ class Blob : public Napi::ObjectWrap<Blob> {
   static void Init(const Napi::Env& env);
   static Napi::Value NewInstance(const Napi::Env& env,
                                  const InferenceEngine::Blob::Ptr& actual);
-  Blob(const Napi::CallbackInfo& info);
+  explicit Blob(const Napi::CallbackInfo& info);
 
  private:
   static Napi::FunctionReference constructor;

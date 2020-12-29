@@ -1,10 +1,7 @@
 #include "blob.h"
-#include "infer_request.h"
 
 #include <napi.h>
-#include <uv.h>
-
-#include "inference_engine.hpp"
+#include <inference_engine.hpp>
 
 using namespace Napi;
 
@@ -56,7 +53,7 @@ Napi::Value Blob::Memmap(const Napi::CallbackInfo& info, const int mode) {
     return env.Null();
   }
 
-  if (locked_memory_.get() != nullptr) {
+  if (locked_memory_ != nullptr) {
     Napi::TypeError::New(env, "Already mapped").ThrowAsJavaScriptException();
     return env.Null();
   }
