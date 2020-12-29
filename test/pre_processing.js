@@ -4,8 +4,7 @@ var chaiAsPromised = require('chai-as-promised');
 chai.use(chaiAsPromised);
 var expect = chai.expect;
 
-const model_path =
-    '/home/user/Developer/repositories/inference-engine-node/test/data/simple.xml';
+const model_path = './test/data/simple.xml';
 const ie = require('../lib/inference-engine-node');
 const core = new ie.Core();
 
