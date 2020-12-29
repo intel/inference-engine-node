@@ -214,7 +214,6 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(
   }
 
   size_t index = info[0].ToNumber().Int32Value();
-  //  if (_input_info->)
   ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
   return PreProcessChannel::NewInstance(env, pre_info, index);
 }

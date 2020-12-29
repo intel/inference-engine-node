@@ -52,15 +52,14 @@ void PreProcessChannel::SetSTDScale(const Napi::CallbackInfo& info,
 
 Napi::Value PreProcessChannel::GetMeanData(const Napi::CallbackInfo& info) {
   auto env = info.Env();
-  ie::Blob::Ptr meanData = this->_actual->meanData;
-  std::unique_ptr<ie::LockedMemory<void>> lockedMemory_;
-  ie::MemoryBlob::Ptr memoryMeanData = ie::as<ie::MemoryBlob>(meanData);
-  Napi::Object result = Napi::Object::New(env);
-  ;
-  Napi::Object tensorDescObj = Napi::Object::New(env);
-  ;
 
-  auto tensorDesc = meanData->getTensorDesc();
+  auto meanData = this->_actual->meanData;
+  auto memoryMeanData = ie::as<ie::MemoryBlob>(meanData);
+  auto tensorDesc = memoryMeanData->getTensorDesc();
+
+  auto result = Napi::Object::New(env);
+  auto tensorDescObj = Napi::Object::New(env);
+
   tensorDescObj.Set("precision",
                     utils::GetNameOfPrecision(tensorDesc.getPrecision()));
   tensorDescObj.Set("layout", utils::GetNameOfLayout(tensorDesc.getLayout()));
@@ -70,17 +69,39 @@ Napi::Value PreProcessChannel::GetMeanData(const Napi::CallbackInfo& info) {
 
   for (size_t i = 0; i < dims.size(); i++) {
     dimsObj[i] = Napi::Number::New(env, dims[i]);
-    ;
   }
   tensorDescObj.Set("dims", dimsObj);
   result.Set("tensorDesc", tensorDescObj);
 
-  ie::LockedMemory<const void> local_memory = memoryMeanData->rmap();
-  Napi::ArrayBuffer buffer = Napi::ArrayBuffer::New(env, meanData->byteSize());
-  void* data = buffer.Data();
-  memcpy(data, local_memory, meanData->byteSize());
+  auto localMemory = memoryMeanData->rmap();
+  auto byteSize = meanData->byteSize();
+  auto buffer = Napi::ArrayBuffer::New(env, byteSize);
+  auto meanDataBuffer = buffer.Data();
+  switch (tensorDesc.getPrecision()) {
+    case ie::Precision::FP32:
+      memcpy(meanDataBuffer,
+             localMemory.as<const ie::PrecisionTrait<ie::Precision::FP32>::value_type*>(),
+             byteSize);
+      break;
+    case ie::Precision::FP16:
+    case ie::Precision::I16:
+      memcpy(meanDataBuffer,
+             localMemory.as<const ie::PrecisionTrait<ie::Precision::FP16>::value_type*>(),
+             byteSize);
+      break;
+    case ie::Precision::U8:
+      memcpy(meanDataBuffer,
+             localMemory.as<const ie::PrecisionTrait<ie::Precision::U8>::value_type*>(),
+             byteSize);
+      break;
+    default:
+      Napi::TypeError::New(env,
+                           "Unsupported network precision ! Supported "
+                           "precisions are: FP32, FP16, I16, U8")
+          .ThrowAsJavaScriptException();
+      return env.Null();
+  }
   result.Set("data", buffer);
-
   return result;
 }
 
@@ -125,9 +146,9 @@ void PreProcessChannel::SetMeanData(const Napi::CallbackInfo& info,
   std::string layoutString = tensorDescObj.Get("layout").ToString();
   auto dims = Napi::Array(env, tensorDescObj.Get("dims"));
 
-  size_t meanDataLength = meanDataArray.ByteLength();
-  size_t dimsLength = dims.Length();
-  void* meanDataBuffer = meanDataArray.Data();
+  auto meanDataLength = meanDataArray.ByteLength();
+  auto dimsLength = dims.Length();
+  auto meanDataBuffer = meanDataArray.Data();
 
   try {
     ie::SizeVector dimsVector = {};

@@ -1,8 +1,5 @@
 #include "blob.h"
 
-#include <napi.h>
-#include <inference_engine.hpp>
-
 using namespace Napi;
 
 namespace ie = InferenceEngine;
