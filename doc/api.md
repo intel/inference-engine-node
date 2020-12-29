@@ -113,9 +113,10 @@ interface PreProcessInfo {
   PreprocessChannel getPreProcessChannel(unsigned long indexOfChannels);
 };
 
-interface PreProcessInfo {
-  property meanValue;
-  property stdScale;
+interface PreProcessChannel {
+  float meanValue;
+  float stdScale;
+  Blob meanData;
 };
 
 interface OutputInfo {
