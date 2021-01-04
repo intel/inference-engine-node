@@ -64,13 +64,13 @@ const modelZoo = {
       modelId: 'resnet50_v1_openvino',
       modelSize: '102.1MB',
       modelFile: './model/resnet-50.bin',
-      labelsFile: './model/labels1000.txt',
+      labelsFile: './model/labels1001.txt',
       onlineFile: '',
       onlineBinFile: '',
       inputSize: [224, 224, 3],
       outputSize: 1000,
       preOptions: {
-        channelScheme: 'BGR',
+        mean: [123.68,116.78,103.94],
       },
       intro:
           'A residual learning framework to ease the training of networks that are substantially deeper than those used previously. This result won the 1st place on the ILSVRC 2015 classification task.',

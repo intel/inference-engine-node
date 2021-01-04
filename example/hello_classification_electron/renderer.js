@@ -208,8 +208,7 @@ async function loadModel(model) {
     $('.loading-page .counter h1').html(``);
     ie_net = await core.readNetwork(xml_path, model_path);
 
-  } catch {
-    console.log('Start to get files online');
+  } catch (e) {
     try {
       let onlineModelUrl = model.onlineFile;
       let onlineBinUrl = model.onlineBinFile;
