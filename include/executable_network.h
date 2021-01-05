@@ -15,7 +15,7 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
                                const Napi::Value& dev_name,
                                const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred);
-  ExecutableNetwork(const Napi::CallbackInfo& info);
+  explicit ExecutableNetwork(const Napi::CallbackInfo& info);
 
  private:
   friend class LoadNetworkAsyncWorker;

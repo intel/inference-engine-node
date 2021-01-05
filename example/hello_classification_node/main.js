@@ -177,6 +177,10 @@ async function main() {
   showVersion(getVersion());
   showBreakLine();
 
+  console.log(`Check ${device_name} plugin version:`);
+  showPluginVersions(core.getVersions(device_name));
+  showBreakLine();
+
   console.log(`Start to create network from ${model_path}.`)
 
   let start_time = performance.now();
@@ -201,10 +205,18 @@ async function main() {
   const input_info = inputs_info[0];
   console.log(`Set input layout to 'nhwc'.`);
   input_info.setLayout('nhwc');
-  if (!preprocess) {
-    console.log(`Set input precision to 'u8'.`);
-    input_info.setPrecision('u8');
-  }
+
+  const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
+  const preProcessInfo = input_info.getPreProcess();
+  preProcessInfo.init(3);
+  preProcessInfo.getPreProcessChannel(rgb.r).stdScale = std[rgb.r];
+  preProcessInfo.getPreProcessChannel(rgb.g).stdScale = std[rgb.g];
+  preProcessInfo.getPreProcessChannel(rgb.b).stdScale = std[rgb.b];
+
+  preProcessInfo.getPreProcessChannel(rgb.r).meanValue = mean[rgb.r];
+  preProcessInfo.getPreProcessChannel(rgb.g).meanValue = mean[rgb.g];
+  preProcessInfo.getPreProcessChannel(rgb.b).meanValue = mean[rgb.b];
+  preProcessInfo.setVariant('mean_value');
 
   const output_info = outputs_info[0];
   showBreakLine();
@@ -225,8 +237,6 @@ async function main() {
   }
   showBreakLine();
 
-  console.log(`Check ${device_name} plugin version:`);
-  showPluginVersions(core.getVersions(device_name));
 
   console.log(`Start to load network to ${device_name} plugin.`)
   start_time = performance.now();
@@ -244,33 +254,24 @@ async function main() {
   for (let i = 0; i < iterations; i++) {
     start_time = performance.now();
     infer_req = exec_net.createInferRequest();
+
     const input_blob = infer_req.getBlob(input_info.name());
-    let input_data;
-    if (!preprocess) {
-      input_data = new Uint8Array(input_blob.wmap());
-    } else {
-      input_data = new Float32Array(input_blob.wmap());
-    }
+    const input_data = new Float32Array(input_blob.wmap());
 
     image.scan(
         0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
           // Convert from RGBA to BGR (IE default)
           let i = Math.floor(idx / 4) * 3;
-          const rgb = color === 'bgr' ? {r: 2, g: 1, b: 0} : {r: 0, g: 1, b: 2};
-          input_data[i + rgb.r] =
-              (image.bitmap.data[idx + 0] - mean[0]) / std[0];  // R
-          input_data[i + rgb.g] =
-              (image.bitmap.data[idx + 1] - mean[1]) / std[1];  // G
-          input_data[i + rgb.b] =
-              (image.bitmap.data[idx + 2] - mean[2]) / std[2];  // B
+          input_data[i + rgb.r] = image.bitmap.data[idx + 0];  // R
+          input_data[i + rgb.g] = image.bitmap.data[idx + 1];  // G
+          input_data[i + rgb.b] = image.bitmap.data[idx + 2];  // B
         });
     input_blob.unmap();
-    start_time = performance.now()
 
+    start_time = performance.now();
     if (sync) {
       infer_req.infer();
-    }
-    else {
+    } else {
       await infer_req.startAsync();
     }
     infer_time.push(performance.now() - start_time);

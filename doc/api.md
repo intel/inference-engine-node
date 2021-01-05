@@ -29,7 +29,7 @@ interface PluginVersions {
 interface Core {
   PluginVersions getVersions(DOMString deviceName);
   sequence<DOMString> getAvailableDevices();
-  Promise<Network> readNetwork(DOMString modelFilePath, DOMString weightsFilePath);
+  Promise<Network> readNetwork(DOMString modelFilePath, [DOMString weightsFilePath]);
   Promise<Network> readNetworkFromData(DOMString model, ArrayBuffer weights);
   Promise<ExecutableNetwork> loadNetwork(Network network, DOMString deviceName);
 };
@@ -102,14 +102,33 @@ interface InputInfo {
 };
 
 interface PreProcessInfo {
-  void setColorFormat(ColorFormat colorformat);
+  void init(unsigned long numOfChannels);
   ColorFormat getColorFormat();
-  unsigned long getNumberOfChannels();
-  void setResizeAlgorithm(ResizeAlgorithm resizeAlgorithm);
+  void setColorFormat(ColorFormat colorformat);
   ResizeAlgorithm getResizeAlgorithm();
-  void setVariant(MeanVariant meanVariant);
+  void setResizeAlgorithm(ResizeAlgorithm resizeAlgorithm);
   MeanVariant getMeanVariant();
-}
+  void setVariant(MeanVariant meanVariant);
+  unsigned long getNumberOfChannels();
+  PreprocessChannel getPreProcessChannel(unsigned long indexOfChannels);
+};
+
+interface TensorDesc {
+  required Precision precision;
+  required sequence<unsigned long long> dims,
+  required Layout layout;
+};
+
+interface MeanData {
+  required TensorDesc desc;
+  required ArrayBuffer data;
+};
+
+interface PreProcessChannel {
+  optional float stdScale = 1;
+  optional float meanValue = 0;
+  optional MeanData meanData = null;
+};
 
 interface OutputInfo {
   DOMString name();

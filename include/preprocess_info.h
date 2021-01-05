@@ -12,7 +12,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   static void Init(const Napi::Env& env);
   static Napi::Object NewInstance(const Napi::Env& envs,
                                   InferenceEngine::InputInfo::Ptr actual);
-  PreProcessInfo(const Napi::CallbackInfo& info);
+  explicit PreProcessInfo(const Napi::CallbackInfo& info);
 
  private:
   static Napi::FunctionReference constructor;
@@ -25,9 +25,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   Napi::Value GetResizeAlgorithm(const Napi::CallbackInfo& info);
   void SetVariant(const Napi::CallbackInfo& info);
   Napi::Value GetMeanVariant(const Napi::CallbackInfo& info);
-
   Napi::Value GetPreProcessChannel(const Napi::CallbackInfo& info);
-  void SetPreProcessChannel(const Napi::CallbackInfo& info);
   Napi::Value GetNumberOfChannels(const Napi::CallbackInfo& info);
 
   InferenceEngine::InputInfo::Ptr _input_info;

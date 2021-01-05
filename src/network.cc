@@ -15,6 +15,18 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
  public:
   ReadNetworkAsyncWorker(Napi::Env& env,
                          const Napi::Value& model,
+                         const InferenceEngine::Core& core,
+                         Napi::Promise::Deferred& deferred)
+      : Napi::AsyncWorker(env),
+        core_(core),
+        model_(model.As<Napi::String>()),
+        read_from_data_(false),
+        without_weights_(true),
+        env_(env),
+        deferred_(deferred) {}
+
+  ReadNetworkAsyncWorker(Napi::Env& env,
+                         const Napi::Value& model,
                          const Napi::Value& weights,
                          const InferenceEngine::Core& core,
                          Napi::Promise::Deferred& deferred)
@@ -22,6 +34,7 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
         core_(core),
         model_(model.As<Napi::String>()),
         read_from_data_(false),
+        without_weights_(true),
         env_(env),
         deferred_(deferred) {
     if (weights.IsString()) {
@@ -71,6 +84,7 @@ class ReadNetworkAsyncWorker : public Napi::AsyncWorker {
   std::string weights_path_;
   ie::Blob::CPtr weights_blob_;
   bool read_from_data_;
+  bool without_weights_;
   Napi::Env env_;
   Napi::Promise::Deferred deferred_;
 };
@@ -96,12 +110,18 @@ Network::Network(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<Network>(info) {}
 
 void Network::NewInstanceAsync(Napi::Env env,
-                               const Napi::Value& model,
-                               const Napi::Value& weights,
+                               const Napi::CallbackInfo& info,
                                const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred) {
-  ReadNetworkAsyncWorker* read_network_worker =
-      new ReadNetworkAsyncWorker(env, model, weights, core, deferred);
+  ReadNetworkAsyncWorker* read_network_worker;
+  if (info.Length() == 2) {
+    read_network_worker =
+        new ReadNetworkAsyncWorker(env, info[0], info[1], core, deferred);
+  }
+  if (info.Length() == 1) {
+    read_network_worker =
+        new ReadNetworkAsyncWorker(env, info[0], core, deferred);
+  }
   read_network_worker->Queue();
 }
 

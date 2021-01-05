@@ -124,15 +124,15 @@ Napi::Value InferRequest::Infer(const Napi::CallbackInfo& info) {
 }
 
 Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
-  Napi::Env env = info.Env();
-  Napi::Promise::Deferred deferred = Napi::Promise::Deferred::New(env);
+  auto env = info.Env();
+  auto deferred = Napi::Promise::Deferred::New(env);
   if (info.Length() > 0) {
     deferred.Reject(
         Napi::TypeError::New(env, "Wrong number of arguments").Value());
     return deferred.Promise();
   }
 
-  InferAsyncWorker* infer_worker = new InferAsyncWorker(env, actual_, deferred);
+  auto infer_worker = new InferAsyncWorker(env, actual_, deferred);
   infer_worker->Queue();
 
   return deferred.Promise();
