@@ -9,6 +9,6 @@
     "command-line-args": "^5.1.1",
     "command-line-usage": "^6.1.0",
     "inference-engine-node": "../../",
-    "jimp": "^0.9.8"
+    "jimp": "^0.16.1"
   }
 }
