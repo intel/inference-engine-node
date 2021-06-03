@@ -100,6 +100,8 @@ void Network::Init(const Napi::Env& env) {
           InstanceMethod("getName", &Network::GetName),
           InstanceMethod("getInputsInfo", &Network::GetInputsInfo),
           InstanceMethod("getOutputsInfo", &Network::GetOutputsInfo),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &Network::toStringTag, nullptr, napi_enumerable),
       });
 
   constructor = Napi::Persistent(func);
@@ -163,6 +165,10 @@ Napi::Value Network::GetOutputsInfo(const Napi::CallbackInfo& info) {
     js_outputs_info[i++] = OutputInfo::NewInstance(env, out.second);
   }
   return js_outputs_info;
+}
+
+Napi::Value Network::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "Network");
 }
 
 }  // namespace ienodejs

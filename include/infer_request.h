@@ -20,6 +20,7 @@ class InferRequest : public Napi::ObjectWrap<InferRequest> {
   Napi::Value GetBlob(const Napi::CallbackInfo& info);
   Napi::Value Infer(const Napi::CallbackInfo& info);
   Napi::Value StartAsync(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::InferRequest actual_;
 };

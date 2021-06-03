@@ -23,6 +23,7 @@ class ExecutableNetwork : public Napi::ObjectWrap<ExecutableNetwork> {
   static Napi::FunctionReference constructor;
   // APIs
   Napi::Value CreateInferRequest(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::ExecutableNetwork actual_;
 };

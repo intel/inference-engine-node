@@ -53,9 +53,14 @@ void InferRequest::Init(const Napi::Env& env) {
 
   Napi::Function func =
       DefineClass(env, "InferRequest",
-                  {InstanceMethod("getBlob", &InferRequest::GetBlob),
-                   InstanceMethod("infer", &InferRequest::Infer),
-                   InstanceMethod("startAsync", &InferRequest::StartAsync)});
+                  {
+                      InstanceMethod("getBlob", &InferRequest::GetBlob),
+                      InstanceMethod("infer", &InferRequest::Infer),
+                      InstanceMethod("startAsync", &InferRequest::StartAsync),
+                      InstanceAccessor(
+                          Napi::Symbol::WellKnown(env, "toStringTag"),
+                          &InferRequest::toStringTag, nullptr, napi_enumerable),
+                  });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -136,6 +141,10 @@ Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
   infer_worker->Queue();
 
   return deferred.Promise();
+}
+
+Napi::Value InferRequest::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "InferRequest");
 }
 
 }  // namespace ienodejs

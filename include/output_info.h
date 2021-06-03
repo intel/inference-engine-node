@@ -22,6 +22,7 @@ class OutputInfo : public Napi::ObjectWrap<OutputInfo> {
   void SetPrecision(const Napi::CallbackInfo& info);
   Napi::Value GetLayout(const Napi::CallbackInfo& info);
   Napi::Value GetDims(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::DataPtr actual_;
 };
