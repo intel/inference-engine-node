@@ -20,8 +20,11 @@ class InferRequest : public Napi::ObjectWrap<InferRequest> {
   Napi::Value GetBlob(const Napi::CallbackInfo& info);
   Napi::Value Infer(const Napi::CallbackInfo& info);
   Napi::Value StartAsync(const Napi::CallbackInfo& info);
+  void SetCompletionCallback(const Napi::CallbackInfo& info);
+  void NativeStartAsync(const Napi::CallbackInfo& info);
 
   InferenceEngine::InferRequest actual_;
+  Napi::ThreadSafeFunction _threadSafeFunction;
 };
 
 }  // namespace ienodejs

@@ -51,11 +51,14 @@ Napi::FunctionReference InferRequest::constructor;
 void InferRequest::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "InferRequest",
-                  {InstanceMethod("getBlob", &InferRequest::GetBlob),
-                   InstanceMethod("infer", &InferRequest::Infer),
-                   InstanceMethod("startAsync", &InferRequest::StartAsync)});
+  Napi::Function func = DefineClass(
+      env, "InferRequest",
+      {InstanceMethod("getBlob", &InferRequest::GetBlob),
+       InstanceMethod("infer", &InferRequest::Infer),
+       InstanceMethod("startAsync", &InferRequest::StartAsync),
+       InstanceMethod("setCompletionCallback",
+                      &InferRequest::SetCompletionCallback),
+       InstanceMethod("nativeStartAsync", &InferRequest::NativeStartAsync)});
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -138,4 +141,22 @@ Napi::Value InferRequest::StartAsync(const Napi::CallbackInfo& info) {
   return deferred.Promise();
 }
 
+void InferRequest::SetCompletionCallback(const Napi::CallbackInfo& info) {
+  auto env = info.Env();
+  this->_threadSafeFunction = Napi::ThreadSafeFunction::New(
+      env, info[0].As<Napi::Function>(), "CompletionCallback", 0, 1,
+      [](Napi::Env) {});
+
+  actual_.SetCompletionCallback([this]() {
+    auto callback = [](Napi::Env env, Napi::Function jsCallback) {
+      jsCallback.Call({});
+    };
+    this->_threadSafeFunction.BlockingCall(callback);
+    this->_threadSafeFunction.Release();
+  });
+}
+
+void InferRequest::NativeStartAsync(const Napi::CallbackInfo& info) {
+  actual_.StartAsync();
+}
 }  // namespace ienodejs
