@@ -16,15 +16,19 @@ Napi::FunctionReference InputInfo::constructor;
 void InputInfo::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "InputInfo",
-                  {InstanceMethod("name", &InputInfo::Name),
-                   InstanceMethod("getPrecision", &InputInfo::GetPrecision),
-                   InstanceMethod("setPrecision", &InputInfo::SetPrecision),
-                   InstanceMethod("getLayout", &InputInfo::GetLayout),
-                   InstanceMethod("setLayout", &InputInfo::SetLayout),
-                   InstanceMethod("getDims", &InputInfo::GetDims),
-                   InstanceMethod("getPreProcess", &InputInfo::GetPreProcess)});
+  Napi::Function func = DefineClass(
+      env, "InputInfo",
+      {
+          InstanceMethod("name", &InputInfo::Name),
+          InstanceMethod("getPrecision", &InputInfo::GetPrecision),
+          InstanceMethod("setPrecision", &InputInfo::SetPrecision),
+          InstanceMethod("getLayout", &InputInfo::GetLayout),
+          InstanceMethod("setLayout", &InputInfo::SetLayout),
+          InstanceMethod("getDims", &InputInfo::GetDims),
+          InstanceMethod("getPreProcess", &InputInfo::GetPreProcess),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &InputInfo::toStringTag, nullptr, napi_enumerable),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -143,6 +147,10 @@ Napi::Value InputInfo::GetPreProcess(const Napi::CallbackInfo& info) {
   }
 
   return PreProcessInfo::NewInstance(env, actual_);
+}
+
+Napi::Value InputInfo::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "InputInfo");
 }
 
 }  // namespace ienodejs

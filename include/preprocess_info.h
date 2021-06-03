@@ -27,6 +27,7 @@ class PreProcessInfo : public Napi::ObjectWrap<PreProcessInfo> {
   Napi::Value GetMeanVariant(const Napi::CallbackInfo& info);
   Napi::Value GetPreProcessChannel(const Napi::CallbackInfo& info);
   Napi::Value GetNumberOfChannels(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::InputInfo::Ptr _input_info;
 };

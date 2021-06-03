@@ -66,10 +66,15 @@ Napi::FunctionReference ExecutableNetwork::constructor;
 void ExecutableNetwork::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "ExecutableNetwork",
-                  {InstanceMethod("createInferRequest",
-                                  &ExecutableNetwork::CreateInferRequest)});
+  Napi::Function func = DefineClass(
+      env, "ExecutableNetwork",
+      {
+          InstanceMethod("createInferRequest",
+                         &ExecutableNetwork::CreateInferRequest),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &ExecutableNetwork::toStringTag, nullptr,
+                           napi_enumerable),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -106,6 +111,10 @@ Napi::Value ExecutableNetwork::CreateInferRequest(
         .ThrowAsJavaScriptException();
     return env.Null();
   }
+}
+
+Napi::Value ExecutableNetwork::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "ExecutableNetwork");
 }
 
 }  // namespace ienodejs

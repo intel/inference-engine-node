@@ -20,11 +20,15 @@ void Core::Init(const Napi::Env& env, Napi::Object exports) {
 
   Napi::Function func = DefineClass(
       env, "Core",
-      {InstanceMethod("getVersions", &Core::GetVersions),
-       InstanceMethod("readNetwork", &Core::ReadNetwork),
-       InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
-       InstanceMethod("loadNetwork", &Core::LoadNetwork),
-       InstanceMethod("getAvailableDevices", &Core::GetAvailableDevices)});
+      {
+          InstanceMethod("getVersions", &Core::GetVersions),
+          InstanceMethod("readNetwork", &Core::ReadNetwork),
+          InstanceMethod("readNetworkFromData", &Core::ReadNetworkFromData),
+          InstanceMethod("loadNetwork", &Core::LoadNetwork),
+          InstanceMethod("getAvailableDevices", &Core::GetAvailableDevices),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &Core::toStringTag, nullptr, napi_enumerable),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -196,6 +200,10 @@ Napi::Value Core::GetAvailableDevices(const Napi::CallbackInfo& info) {
 
   Napi::Value available_devices = Napi::Value::From(env, devices);
   return available_devices;
+}
+
+Napi::Value Core::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "Core");
 }
 
 }  // namespace ienodejs

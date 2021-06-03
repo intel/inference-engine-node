@@ -79,20 +79,26 @@ Napi::Value PreProcessChannel::GetMeanData(const Napi::CallbackInfo& info) {
   auto meanDataBuffer = buffer.Data();
   switch (tensorDesc.getPrecision()) {
     case ie::Precision::FP32:
-      memcpy(meanDataBuffer,
-             localMemory.as<const ie::PrecisionTrait<ie::Precision::FP32>::value_type*>(),
-             byteSize);
+      memcpy(
+          meanDataBuffer,
+          localMemory
+              .as<const ie::PrecisionTrait<ie::Precision::FP32>::value_type*>(),
+          byteSize);
       break;
     case ie::Precision::FP16:
     case ie::Precision::I16:
-      memcpy(meanDataBuffer,
-             localMemory.as<const ie::PrecisionTrait<ie::Precision::FP16>::value_type*>(),
-             byteSize);
+      memcpy(
+          meanDataBuffer,
+          localMemory
+              .as<const ie::PrecisionTrait<ie::Precision::FP16>::value_type*>(),
+          byteSize);
       break;
     case ie::Precision::U8:
-      memcpy(meanDataBuffer,
-             localMemory.as<const ie::PrecisionTrait<ie::Precision::U8>::value_type*>(),
-             byteSize);
+      memcpy(
+          meanDataBuffer,
+          localMemory
+              .as<const ie::PrecisionTrait<ie::Precision::U8>::value_type*>(),
+          byteSize);
       break;
     default:
       Napi::TypeError::New(env,

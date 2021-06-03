@@ -21,6 +21,7 @@ class Core : public Napi::ObjectWrap<Core> {
   Napi::Value ReadNetworkFromData(const Napi::CallbackInfo& info);
   Napi::Value LoadNetwork(const Napi::CallbackInfo& info);
   Napi::Value GetAvailableDevices(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::Core actual_;
 };
