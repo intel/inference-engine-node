@@ -29,8 +29,8 @@ Napi::Object GetVersion(const Napi::CallbackInfo& info) {
   Napi::Object version = Napi::Object::New(env);
 
   Napi::Object api_version = Napi::Object::New(env);
-  api_version.Set("major", ie_version->apiVersion.major);
-  api_version.Set("minor", ie_version->apiVersion.minor);
+  api_version.Set("major", IE_VERSION_MAJOR);
+  api_version.Set("minor", IE_VERSION_MINOR);
   version.Set("apiVersion", api_version);
 
   if (ie_version->buildNumber) {

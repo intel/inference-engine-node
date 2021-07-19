@@ -231,7 +231,7 @@ Napi::Object PreProcessChannel::NewInstance(
 
   auto numberOfChannels = preProcessInfo.getNumberOfChannels();
 
-  if (index >= numberOfChannels || index < 0) {
+  if (index >= numberOfChannels) {
     auto errorMessage = "PreprocessChannel index " + std::to_string(index) +
                         " is out of bounds.";
     Napi::Error::New(env, errorMessage).ThrowAsJavaScriptException();
