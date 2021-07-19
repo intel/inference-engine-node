@@ -14,16 +14,16 @@ For Linux, install `build-essential` package.
 
 **Verified configurations:**
   * Node.js 12 LTS
-  * OpenVINO 2021.1
+  * OpenVINO 2021.4
   * Windows 10
-  * Ubuntu Linux 16.04
+  * Ubuntu Linux 18.04
 
 ## Install
 
 The Inference Engine Binding for Node.js supports installation for two operation systems: Windows 10 and Ubuntu 16.04 and
 two build systems: node-gyp and CMake-based and Node-GYP-based. 
 
-### Install on Ubuntu 16.04
+### Install on Ubuntu 18.04
 
 To install the Inference Engine Binding for Node.js on Ubuntu 16.04 use the following instruction:
 1. Open a terminal in the repository root folder
