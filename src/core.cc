@@ -83,8 +83,8 @@ Napi::Value Core::GetVersions(const Napi::CallbackInfo& info) {
     ie::Version* ie_version = &iter->second;
 
     Napi::Object api_version = Napi::Object::New(env);
-    api_version.Set("major", ie_version->apiVersion.major);
-    api_version.Set("minor", ie_version->apiVersion.minor);
+    api_version.Set("major", IE_VERSION_MAJOR);
+    api_version.Set("minor", IE_VERSION_MINOR);
     device.Set("apiVersion", api_version);
 
     if (ie_version->buildNumber) {
