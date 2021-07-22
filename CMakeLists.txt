@@ -10,7 +10,7 @@ set(NODE_NODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/node_modules")
 
 set(ARTIFACT_PATH "build")
 
-find_package(InferenceEngine 2.1 REQUIRED)
+find_package(InferenceEngine 2021.4.0 REQUIRED)
 
 if(DEFINED ENV{NODE_PATH})
     set(NODE_PATH "$ENV{NODE_PATH}")
