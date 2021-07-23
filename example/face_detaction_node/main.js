@@ -2,9 +2,6 @@ const {FaceDetectionRetailEngine} = require("./engines/faceDetectionRetailEngine
 
 const {Core} = require('../../lib/inference-engine-node');
 const cv = require('opencv4nodejs')
-const {} = require('../common');
-
-const jimp = require('jimp');
 
 
 const option_definitions = [
@@ -60,18 +57,18 @@ async function main() {
 
     const faceEngine = new FaceDetectionRetailEngine(core, options.face_detection_model)
     await faceEngine.initialize(options.face_detection_device)
-    const origImage = cv.imread(options.image);
-    const image = await jimp.read(options.image);
+    const image = cv.imread(options.image);
     const detectedFace = await faceEngine.process(image)
+
     detectedFace.forEach((face) => {
             const xmin = face.position[0]
             const ymin = face.position[1]
             const xmax = face.size[0]
             const ymax = face.size[1]
-            origImage.drawRectangle(new cv.Rect(xmin, ymin, xmax, ymax,));
+            image.drawRectangle(new cv.Rect(xmin, ymin, xmax, ymax,));
         }
     )
-    cv.imwrite('out.jpg', origImage);
+    cv.imwrite('out.jpg', image);
 
     return 0;
 }

@@ -5,7 +5,6 @@ const jimp = require('jimp');
 
 class Result {
     constructor(data) {
-        this.imageId = data[0]
         this.label = data[1]
         this.confidence = data[2]
         this.position = [data[3], data[4]]
@@ -19,30 +18,30 @@ class Result {
         this.size = this.size.map(value => value * roiScaleFactor);
     }
 
-    resizeROI(frameWidth, frameHeight){
+    resizeROI(frameWidth, frameHeight) {
         this.position[0] *= frameWidth
         this.position[1] *= frameHeight
-        this.size[0] = this.size[0]* frameWidth - this.position[0]
-        this.size[1] = this.size[1]*frameHeight - this.position[1]
+        this.size[0] = this.size[0] * frameWidth - this.position[0]
+        this.size[1] = this.size[1] * frameHeight - this.position[1]
     }
 
-    clip(width, height){
+    clip(width, height) {
         const min = [0, 0];
         const max = [width, height];
-        this.position = this.position.map((value, index) =>{
-            if (value < min[index]){
+        this.position = this.position.map((value, index) => {
+            if (value < min[index]) {
                 return min[index]
             }
-            if (value > max[index]){
+            if (value > max[index]) {
                 return max[index]
             }
             return value
         })
-        this.size = this.size.map((value, index) =>{
-            if (value < min[index]){
+        this.size = this.size.map((value, index) => {
+            if (value < min[index]) {
                 return min[index]
             }
-            if (value > max[index]){
+            if (value > max[index]) {
                 return max[index]
             }
             return value
@@ -50,17 +49,33 @@ class Result {
     }
 }
 
+function toCHWArray(image, blob) {
+    const height = image.rows;
+    const width = image.cols;
+    const channels = image.channels;
+
+    for (let h = 0; h < height; h++) {
+        for (let w = 0; w < width; w++) {
+            const pixel = image.at(h, w);
+            const bgr = [pixel.x, pixel.y, pixel.z];
+            for (let c = 0; c < channels; c++) {
+                blob[c * width * height + h * height + w] = bgr[c];
+            }
+        }
+    }
+
+}
+
 class FaceDetectionRetailEngine extends Engine {
 
     async initialize(deviceName) {
         const weightsPath = binPathFromXML(this.modelPath);
         this.network = await this.core.readNetwork(this.modelPath, weightsPath);
-
         this.inputsInfo = this.network.getInputsInfo();
         this.outputsInfo = this.network.getOutputsInfo();
 
         this.input = this.inputsInfo[0];
-        this.input.setLayout('nhwc');
+        this.input.setLayout('nchw');
         this.output = this.outputsInfo[0];
         this.execNet = await this.core.loadNetwork(this.network, deviceName);
 
@@ -71,15 +86,11 @@ class FaceDetectionRetailEngine extends Engine {
 
         const inputHeight = inputDimsFace[2];
         const inputWidth = inputDimsFace[3];
-        const frameWidth = image.bitmap.width;
-        const frameHeight = image.bitmap.height;
 
-        if (image.bitmap.height !== inputHeight ||
-            image.bitmap.width !== inputWidth) {
-            console.log(`Resize image from (${image.bitmap.height}, ${
-                image.bitmap.width}) to (${inputHeight}, ${inputWidth}).`);
-            image.resize(inputWidth, inputHeight, jimp.RESIZE_BILINEAR);
-        }
+        const frameWidth = image.cols;
+        const frameHeight = image.rows;
+
+        image = image.resize(inputHeight, inputWidth, 2);
 
         const inferenceRequest = this.execNet.createInferRequest();
 
@@ -87,14 +98,7 @@ class FaceDetectionRetailEngine extends Engine {
 
         const inputData = new Float32Array(inputBlob.wmap());
 
-        image.scan(
-            0, 0, image.bitmap.width, image.bitmap.height, function (x, y, idx) {
-                // Convert from RGBA to BGR (IE default)
-                let i = Math.floor(idx / 4) * 3;
-                inputData[i + 2] = image.bitmap.data[idx + 0];  // R
-                inputData[i + 1] = image.bitmap.data[idx + 1];  // G
-                inputData[i + 0] = image.bitmap.data[idx + 2];  // B
-            });
+        toCHWArray(image, inputData);
 
         inputBlob.unmap();
 
@@ -105,7 +109,6 @@ class FaceDetectionRetailEngine extends Engine {
 
         const faces = [];
         for (let i = 0; i < inferenceResultArray.length; i += 7) {
-
             const confidence = inferenceResultArray[i + 2];
 
             if (confidence < 0.5) {
