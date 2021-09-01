@@ -11,15 +11,16 @@ $ npm install
 ```sh
 $ node main.js --help
 
-Hello Classification
+Start.
+-------------------------------------------
+Check inference engine version: 
+  API version: 2021.4
+  Build: 2021.4.1-3886-f03763defe6-releases/2021/4
+  Description: IE
+-------------------------------------------
+Detected Faces:
+probability    box
+-------        -------
+1.00           [417.78,203.41,164.37,210.84]
 
-  An example of face detection using inference-engine-node.
-
-Options
-
-  -h, --help                                        Show this help message and exit.
-  -i, --image string                                Required. Path to an image file.
-  --face-detection-model string              Required. Path to an .xml file with a trained model.
-  --face-detection-device string             Optional. Specify the target device to infer face detection model on; CPU, GPU, FPGA, HDDL, MYRIAD
-                                                    or HETERO: is acceptable. Default value is CPU.
 ```

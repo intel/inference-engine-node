@@ -1,6 +1,5 @@
 const {binPathFromXML} = require("../../common");
 const {Engine} = require("./engine");
-const jimp = require('jimp');
 
 
 class Result {
@@ -81,7 +80,7 @@ class FaceDetectionRetailEngine extends Engine {
 
     }
 
-    async process(image) {
+    async process(image, threshold) {
         const inputDimsFace = this.input.getDims();
 
         const inputHeight = inputDimsFace[2];
@@ -111,7 +110,7 @@ class FaceDetectionRetailEngine extends Engine {
         for (let i = 0; i < inferenceResultArray.length; i += 7) {
             const confidence = inferenceResultArray[i + 2];
 
-            if (confidence < 0.5) {
+            if (confidence < threshold) {
                 continue;
             }
 
