@@ -3,6 +3,7 @@
 
 #include <napi.h>
 #include <uv.h>
+#include <condition_variable>
 
 #include "inference_engine.hpp"
 
@@ -19,14 +20,27 @@ class InferAsyncWorker : public Napi::AsyncWorker {
                    Napi::Promise::Deferred& deferred)
       : Napi::AsyncWorker(env),
         infer_request_(infer_request),
-        env_(env),
         deferred_(deferred) {}
 
   ~InferAsyncWorker() {}
 
   void Execute() {
     try {
-      infer_request_.Infer();
+      std::condition_variable condVar;
+
+      bool isFinish = false;
+      infer_request_.SetCompletionCallback([&] {
+          isFinish = true;
+          condVar.notify_one();
+      });
+      infer_request_.StartAsync();
+
+      std::mutex mutex;
+      std::unique_lock<std::mutex> lock(mutex);
+      condVar.wait(lock, [&] {
+        return isFinish;
+      });
+
     } catch (const std::exception& error) {
       Napi::AsyncWorker::SetError(error.what());
       return;
@@ -36,13 +50,14 @@ class InferAsyncWorker : public Napi::AsyncWorker {
     }
   }
 
+
+
   void OnOK() { deferred_.Resolve(Env().Null()); }
 
   void OnError(Napi::Error const& error) { deferred_.Reject(error.Value()); }
 
  private:
   InferenceEngine::InferRequest infer_request_;
-  Napi::Env env_;
   Napi::Promise::Deferred deferred_;
 };
 

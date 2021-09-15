@@ -113,7 +113,7 @@ void Network::NewInstanceAsync(Napi::Env env,
                                const Napi::CallbackInfo& info,
                                const InferenceEngine::Core& core,
                                Napi::Promise::Deferred& deferred) {
-  ReadNetworkAsyncWorker* read_network_worker;
+  ReadNetworkAsyncWorker* read_network_worker = nullptr;
   if (info.Length() == 2) {
     read_network_worker =
         new ReadNetworkAsyncWorker(env, info[0], info[1], core, deferred);
