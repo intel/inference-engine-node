@@ -25,6 +25,7 @@ class InputInfo : public Napi::ObjectWrap<InputInfo> {
   void SetLayout(const Napi::CallbackInfo& info);
   Napi::Value GetDims(const Napi::CallbackInfo& info);
   Napi::Value GetPreProcess(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   InferenceEngine::InputInfo::Ptr actual_;
 };

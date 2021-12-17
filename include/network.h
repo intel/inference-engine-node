@@ -27,6 +27,7 @@ class Network : public Napi::ObjectWrap<Network> {
   Napi::Value GetName(const Napi::CallbackInfo& info);
   Napi::Value GetInputsInfo(const Napi::CallbackInfo& info);
   Napi::Value GetOutputsInfo(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   std::string model_;
   std::string weights_;

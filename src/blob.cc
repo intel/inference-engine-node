@@ -13,11 +13,16 @@ void Blob::Init(const Napi::Env& env) {
 
   Napi::Function func = DefineClass(
       env, "Blob",
-      {InstanceMethod("byteSize", &Blob::ByteSize),
-       InstanceMethod("size", &Blob::Size), InstanceMethod("rmap", &Blob::Rmap),
-       InstanceMethod("rwmap", &Blob::Rwmap),
-       InstanceMethod("wmap", &Blob::Wmap),
-       InstanceMethod("unmap", &Blob::Unmap)});
+      {
+          InstanceMethod("byteSize", &Blob::ByteSize),
+          InstanceMethod("size", &Blob::Size),
+          InstanceMethod("rmap", &Blob::Rmap),
+          InstanceMethod("rwmap", &Blob::Rwmap),
+          InstanceMethod("wmap", &Blob::Wmap),
+          InstanceMethod("unmap", &Blob::Unmap),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &Blob::toStringTag, nullptr, napi_enumerable),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -99,6 +104,10 @@ Napi::Value Blob::Size(const Napi::CallbackInfo& info) {
     return Napi::Object::New(env);
   }
   return Napi::Number::New(env, actual_->size());
+}
+
+Napi::Value Blob::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "Blob");
 }
 
 }  // namespace ienodejs

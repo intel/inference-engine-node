@@ -29,6 +29,7 @@ class Blob : public Napi::ObjectWrap<Blob> {
     return Memmap(info, WRITE);
   }
   Napi::Value Unmap(const Napi::CallbackInfo& info);
+  Napi::Value toStringTag(const Napi::CallbackInfo& info);
 
   // Helpers
   const static int READ = 0;

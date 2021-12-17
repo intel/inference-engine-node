@@ -15,15 +15,17 @@ Napi::FunctionReference OutputInfo::constructor;
 void OutputInfo::Init(const Napi::Env& env) {
   Napi::HandleScope scope(env);
 
-  Napi::Function func =
-      DefineClass(env, "OutputInfo",
-                  {
-                      InstanceMethod("name", &OutputInfo::Name),
-                      InstanceMethod("getPrecision", &OutputInfo::GetPrecision),
-                      InstanceMethod("setPrecision", &OutputInfo::SetPrecision),
-                      InstanceMethod("getLayout", &OutputInfo::GetLayout),
-                      InstanceMethod("getDims", &OutputInfo::GetDims),
-                  });
+  Napi::Function func = DefineClass(
+      env, "OutputInfo",
+      {
+          InstanceMethod("name", &OutputInfo::Name),
+          InstanceMethod("getPrecision", &OutputInfo::GetPrecision),
+          InstanceMethod("setPrecision", &OutputInfo::SetPrecision),
+          InstanceMethod("getLayout", &OutputInfo::GetLayout),
+          InstanceMethod("getDims", &OutputInfo::GetDims),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &OutputInfo::toStringTag, nullptr, napi_enumerable),
+      });
 
   constructor = Napi::Persistent(func);
   constructor.SuppressDestruct();
@@ -106,6 +108,10 @@ Napi::Value OutputInfo::GetDims(const Napi::CallbackInfo& info) {
     js_dims[i] = ie_dims[i];
   }
   return js_dims;
+}
+
+Napi::Value OutputInfo::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "OutputInfo");
 }
 
 }  // namespace ienodejs
