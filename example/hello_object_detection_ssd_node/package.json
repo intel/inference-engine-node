@@ -9,7 +9,7 @@
   "author": "artyom.tugaryov@gmail.com",
   "license": "Apache-2.0",
   "dependencies": {
-    "command-line-args": "^5.1.1",
+    "command-line-args": "^5.2.1",
     "command-line-usage": "^6.1.0",
     "inference-engine-node": "../../",
     "jimp": "^0.16.1"
