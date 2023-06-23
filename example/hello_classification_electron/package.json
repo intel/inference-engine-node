@@ -8,7 +8,7 @@
   },
   "repository": "https://github.com/intel/inference-engine-node",
   "dependencies": {
-    "bootstrap": "^4.4.1",
+    "bootstrap": "^4.6.2",
     "electron": "^11.5.0",
     "greensock": "^1.20.2",
     "inference-engine-node": "../../",
