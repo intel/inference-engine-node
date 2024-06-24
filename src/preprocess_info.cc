@@ -33,6 +33,9 @@ void PreProcessInfo::Init(const Napi::Env& env) {
                          &PreProcessInfo::GetNumberOfChannels),
           InstanceMethod("getPreProcessChannel",
                          &PreProcessInfo::GetPreProcessChannel),
+          InstanceAccessor(Napi::Symbol::WellKnown(env, "toStringTag"),
+                           &PreProcessInfo::toStringTag, nullptr,
+                           napi_enumerable),
       });
 
   constructor = Napi::Persistent(func);
@@ -216,6 +219,10 @@ Napi::Value PreProcessInfo::GetPreProcessChannel(
   size_t index = info[0].ToNumber().Int32Value();
   ie::PreProcessInfo& pre_info = _input_info->getPreProcess();
   return PreProcessChannel::NewInstance(env, pre_info, index);
+}
+
+Napi::Value PreProcessInfo::toStringTag(const Napi::CallbackInfo& info) {
+  return Napi::String::From(info.Env(), "PreProcessInfo");
 }
 
 }  // namespace ienodejs
